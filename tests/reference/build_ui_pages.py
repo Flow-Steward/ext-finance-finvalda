@@ -244,14 +244,15 @@ def coverage_page(cov: dict[str, Any], ops: list[dict[str, Any]]) -> dict[str, A
         "- The everyday steps take the operation lists' client column for the client's code (as in "
         "the Postman example of Sales, where client_code holds the company code). If a live server "
         "shows otherwise, a purchase or payment could be registered twice: check this first.",
-        "- Register payment with an invoice returns an earlier payment only when its lines' "
-        "journal_det and op_number_det (the manual's line columns, taken as the operation a line "
-        "settles) point at the invoice; any other payment of the client with that statement number "
-        "and amount stops the step, so nothing is registered twice while their meaning is unconfirmed.",
+        "- Register payment does not tell a rerun from another payment: any payment of the "
+        "client with the same document number stops the step without a write.",
         "- Attach file stores the file in Finvalda's document register before attaching it. The "
-        'manual documents no "already stored" answer, so a rerun after a stored but unattached '
-        "file stops with Finvalda's refusal (or stores it again) instead of attaching a file of the "
-        "same name that may be another one.",
+        'manual documents no "already stored" answer and the register cannot be listed, so after '
+        "a stored but unattached file a rerun reports Finvalda's refusal with a hint to attach it "
+        "by hand; only the invoice steps, whose file names include the kind, client and document, "
+        "attach the stored file themselves.",
+        "- Times given as /Date(ms)/ without an offset are read as Lithuanian local time, like "
+        "every other time Finvalda gives.",
         "- Invoices related to a client sends the client as sKlientoKodas, a name from a published "
         "client, not from Finvalda; the step passes on only rows that show they belong to that client.",
     ]

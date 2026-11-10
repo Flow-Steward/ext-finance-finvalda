@@ -2228,11 +2228,9 @@ def everyday_specs() -> list[dict[str, Any]]:
             "description": (
                 "Registers money received from a client (inflow) or paid to a supplier (disbursement), "
                 "against one document or as a prepayment. Safe to run again: a payment of the client "
-                "with the same document number and amount is returned instead of a second one — "
-                "with an invoice, only when its lines point at that invoice's operation. Any other "
-                "payment of the client with that number and amount stops the step without a write: "
-                "two payments of one client and amount on one statement need document numbers of "
-                "their own, and without an invoice they would count as one."
+                "and that document number already in Finvalda stops the step without a write: if it "
+                "is a rerun nothing more is needed, and a different payment needs a document number "
+                "of its own (one bank statement often holds several payments)."
             ),
             "inputs": [
                 CONNECTION,
@@ -2498,7 +2496,7 @@ def everyday_specs() -> list[dict[str, Any]]:
             "display_name": "Changes since",
             "kind": "source",
             "calls": ["GetDescriptions (EditedFrom)", "GetOperations (DateEditedFrom)"],
-            "description": "Records or operations created or edited since a moment: clients, products, services, sales, purchases, inflows, disbursements. To continue, pass latest_edited as since and next_after_key as after_key: records of one edit time are read on, never repeated.",
+            "description": "Records or operations created or edited since a moment: clients, products, services, sales, purchases, inflows, disbursements. Pass latest_edited as since next time. Since is inclusive and records of one edit time are never split, so the records at the boundary come again: repeated, never lost — skip them by code.",
             "inputs": [
                 CONNECTION,
                 choice(
@@ -2515,12 +2513,6 @@ def everyday_specs() -> list[dict[str, Any]]:
                     "YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS; records edited at or after it.",
                     required=True,
                     **DATE_TIME,
-                ),
-                text(
-                    "after_key",
-                    "After key",
-                    "With since = latest_edited: the next_after_key of the previous step, to continue after it.",
-                    maxLength=80,
                 ),
                 whole(
                     "limit",
@@ -2540,22 +2532,22 @@ def everyday_specs() -> list[dict[str, Any]]:
                     "The edit time of the last record; pass it as since next time.",
                 ),
                 out(
-                    "next_after_key",
-                    "text",
-                    ["string", "null"],
-                    "The key of the last record; pass it as after_key next time.",
-                ),
-                out(
                     "has_more",
                     "boolean",
                     "boolean",
-                    "True when the limit cut the list; continue with since and after_key.",
+                    "True when more records follow; continue with since = latest_edited.",
                 ),
                 out(
                     "undated",
                     "array",
                     "array",
-                    "Records whose edit time Finvalda gives in no known form; returned on every call.",
+                    "Records whose edit time Finvalda gives in no known form (up to 100), with the last page only.",
+                ),
+                out(
+                    "undated_count",
+                    "integer",
+                    "integer",
+                    "How many records have an edit time in no known form.",
                 ),
             ],
         },

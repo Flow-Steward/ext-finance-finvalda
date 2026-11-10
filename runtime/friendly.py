@@ -828,6 +828,7 @@ def invoice_op(
             },
             progress,
             content=content,
+            own_name=True,
         )["file_name"]
     return {
         **saved,
@@ -903,25 +904,18 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     client = client_code_of(context, inputs)
     head, op_class, operation = payment_body(inputs, client)
     document = operation["sDokumentas"]
-    amount = Decimal(operation[next(k for k in operation if k.endswith("DetEil"))][0]["dSumaV"])
-    invoice = text("invoice_document", inputs, 20)
-    existing = find_payment(
-        context,
-        op_class,
-        client,
-        document,
-        amount,
-        operation["sValiuta"],
-        invoice=invoice,
-        invoice_series=text("invoice_series", inputs, 10),
-    )
-    if existing is not None:
-        return {
-            **operation_identity(existing, document),
-            "created": False,
-            "client_code": client,
-            "record": existing,
-        }
+    # One statement may hold several payments of a client, and nothing in Finvalda's
+    # answer tells a rerun from another payment for sure. So any operation of this
+    # class with this document number for the client stops the step (0.1.0).
+    existing = same_document(context, op_class, document, client=client)
+    if existing:
+        raise errors.no_effect(
+            errors.CONFLICT,
+            f"A payment of client {client} with document {document} is already in Finvalda "
+            f"({', '.join(str(field(r, 'journal') or '?') + ' #' + str(_op_number(r)) for r in existing[:5])}). "
+            "If this is a rerun, nothing more is needed; if it is a different payment, give it "
+            "a document number of its own",
+        )
     body = {
         "ItemClassName": head,
         "sParametras": parameter,
@@ -942,98 +936,6 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     return {**saved, "created": True, "client_code": client, "record": record}
 
 
-def _amount_of(row: Mapping[str, Any]) -> Decimal | None:
-    return ops.decimal_of(field(row, "amount"))
-
-
-def _reference(journal: Any, number: Any) -> tuple[str, int] | None:
-    """(journal, number) of an operation, or None when either is missing."""
-    journal_text = str(journal or "").strip().upper()
-    value = ops.decimal_of(number)
-    if not journal_text or value is None or value != value.to_integral_value():
-        return None
-    return journal_text, int(value)
-
-
-def find_payment(
-    context: Any,
-    op_class: str,
-    client: str,
-    document: str,
-    amount: Decimal,
-    currency: str,
-    *,
-    invoice: str,
-    invoice_series: str,
-) -> dict[str, Any] | None:
-    """The same payment made before, if this step already made it; None for a new one.
-
-    A new payment is registered only when the client has no payment with this
-    statement number and amount at all. Otherwise it is taken as made before only
-    when that is certain:
-
-    * without an invoice, the one payment with this number and amount;
-    * with an invoice, the one such payment whose lines point at the invoice's
-      operation (``journal_det``/``op_number_det``, the manual's line columns, 3.77).
-
-    Every other case stops the step without a write — several matches, an amount
-    that cannot be read or compared (another currency: the header amount may be in
-    EUR), lines that point elsewhere or nowhere — because what those columns mean is
-    not confirmed on a live server. Two payments of one client and amount on one
-    statement therefore need their own document numbers.
-    """
-    rows = same_document(context, op_class, document, client=client)
-    if not rows:
-        return None
-
-    def stop(detail: str) -> ExtensionError:
-        return errors.no_effect(
-            errors.CONFLICT,
-            f"Payment document {document} of client {client} already exists in Finvalda and "
-            f"{detail}; check Finvalda — register it under another document number if it is "
-            "a different payment",
-        )
-
-    if currency != "EUR":
-        raise stop("its amount cannot be compared in another currency")
-    if any(_amount_of(r) is None for r in rows):
-        raise stop("its amount could not be read")
-    same_amount = [r for r in rows if _amount_of(r) == amount]
-    if not same_amount:
-        return None
-    if not invoice:
-        if len(same_amount) == 1:
-            return same_amount[0]
-        raise stop(f"{len(same_amount)} payments have the amount {amount}")
-    invoice_class = "Sales" if op_class == "Inflows" else "Purchases"
-    invoices = same_document(context, invoice_class, invoice, invoice_series, client)
-    if len(invoices) != 1:
-        raise stop(f"has the same amount, and invoice {invoice} could not be found once")
-    target = _reference(field(invoices[0], "journal"), field(invoices[0], "op_number"))
-    confirmed = []
-    for row in same_amount:
-        number = _op_number(row)
-        lines = (
-            operations_of(
-                context,
-                f"{op_class}Det",
-                {"Journal": str(field(row, "journal") or ""), "OpNumber": number},
-            )
-            if number is not None
-            else []
-        )
-        references = [
-            _reference(field(line, "journal_det"), field(line, "op_number_det")) for line in lines
-        ]
-        if target is not None and target in references:
-            confirmed.append(row)
-    if len(confirmed) == 1:
-        return confirmed[0]
-    raise stop(
-        f"has the same amount; Finvalda's answer does not show that it is this payment of {invoice}"
-    )
-
-
 # ---------------------------------------------------------------------------
 # Files
 
@@ -1048,14 +950,21 @@ ATTACH_INPUTS = {
 
 
 def store_and_attach(
-    context: Any, inputs: Mapping[str, Any], progress: Progress, *, content: bytes | None = None
+    context: Any,
+    inputs: Mapping[str, Any],
+    progress: Progress,
+    *,
+    content: bytes | None = None,
+    own_name: bool = False,
 ) -> dict[str, Any]:
     """Store a workflow file in the register and attach it, unless it is already attached.
 
     Every call is guarded, so a failure after an earlier write names what was saved.
     InsertDocument documents no "already stored" code (manual 3.80: 1 no name,
-    2 unknown employee, 3 no content), so a stored file of the same name is never
-    assumed: it could be another one.
+    2 unknown employee, 3 no content) and the register cannot be listed, so a stored
+    file of the same name is assumed only for ``own_name``: a name this extension
+    builds from the kind, the client and the document, which no other file has.
+    Otherwise a refused store is reported with a hint to attach by hand.
     """
     query = ops.entity_query(inputs)
     name = ops.file_name_input("file_name", inputs.get("file_name"))
@@ -1073,16 +982,47 @@ def store_and_attach(
         document_inputs["file_description"] = inputs["file_description"]
     body = ops.insert_document_params(document_inputs, context, content)
     attach_query = [*query, ("documentId", name), ("finUser", user)]
-    stored = True
-    progress.guard(
-        "Storing the file",
-        lambda: context.call("InsertDocument", verb="POST", body=body, mutating=True),
-    )
+    try:
+        progress.guard(
+            "Storing the file",
+            lambda: context.call("InsertDocument", verb="POST", body=body, mutating=True),
+        )
+    except ExtensionError as refused:
+        if refused.definitely_no_external_effect is not True:
+            raise
+        if not own_name:
+            raise ExtensionError(
+                refused.code,
+                f"{refused.message}. If an earlier run stored {name}, attach it with "
+                "Advanced · Attach a document",
+                failure_class=refused.failure_class,
+                retryable=False,
+                definitely_no_external_effect=refused.definitely_no_external_effect,
+                external_effect_status=refused.external_effect_status,
+                http_status=refused.http_status,
+                finvalda_code=refused.finvalda_code,
+            ) from refused
+        # Our own name: an earlier run of this step stored it. Attach that one; an
+        # unknown outcome of the attach is passed on as it is.
+        try:
+            attached = progress.guard(
+                "Attaching the stored document",
+                lambda: ops.attach_document(context, attach_query),
+            )
+        except ExtensionError as failed:
+            if failed.definitely_no_external_effect is not True:
+                raise
+            raise errors.no_effect(
+                errors.CONFLICT,
+                f"Finvalda refused to store {name} ({refused.message}) and to attach a stored "
+                f"one ({failed.message}); attach the file by hand in Finvalda",
+            ) from failed
+        return {"file_name": name, "stored": False, "attached": attached}
     progress.add(f"document {name} in the register")
     attached = progress.guard(
         "Attaching the document", lambda: ops.attach_document(context, attach_query)
     )
-    return {"file_name": name, "stored": stored, "attached": attached}
+    return {"file_name": name, "stored": True, "attached": attached}
 
 
 def attach_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> dict[str, Any]:
@@ -1295,7 +1235,6 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
 
 
 CHANGES_MAX_ROWS = 20_000
-_ISO_DATE = re.compile(r"^(\d{4})[-.](\d{2})[-.](\d{2})")
 _DOTNET_DATE = re.compile(r"^/Date\((-?\d+)([+-]\d{4})?\)/$")
 
 
@@ -1305,8 +1244,37 @@ def finvalda_date(value: Any) -> Date | None:
     return moment.date() if moment else None
 
 
+def _zone_offset(moment: datetime) -> timedelta | None:
+    """Europe/Vilnius's offset from the time zone database, when the runtime has one."""
+    try:
+        from zoneinfo import ZoneInfo
+
+        return moment.astimezone(ZoneInfo("Europe/Vilnius")).utcoffset()
+    except Exception:  # noqa: BLE001 - no time zone data: the caller uses the EU rule
+        return None
+
+
+def _vilnius_offset(moment: datetime) -> timedelta:
+    """Lithuania's offset at a UTC moment: EET +2, EEST +3 from the last Sunday of
+    March 01:00 UTC to the last Sunday of October 01:00 UTC (EU rule)."""
+    offset = _zone_offset(moment)
+    if offset is not None:
+        return offset
+
+    def last_sunday(month: int) -> datetime:
+        day = datetime(moment.year, month, 31, 1, tzinfo=timezone.utc)
+        return day - timedelta(days=(day.weekday() + 1) % 7)
+
+    summer = last_sunday(3) <= moment < last_sunday(10)
+    return timedelta(hours=3 if summer else 2)
+
+
 def _dotnet(text: str) -> datetime | None:
-    """/Date(ms±hhmm)/ as the local wall time its offset names (UTC without one)."""
+    """/Date(ms±hhmm)/ as local wall time: by its offset, else Lithuania's.
+
+    Every other time from Finvalda (ISO text, since) is the server's local time,
+    so a /Date/ without an offset is read as Lithuanian local time too.
+    """
     match = _DOTNET_DATE.match(text)
     if not match:
         return None
@@ -1315,6 +1283,8 @@ def _dotnet(text: str) -> datetime | None:
     if offset:
         sign = 1 if offset[0] == "+" else -1
         moment += sign * timedelta(hours=int(offset[1:3]), minutes=int(offset[3:5]))
+    else:
+        moment += _vilnius_offset(moment)
     return moment.replace(tzinfo=None)
 
 
@@ -1354,23 +1324,22 @@ def _edited(row: Mapping[str, Any]) -> datetime | None:
     return finvalda_datetime(field(row, "date_edited"))
 
 
-def change_key(row: Mapping[str, Any]) -> str:
-    """A record's identity in the change cursor: its code, or journal and number."""
-    code = field(row, "code") or field(row, "product")
-    if code not in (None, ""):
-        return str(code)
-    number = _op_number(row)
-    journal = str(field(row, "journal") or "")
-    return f"{journal}#{number:012d}" if number is not None else journal
-
-
 #: Rows per step: 300 rows of up to 13 columns stay inside the step output's limits.
 CHANGES_MAX_LIMIT = 300
-#: Rows whose edit time is in no known form are returned apart, on every call.
+#: Records of one edit time are never split; a group bigger than this cannot be read.
+MAX_GROUP = 600
+#: Rows whose edit time is in no known form, returned with the last page only.
 MAX_UNDATED = 100
 
 
 def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
+    """Records edited at or after ``since``, in whole groups of one edit time.
+
+    Finvalda's edit times are coarse (seconds, sometimes minutes or a date), so
+    since is inclusive and a group of one time is never split: the records at the
+    boundary come again on the next call — repeated, never lost. Each step also
+    moves past the time it started at, so a long run of one time cannot stall.
+    """
     entity = inputs.get("entity")
     if entity not in CHANGE_ENTITIES:
         raise invalid(f"entity must be one of: {', '.join(CHANGE_ENTITIES)}")
@@ -1378,7 +1347,6 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     since = finvalda_datetime(raw_since)
     if since is None or not ops._DATE_TIME_RE.fullmatch(raw_since.replace(" ", "T")):
         raise invalid("since must be YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS")
-    after_key = text("after_key", inputs, 80)
     # Finvalda's filters take a date only (manual: yyyy.MM.dd or yyyy-MM-dd); the time
     # part of since is applied here, on the rows of that day.
     day = since.date().isoformat()
@@ -1411,8 +1379,8 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             )
     else:
         rows = operations_of(context, name, {"DateEditedFrom": day}, OPERATION_COLUMNS)
-    # Each row's edit time and key, read once.
-    dated: list[tuple[datetime, str, dict[str, Any]]] = []
+    # Each row's edit time, read once.
+    dated: list[tuple[datetime, dict[str, Any]]] = []
     undated: list[dict[str, Any]] = []
     for row in rows:
         if not isinstance(row, Mapping):
@@ -1420,31 +1388,51 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         moment = _edited(row)
         if moment is None:
             undated.append(dict(row))
-        else:
-            dated.append((moment, change_key(row), dict(row)))
-    # The cursor (since, after_key) is exclusive on the key at the same moment, so a
-    # long run of records with one edit time is read on, never repeated forever.
-    dated = [
-        item
-        for item in dated
-        if item[0] > since or (item[0] == since and (not after_key or item[1] > after_key))
-    ]
-    dated.sort(key=lambda item: (item[0], item[1]))
-    has_more = len(dated) > limit
-    page = dated[:limit]
-    if len(undated) > MAX_UNDATED:
+        elif moment >= since:
+            dated.append((moment, dict(row)))
+    # By time, then by code (or journal and number), so a page reads in a fixed order.
+    dated.sort(
+        key=lambda item: (
+            item[0],
+            str(field(item[1], "code") or field(item[1], "product") or ""),
+            str(field(item[1], "journal") or ""),
+            _op_number(item[1]) or 0,
+        )
+    )
+    # The group at since itself (repeated from the last call), then whole groups of
+    # later times up to the limit — always at least one later group, so it moves on.
+    at_since = [item for item in dated if item[0] == since]
+    later = [item for item in dated if item[0] > since]
+    page = list(at_since)
+    taken = 0
+    index = 0
+    while index < len(later):
+        moment = later[index][0]
+        group_end = index
+        while group_end < len(later) and later[group_end][0] == moment:
+            group_end += 1
+        if taken and taken + (group_end - index) > limit:
+            break
+        page.extend(later[index:group_end])
+        taken += group_end - index
+        index = group_end
+        if taken >= limit:
+            break
+    has_more = index < len(later)
+    if len(page) > MAX_GROUP + limit:
         raise errors.no_effect(
             errors.RESPONSE_TOO_LARGE,
-            f"More than {MAX_UNDATED} records have an edit time in no known form",
+            f"More than {MAX_GROUP} records share one edit time; narrow the list (for example "
+            "with Export a list to a file and a filter)",
         )
-    last = page[-1] if page else None
-    result = {
-        "records": [item[2] for item in page],
+    last = page[-1][0] if page else None
+    result: dict[str, Any] = {
+        "records": [item[1] for item in page],
         "count": len(page),
-        "latest_edited": last[0].isoformat() if last else None,
-        "next_after_key": last[1] if last else None,
+        "latest_edited": last.isoformat() if last else None,
         "has_more": has_more,
-        "undated": undated,
+        "undated": [] if has_more else undated[:MAX_UNDATED],
+        "undated_count": len(undated),
     }
     if not budget.fits(result):
         raise errors.no_effect(
@@ -1474,7 +1462,7 @@ ALLOWED_INPUTS: dict[str, set[str]] = {
     "stock_levels": {"product_codes", "warehouse", "warehouse_group", "limit", "page"},
     "product_prices": {"product_codes", "client_code"},
     "client_debt": {"client_code", "as_of"},
-    "changes_since": {"entity", "since", "after_key", "limit"},
+    "changes_since": {"entity", "since", "limit"},
 }
 
 

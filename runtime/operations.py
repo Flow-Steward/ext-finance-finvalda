@@ -452,23 +452,32 @@ def check_fields(
 
 
 def rows_of(data: Mapping[str, Any], *, strict: bool = True) -> list[Any]:
-    """The list of rows in a Finvalda answer (``items``, or the one list it holds).
+    """The list of rows in a Finvalda answer.
 
-    An answer of no known form is an error (``strict``), never "no rows": a lookup
-    before a create would otherwise create a record that already exists.
+    ``strict`` (the reads everyday steps rely on, lookups before a create among
+    them): only the form every read example of Finvalda's Postman collection shows,
+    ``{"AccessResult": "Success", "error": "", "items": [...]}`` — an empty list is
+    "no rows". Anything else (no ``items``, ``items: null``) is an error, never "no
+    rows": a lookup would otherwise create a record that already exists.
+
+    Not strict (the older methods, whose answers the manual describes by their
+    columns only): ``items``, or the one list the answer holds, or nothing.
     """
     rest = {
         k: v
         for k, v in data.items()
         if str(k).lower() not in {"accessresult", "error", "serror", "nresult"}
     }
-    if all(value in (None, "", []) for value in rest.values()):
-        # No data key, or data keys that are null or empty: no rows.
-        return []
     items = field(rest, "items")
     if isinstance(items, list):
         return items
-    if "items" in {str(k).lower() for k in rest} and items in (None, ""):
+    if strict:
+        raise errors.no_effect(
+            errors.INVALID_RESPONSE,
+            "Finvalda's answer has no list of rows (items)"
+            + (": " + ", ".join(sorted(str(k) for k in rest))[:200] if rest else ""),
+        )
+    if all(value in (None, "", []) for value in rest.values()):
         return []
     lists = [v for v in rest.values() if isinstance(v, list)]
     if len(lists) == 1:
@@ -483,14 +492,6 @@ def rows_of(data: Mapping[str, Any], *, strict: bool = True) -> list[Any]:
                 (inner,) = only.values()
                 if isinstance(inner, Mapping):
                     return [inner]
-            if not only:
-                return []
-    if strict:
-        raise errors.no_effect(
-            errors.INVALID_RESPONSE,
-            "Finvalda's answer is not a list of rows in any known form: "
-            + ", ".join(sorted(str(k) for k in rest))[:200],
-        )
     return []
 
 
@@ -1815,7 +1816,7 @@ def run_related_invoices(context: Context, spec: Mapping[str, Any]) -> dict[str,
     reply = context.call(
         "GetInvoicesRelatedToCustomer", verb="POST", query=query, body={}, mutating=False
     )
-    rows_all = rows_of(reply.data)
+    rows_all = rows_of(reply.data, strict=False)
     if client:
         # The client parameter's name comes from a published client of the web service,
         # not from Finvalda's documents. Were it ignored, Finvalda would answer with every
@@ -1839,7 +1840,7 @@ def run_related_invoices(context: Context, spec: Mapping[str, Any]) -> dict[str,
                     f"Finvalda's answer holds invoices that are not shown to belong to client "
                     f"{client}; it is not passed on",
                 )
-    rows = rows_of(reply.data)
+    rows = rows_all
     return {
         "records": rows,
         "record": rows[0] if rows else None,

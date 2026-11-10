@@ -83,25 +83,25 @@ against a live Finvalda. Where a published client of the same web service report
 name that differs from the manual (`sSandKod` for `sSanKod`; `tDataNuo`/`tDataIki` for
 `tNuo`/`tIki`), the step sends both names.
 
-Register payment treats a payment as made before when the client, the statement number and
-the amount match (and, when an invoice is given, its lines' `journal_det` and `op_number_det`
-point at that invoice's operation). Any other payment of the client with that statement number
-and amount stops the step without a write, until the meaning of those columns is confirmed on a
-live server. Two real payments of the same
-client and amount on one statement without an invoice therefore count as one: give the invoice,
-or a document number of its own for each payment.
+Register payment registers a payment only when the client has no operation of that kind with
+the same document number. Otherwise it stops without a write: a rerun needs nothing more, and a
+different payment (one bank statement often holds several) needs a document number of its own.
 
 What to check first on a live server:
 
 - the operation lists' `client` column is the client's code (the Postman example of Sales shows
   it so, with `client_code` holding the company code); the everyday purchase and payment steps
   find earlier documents by it, so if it were otherwise they could register one twice;
-- the payment lines' `journal_det`/`op_number_det` name the operation a line settles (Register
-  payment with an invoice relies on it to recognise its own earlier payment);
 - what InsertDocument answers for a file name already in the register (the manual documents no
-  such code, so Attach file never assumes a stored file of that name is the same file);
+  such code; only the invoice steps, whose file names are their own, attach a stored file
+  after a refused store);
+- `/Date(ms)/` times without an offset are read as Lithuanian local time;
 - Invoices related to a client sends the client as `sKlientoKodas` (a name from a published
   client, not from Finvalda) and passes on only rows that show they belong to that client.
+
+Changes since reads `since` inclusively and never splits records of one edit time, because
+Finvalda's edit times are coarse: the records at the boundary come again on the next call
+(repeated, never lost), so skip them by code.
 
 Results give every number Finvalda returns as exact decimal text.
 

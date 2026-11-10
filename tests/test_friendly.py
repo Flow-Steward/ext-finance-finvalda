@@ -341,7 +341,7 @@ def test_incoming_payment_for_an_invoice() -> None:
     assert fake.calls[0].op_params()["OpClass"] == "Inflows"
 
 
-def test_payment_rerun_returns_the_existing_one() -> None:
+def test_payment_with_an_existing_document_stops() -> None:
     fake = FakeFinvalda(
         GetOperations=items(
             {"journal": "ISM", "op_number": 3, "order_number": "B-2", "client": "K1", "amount": 5}
@@ -352,8 +352,10 @@ def test_payment_rerun_returns_the_existing_one() -> None:
         "register_payment",
         {"direction": "outgoing", "client_code": "K1", "document": "B-2", "amount": 5},
     )
-    assert response["result"]["created"] is False and fake.writes() == []
+    assert response["error_code"] == "conflict" and fake.writes() == []
+    assert "nothing more is needed" in response["error"]
     assert fake.calls[0].op_params()["OpClass"] == "Disbursement"
+    assert fake.calls[0].op_params()["filter"] == {"OrderNumber": "B-2", "Client": "K1"}
 
 
 def test_payment_inputs_checked() -> None:
@@ -499,26 +501,29 @@ def test_product_prices_with_client_prices() -> None:
     assert fake.calls[1].read_params()["Prices"] == {"Type": 1, "Client": "K1", "Codes": ["P1"]}
 
 
-def test_changes_since_continues_with_a_cursor() -> None:
+def test_changes_since_repeats_the_boundary_and_moves_on() -> None:
     rows = [
         {"code": "A", "date_edited": "2026-11-01T10:00:00"},
         {"code": "B", "date_edited": "2026-11-01T11:00:00"},
         {"code": "C", "date_edited": "2026-11-01T11:00:00"},
         {"code": "D", "date_edited": "2026-11-01T12:00:00"},
     ]
-    fake = FakeFinvalda(GetDescriptions=items(*reversed(rows)))
+    fake = FakeFinvalda(GetDescriptions=lambda call: items(*reversed(rows)))
     first = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-01", "limit": 2})[
         "result"
     ]
-    assert [r["code"] for r in first["records"]] == ["A", "B"] and first["has_more"] is True
-    assert first["latest_edited"] == "2026-11-01T11:00:00" and first["next_after_key"] == "B"
+    # B and C share one time and would pass the limit: the group is left whole for later.
+    assert [r["code"] for r in first["records"]] == ["A"] and first["has_more"] is True
     assert fake.calls[0].read_params()["Clients"] == {"EditedFrom": "2026-11-01"}
     second = run(
-        fake,
-        "changes_since",
-        {"entity": "clients", "since": first["latest_edited"], "after_key": "B", "limit": 2},
+        fake, "changes_since", {"entity": "clients", "since": first["latest_edited"], "limit": 2}
     )["result"]
-    assert [r["code"] for r in second["records"]] == ["C", "D"] and second["has_more"] is False
+    # The boundary record comes again, then the whole next group.
+    assert [r["code"] for r in second["records"]] == ["A", "B", "C"] and second["has_more"] is True
+    third = run(
+        fake, "changes_since", {"entity": "clients", "since": second["latest_edited"], "limit": 2}
+    )["result"]
+    assert [r["code"] for r in third["records"]] == ["B", "C", "D"] and third["has_more"] is False
 
 
 def test_changes_since_for_operations() -> None:
