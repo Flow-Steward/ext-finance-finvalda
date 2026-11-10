@@ -8,6 +8,7 @@ from typing import Any
 from ..advanced.files import (
     attach_document,
     attached_files,
+    same_content,
     entity_query,
     fin_user_of,
     insert_document_params,
@@ -35,6 +36,7 @@ def store_and_attach(
     progress: Progress,
     *,
     content: bytes | None = None,
+    generated_name: bool = False,
 ) -> dict[str, Any]:
     """Store a workflow file in the register and attach it, unless the same file (same
     name, same content) is already attached; another file of that name is a conflict.
@@ -56,22 +58,25 @@ def store_and_attach(
         content = read_input_file(context, inputs.get("document_file"))
     same_name = [f for f in attached_files(reply.data) if f["name"] == name]
     if same_name:
-        # Already attached only when the content is the same, byte for byte.
-        for attached in same_name:
-            try:
-                stored = bytes.fromhex(attached["data"])
-            except ValueError as exc:
-                raise errors.no_effect(
-                    errors.INVALID_RESPONSE,
-                    f"The content of the attached file {name} in Finvalda's answer is not hex; "
-                    "nothing was written",
-                ) from exc
-            if stored == content:
-                return {"file_name": name, "stored": False, "attached": False}
-        raise errors.no_effect(
-            errors.CONFLICT,
-            f"A different file named {name} is already attached there; nothing was written. "
-            "Give the new file another name, or replace the attached one in Finvalda",
+        # Already attached only when the content is the same, byte for byte. Any
+        # failure here goes through progress, so a write made earlier in this step
+        # (an invoice) is named, not hidden.
+        step = "Checking the attached file"
+        if progress.guard(step, lambda: any(same_content(f, content) for f in same_name)):
+            return {"file_name": name, "stored": False, "attached": False}
+        hint = (
+            "replace it in Finvalda by hand, or attach the new file under another name with "
+            "Advanced · Attach a document"
+            if generated_name
+            else "give the new file another name, or replace the attached one in Finvalda"
+        )
+        raise progress.fail(
+            errors.no_effect(
+                errors.CONFLICT,
+                f"A different file named {name} is already attached there, so the new file "
+                f"was not stored or attached; {hint}",
+            ),
+            step,
         )
     document_inputs = {"file_name": name}
     if inputs.get("file_description"):

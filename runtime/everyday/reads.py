@@ -18,6 +18,7 @@ from ..reference_data import CHANGE_ENTITIES, DESCRIPTION_TYPES
 from ..rows import rows_of
 from ..values import as_decimal, cents, finvalda_date, finvalda_datetime, iso_moment
 from .common import (
+    row_code,
     CLIENT_COLUMNS,
     OPERATION_COLUMNS,
     PRODUCT_COLUMNS,
@@ -126,13 +127,14 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         "vat_percent",
     ]
     wanted = {c.upper() for c in codes}
+    # A read: a row without its code is kept, with a warning (checked_rows); a row
+    # of another product is left out.
     rows = [
         r
-        for r in describe(context, "Products", {"Codes": codes}, columns, limit=500)
-        # The product's code as the record reads it: product, else code.
-        if str(field(r, "product") or field(r, "code") or "").strip().upper() in wanted
+        for r in describe(context, "Products", {"Codes": codes}, columns, limit=500, strict=False)
+        if not row_code(r, "Products") or row_code(r, "Products").upper() in wanted
     ]
-    if len(rows) > len(codes):
+    if len([r for r in rows if row_code(r, "Products")]) > len(codes):
         raise errors.no_effect(
             errors.INVALID_RESPONSE,
             "Finvalda returned more products than were asked for; nothing is passed on",
@@ -150,9 +152,10 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
                 CLIENT_PRICE_COLUMNS,
                 limit=200,
                 max_pages=5,
+                strict=False,
             )
-            # Only the prices of the codes asked for, of this client.
-            if str(field(r, "code") or "").strip().upper() in wanted
+            # Only the prices of the codes asked for (or of no code, warned), of this client.
+            if (not row_code(r, "Prices") or row_code(r, "Prices").upper() in wanted)
             and _same(field(r, "client") or client, client)
         ]
     return {
@@ -168,7 +171,11 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     rows = [
         r
         for r in describe(
-            context, "Clients", {"Codes": [client]}, ["code", "title", "debt", "current_debt"]
+            context,
+            "Clients",
+            {"Codes": [client]},
+            ["code", "title", "debt", "current_debt"],
+            strict=False,
         )
         if _same(field(r, "code"), client)
     ]
@@ -282,7 +289,7 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             )
     else:
         rows = operations_of(context, name, {"DateEditedFrom": day}, OPERATION_COLUMNS)
-    ordered = sorted((dict(r) for r in rows if isinstance(r, Mapping)), key=_change_key)
+    ordered = sorted(rows, key=_change_key)
     start = (page - 1) * limit
     chosen = ordered[start : start + limit]
     has_more = start + limit < len(ordered)

@@ -159,6 +159,13 @@ _UNFIT = object()
 _SINK: ContextVar[list[str] | None] = ContextVar("finvalda_value_warnings", default=None)
 
 
+def warn(text: str) -> None:
+    """Add a warning to the step being run (when it collects them)."""
+    found = _SINK.get()
+    if found is not None and len(found) < MAX_WARNINGS:
+        found.append(text)
+
+
 @contextmanager
 def collect_value_warnings() -> Iterator[list[str]]:
     """Collect the warnings of values that did not fit their type, for one step."""
@@ -341,6 +348,7 @@ __all__ = [
     "SHAPES",
     "Field",
     "collect_value_warnings",
+    "warn",
     "column_kinds",
     "manual_kind",
     "normalize_row",

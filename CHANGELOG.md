@@ -6,7 +6,7 @@ First release.
 
 - Finvalda's web service (the FvsServicePure interface) with the web service user, password and
   company of the connection.
-- Everyday steps: Find or create client, Find or create product, Find or create service, Create
+- Everyday steps: Test the connection, Find or create client, Find or create product, Find or create service, Create
   sales invoice, Create purchase invoice, Register payment, Download invoice PDF, Attach file, Stock
   levels, Product prices, Client debt, Changes since.
 - Every documented method as its own step: every list of GetDescriptions, every operation class of

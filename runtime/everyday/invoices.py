@@ -310,6 +310,7 @@ def invoice_op(
             },
             progress,
             content=content,
+            generated_name=True,
         )["file_name"]
     invoice = shape("operation", record)
     return {

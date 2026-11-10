@@ -1,131 +1,167 @@
 # Finvalda for Flow Steward
 
-`flowsteward.finvalda` connects Flow Steward workflows to **Finvalda**, the Lithuanian
-accounting and business management system, through its web service — the REST interface
-`FvsServicePure` that Finvalda installs on the company's server.
+`flowsteward.finvalda` is a Flow Steward extension that connects **Finvalda**, the Lithuanian
+accounting and business management system, to Flow Steward workflows. It talks to Finvalda's own
+web service (the REST interface `FvsServicePure` that Finvalda installs on the company's server),
+so a workflow can find and create clients, products and services, create invoices and payments,
+attach files and read stock, prices, debts and changes — as ordinary workflow steps.
 
-Every step follows Finvalda's own documentation:
+## Why use it
 
-- the manual "FVS Webserviso metodų naudojimo instrukcija", revision 110 (2025-04-14), which
-  Finvalda gives to its customers;
-- Finvalda's published Postman collection "Finvaldos webservisas V2"
-  ([documenter.getpostman.com](https://documenter.getpostman.com/view/7208231/2s8YmRMLvd)).
+Typical jobs it automates:
+
+- **An order or invoice arrives** (from a shop, an e-mail, a form) → find the client and the
+  products in Finvalda, create them if they are missing, and create the sales invoice with its PDF
+  attached.
+- **A bank statement arrives** → register each payment against the client and the invoice it
+  pays.
+- **Stock and prices for a shop** → read current stock by warehouse and the sales prices, and pass
+  them to the shop's steps.
+- **Changes to another system** → read the clients, products or operations changed since a date
+  and send them on, page by page.
+- **Debt control** → read a client's debt and unpaid documents, with the overdue part, before
+  accepting a new order.
+
+## How it fits into Flow Steward
+
+- **Install** it as an extension: from the catalog, or with
+  `./flow-steward extensions install --archive flowsteward.finvalda-0.1.0.zip`.
+- **Connect**: on the extension's Connection page a project adds a Finvalda connection — the web
+  service address, the web service user and password, the company, the two import parameters and
+  the Finvalda employee. One project can hold several connections, for example one per company.
+- **Build workflows**: the Finvalda steps appear in the workflow editor — the everyday steps first,
+  then the `Advanced · …` steps. Each step's results (codes, records, totals, files) are inputs for
+  the next steps.
+- **Files** (invoice PDFs, attachments, exports) travel through Flow Steward's file storage: a step
+  takes a workflow file as input or returns one.
+- **Writes** to Finvalda are declared external effects: Flow Steward suppresses them in test runs,
+  so a workflow can be tried without changing the books.
+
+```
+order / bank statement / schedule  →  Finvalda step  →  next steps (e-mail, shop, report …)
+```
+
+## What Finvalda needs
+
+The company's Finvalda administrator:
+
+- enables Finvalda's **web service module** and makes it reachable over **https** on a public host
+  name, for example `https://fvs.example.lt/FvsServicePure.svc`;
+- creates a **Finvalda user for the web service** and gives it the rights the steps need;
+- names a **Finvalda employee** (finUser) for documents and files — a Finvalda employee, not the
+  web service user;
+- prepares the **import parameters** in Finvalda's FvsNETParamKonfig tool: one for operations
+  (journal, operation type, series, accounts) and one for new records (accounts, VAT, unit).
+
+The extension's **Setup Guide** page walks through each of these, and the **Connection** page
+explains every field.
 
 ## Steps
 
-Everyday steps (listed first in the step picker): Find or create client, Find or create product,
-Find or create service, Create sales invoice, Create purchase invoice, Register payment, Download
-invoice PDF, Attach file, Stock levels, Product prices, Client debt, Changes since.
+Everyday steps:
 
-Every documented method also has its own step ("Advanced · …"):
+- **Test the connection** — reads one client to check the address, user, password and company.
+- **Find or create client** — looks a client up by code, company code, VAT code or e-mail; creates
+  it when none matches.
+- **Find or create product** — looks a product up by code or barcode; creates it when none matches.
+- **Find or create service** — looks a service up by code; creates it when it does not exist.
+- **Create sales invoice** — a sales invoice with product and service lines, VAT computed, and an
+  optional PDF attached.
+- **Create purchase invoice** — the same for a supplier's invoice.
+- **Register payment** — money received from a client or paid to a supplier, against an invoice or
+  as a prepayment.
+- **Download invoice PDF** — prints a sale or purchase with an invoice form to a workflow file.
+- **Attach file** — stores a workflow file in Finvalda and attaches it to an operation, a client or
+  a product.
+- **Stock levels** — current stock by warehouse: quantity, quantity with reservations, cost.
+- **Product prices** — the six sales prices and the purchase price, and a client's special prices.
+- **Client debt** — a client's debt and unpaid documents, with the overdue part.
+- **Changes since** — clients, products, services, sales, purchases or payments created or edited
+  on or after a date, page by page.
 
-- **Lists** — one step per GetDescriptions type (clients, products, services, stock, stock on a
-  date, prices, barcodes, addresses, fixed assets, currency rates, series, reports, invoice forms
-  and the rest), with the documented filters, columns and pages.
-- **Operations** — one step per GetOperations class (sales, purchases, returns, inflows,
-  disbursements, offsets, reservations, orders, transfers, write-offs, receipts, production and
-  their lines).
-- **Older read methods** — one step per method of the manual's section 3 (GetKlientusSet,
-  GetEinamiejiLikuciai, GetNeapmoketiKliDok, the discount and price tables, objects, order
-  management and the rest).
-- **Writes** — create, update or delete a record (InsertNewItem, EditItem, EditItemProps,
-  DeleteItem, AppendGroup); create, change or delete an operation (InsertNewOperation,
-  UpdateOperation, DeleteOperation); lock, unlock, move to another journal, copy.
-- **Files** — invoice and report PDFs (MakeInvoice, MakeReport, automatic reports), product
-  pictures, the document register (InsertDocument, AttachDocument, GetAttachedDocuments,
-  DeleteDocument).
-- **Other** — recommended prices, employee permissions, an export of any list to a JSON Lines
-  file, and a raw call of any documented method.
+Every documented method of the web service also has its own step, **160 `Advanced · …` steps** in
+all: every list of GetDescriptions, every operation class of GetOperations, every older read
+method, record and operation writes (create, change, delete, lock, copy, move to another journal),
+invoice and report PDFs, the document register, recommended prices and employee permissions, an
+export of any list to a file, and a call of any documented method. The **Coverage** page names
+every method and list of Finvalda's documents and the step that offers it, or the reason there is
+none; the **Finvalda API** page lists each step's inputs and results with their types.
 
-The **Coverage** page lists every name of both sources and the step that offers it.
-`tests/reference/coverage.json` is the same map in machine-readable form.
+## How writes behave
 
-## Connecting
+- **Running a step again does not create duplicates.** Everyday steps look up before they create:
+  clients, products and services by code (and the other values given), invoices and payments by
+  their document number for that client. When the answer is not clear — another client with the
+  same company code, an invoice with another amount, a lookup row without its code — the step stops
+  with a conflict and writes nothing.
+- **An unknown outcome is marked, never retried.** When Finvalda's answer does not confirm that a
+  change was saved (a timeout, a lost connection, a server error), the step reports the outcome as
+  unknown so the workflow can check Finvalda first. A step that saves more than one thing (an
+  invoice and its file) names what it already saved when a later call fails.
+- **Refusals are explained.** When Finvalda refuses a change, the step passes on Finvalda's code
+  with the manual's meaning; nothing was saved.
+- **Money is exact.** Amounts are exact decimals from input to Finvalda and back: no rounding
+  through floating point, and an amount with more than cents is refused rather than rounded.
+- **The password stays secret.** It travels only in the header the web service requires and is
+  removed from every answer before it is read.
 
-The company's Finvalda administrator makes the web service reachable over https (for example
-`https://fvs.example.lt/FvsServicePure.svc`), creates a Finvalda user for it, and prepares the
-import parameters in Finvalda's FvsNETParamKonfig tool: a preset for operations (journal,
-operation type, series, accounts) and one for new records (accounts, VAT, unit). The connection
-holds the address, the user and its password, the company code (CompanyID) when the service
-serves several companies, and the two import parameters.
+## Limits of 0.1.0
 
-## Writes and failures
-
-- Every write is a declared external effect, suppressed in test runs.
-- Fields of records and operations use the manual's names and are checked against its field
-  tables (name, kind, length, required) before anything is sent.
-- When Finvalda refuses a change it answers `AccessResult: Fail` with a result code (`nResult`);
-  nothing was saved. The step passes the code on with the manual's meaning (appendix I).
-- The codes the manual describes as program, memory, recordset or transaction failures (2001,
-  2002, 2010, 2031), server errors (the WCF interface answers an exception with HTTP 400 or 500),
-  timeouts and lost connections leave a write's outcome unknown (`timeout_unknown`). Nothing
-  ambiguous is retried.
-- Everyday steps look up before they create: clients by code, company code, VAT code and e-mail;
-  products by code and barcode; services by code; invoices and payments by their document number
-  for that client. Finvalda itself refuses a document number already used (codes 1001, 1035,
-  1058). A step that saves more than one thing (an invoice and its file) names what it already
-  saved when a later call fails.
-- The newer methods (prices, documents, permissions; manual 3.79-3.84) answer with their own
-  result object; its error code is checked too. Their Finvalda employee (finUser) is a Finvalda
-  employee, not the web service user, so it is set on the connection or the step.
-- Amounts are exact decimals end to end: Finvalda's numbers are read as decimals and passed on as
-  text; fields are checked against the manual's precision (Numeric(14,2) and so on).
-- The password travels only in the request header the web service requires; it is removed from
-  every answer (also XML-escaped) before it is read, and never appears in a result or an error.
-- The web service address must be https and a public host name; the SDK's pinned opener refuses
-  private and reserved addresses.
-
-## Verification
-
-No Finvalda server was available while version 0.1.0 was built. The steps follow the manual and
-the Postman collection and are tested against recorded answers from them; they have not been run
-against a live Finvalda. Where a published client of the same web service reports a parameter
-name that differs from the manual (`sSandKod` for `sSanKod`; `tDataNuo`/`tDataIki` for
-`tNuo`/`tIki`), the step sends both names.
-
-Register payment is not safe to run again by itself: when the client already has an inflow or
-disbursement with the document number, it stops with a conflict and writes nothing — after a
-rerun, check Finvalda. Two payments of one client under one bank statement number do not pass:
-give each its own document number.
+No Finvalda server was available while version 0.1.0 was built. The steps follow Finvalda's manual
+(revision 110) and its published Postman collection and are tested against answers recorded from
+them; they have **not been run against a live Finvalda**.
 
 What to check first on a live server:
 
-- the operation lists' `client` column is the client's code (the Postman example of Sales shows
-  it so, with `client_code` holding the company code); the everyday purchase and payment steps
-  find earlier documents by it, so if it were otherwise they could register one twice;
-- what InsertDocument answers for a file name already in the register (the manual documents no
-  such code; only the invoice steps, whose file names are their own, attach a stored file
-  after a refused store);
+- the operation lists' `client` column holds the client's code (the Postman example of Sales shows
+  it so); the purchase and payment steps find earlier documents by it;
+- the form of the answers of the older methods that return one record of a class (GetKlientas,
+  GetPreke …) — as an object, or as XML text, which is then returned as it came;
 - `/Date(ms)/` times without an offset are read as Lithuanian local time;
-- Invoices related to a client sends the client as `sKlientoKodas` (a name from a published
-  client, not from Finvalda) and passes on only rows that show they belong to that client.
+- whether the operation amount (`amount`) includes VAT and is in the invoice's currency; a rerun of
+  an invoice step accepts either reading;
+- Invoices related to a client sends the client as `sKlientoKodas`, a name from a published client
+  of the web service, not from Finvalda's documents;
+- where a published client reports a parameter name that differs from the manual (`sSandKod` for
+  `sSanKod`; `tDataNuo`/`tDataIki` for `tNuo`/`tIki`), the step sends both names.
 
-Changes since reads `since` inclusively and never splits records of one edit time, because
-Finvalda's edit times are coarse: the records at the boundary come again on the next call
-(repeated, never lost), so skip them by code. Continue with `since = next_since`.
+Register payment stops with a conflict when the client already has a payment with that document
+number: two payments under one bank statement number need a document number each.
 
-Results give every number Finvalda returns as exact decimal text.
+## Installing and developing
 
-## Development
+Requirements: Flow Steward Core with the extension host contract `extension_host_v2`; the
+extension is built on `flowsteward-extension-sdk` 0.4.0 and has no other Python dependencies.
 
-From the extension folder:
+From a Flow Steward checkout, with `EXT` the absolute path of this repository and `ROOT` the
+folder that contains it:
+
+```bash
+./core/entrypoints/cli/scripts/lint.sh --checks extension-static,extension-tests --extension-root "$EXT"
+./flow-steward extensions validate flowsteward.finvalda --root "$ROOT" --health --marketplace
+./flow-steward extensions test flowsteward.finvalda --root "$ROOT"
+./flow-steward extensions bundle flowsteward.finvalda --root "$ROOT" --with-wheels --confirm
+./flow-steward extensions install --archive dist/extensions/flowsteward.finvalda-0.1.0.zip --confirm
+```
+
+The contracts, the Coverage and Finvalda API pages and `runtime/registry.json` are generated from
+the facts extracted from Finvalda's documents:
 
 ```bash
 python3 tests/reference/extract_reference.py <FVS_Webservice.md> <collection.json>  # re-extract
-python3 tests/reference/build_contracts.py                         # regenerate contracts and pages
+python3 tests/reference/build_contracts.py                                           # regenerate
 ```
 
-From a Flow Steward checkout (all checks run in the `fs-audit` container), with `EXT` the
-absolute path of this repository:
+Neither source is committed — only the facts extracted from them
+(`tests/reference/fvs_reference.json`), pinned by SHA-256 in `tests/reference/extract_reference.py`.
+`tests/test_reference.py` re-extracts each source and compares it with the committed facts when
+`FINVALDA_MANUAL` (the manual as Markdown) and `FINVALDA_POSTMAN` (the Postman collection's JSON
+export) name the pinned copies.
 
-```bash
-EXT=/path/to/ext-finance-finvalda
-./core/entrypoints/cli/scripts/lint.sh --checks extension-static,extension-tests --extension-root "$EXT"
-./flow-steward extensions validate flowsteward.finvalda --root <bundle folder> --health --marketplace
-```
+## License, support and links
 
-Neither source is committed, only the facts extracted from them (`tests/reference/fvs_reference.json`).
-`tests/test_reference.py` re-extracts each source and compares it with the committed reference when
-`FINVALDA_MANUAL` and `FINVALDA_POSTMAN` name the pinned copies (SHA-256 in
-`tests/reference/extract_reference.py`): the manual as Markdown, the Postman collection as its JSON
-export.
+- License: no license has been chosen for this repository yet.
+- Support and issues: <https://github.com/Flow-Steward/ext-finance-finvalda/issues>
+- Changes: [CHANGELOG.md](CHANGELOG.md)
+- Finvalda's web service reference (Postman):
+  <https://documenter.getpostman.com/view/7208231/2s8YmRMLvd>

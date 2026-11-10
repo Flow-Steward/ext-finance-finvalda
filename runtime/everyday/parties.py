@@ -11,6 +11,7 @@ from ..errors import invalid
 from ..fields import field
 from ..inputs import flag_input
 from .common import (
+    row_code,
     _EMAIL_RE,
     CLIENT_COLUMNS,
     PRODUCT_COLUMNS,
@@ -84,7 +85,7 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
             )
         if rows:
             record = rows[0]
-            if values["code"] and not _same(field(record, "code"), values["code"]):
+            if values["code"] and not _same(row_code(record), values["code"]):
                 # No client has the code given (that lookup came first): a client
                 # found by another value is another client, not this one.
                 raise errors.no_effect(
@@ -105,7 +106,7 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
                         f"Client {field(record, 'code')} has {other} {found}, not {values[other]}",
                     )
             return {
-                "client_code": str(field(record, "code")),
+                "client_code": row_code(record),
                 "created": False,
                 "matched_by": matched_by,
                 "client": shape("client", record),
@@ -192,7 +193,8 @@ def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
         rows = [
             r
             for r in describe(context, "Products", {"Codes": [code]}, PRODUCT_COLUMNS)
-            if _same(field(r, "product"), code)
+            # The code from the same columns its presence was checked in.
+            if _same(row_code(r, "Products"), code)
         ]
         if rows:
             return {
@@ -272,7 +274,7 @@ def service_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     rows = [
         r
         for r in describe(context, "Services", {"Codes": [code]}, SERVICE_COLUMNS)
-        if _same(field(r, "code"), code)
+        if _same(row_code(r, "Services"), code)
     ]
     if rows:
         return {

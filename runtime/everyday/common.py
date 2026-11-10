@@ -17,6 +17,7 @@ from ..inputs import decimal_input, text_input
 from ..reference_data import DESCRIPTION_TYPES
 from ..rows import rows_of
 from ..transport import DeadlineReached
+from ..shapes import warn
 from ..values import lithuanian_today, safe_name
 
 MAX_AMOUNT = Decimal("9999999999.99")
@@ -157,38 +158,74 @@ def today() -> str:
     return lithuanian_today().isoformat()
 
 
-#: The columns that identify a row of a list (any one of them must hold a value):
-#: a row without them cannot be told apart from "no such record".
-_IDENTITY: dict[str, tuple[str, ...]] = {
-    "Clients": ("code",),
-    "Products": ("product", "code"),
-    "Services": ("code",),
-    "Prices": ("code",),
+#: What identifies a row of a list: each entry is a set of columns of which one
+#: must hold a value. A row without it cannot be told apart from "no such record".
+_IDENTITY: dict[str, tuple[tuple[str, ...], ...]] = {
+    "Clients": (("code",),),
+    "Products": (("product", "code"),),
+    "Services": (("code",),),
+    "Prices": (("code",),),
 }
+#: Operations are told apart by journal and number.
+_OPERATION_IDENTITY: tuple[tuple[str, ...], ...] = (("journal",), ("op_number",))
 
 
-def checked_rows(rows: Any, what: str, identity: tuple[str, ...] = ()) -> list[dict[str, Any]]:
-    """Every row an object, with its identifying value; else invalid_response.
+def _blank(value: Any) -> bool:
+    return value is None or str(value).strip() == ""
 
-    A lookup that finds "nothing" decides whether a step creates a record, so a
-    row of unknown form (null, {}, a row without its code) is an error, never
-    skipped.
+
+def row_code(row: Mapping[str, Any], kind: str = "Clients") -> str:
+    """The code of a row, from the same columns its identity is checked in."""
+    for columns in _IDENTITY.get(kind, (("code",),)):
+        for column in columns:
+            value = field(row, column)
+            if not _blank(value):
+                return str(value).strip()
+    return ""
+
+
+def checked_rows(
+    rows: Any, what: str, required: tuple[tuple[str, ...], ...] = (), *, strict: bool = True
+) -> list[dict[str, Any]]:
+    """Every row an object with its identifying values (``required``: one column of
+    each group, not blank).
+
+    ``strict`` — for a lookup that decides whether a step writes: a row of
+    unknown form (null, {}, a row without its code) is invalid_response, never
+    skipped as "not found". Otherwise (a read) a row without its code is kept, with
+    a warning; a row that is not a record is still an error.
     """
     out: list[dict[str, Any]] = []
     for row in rows:
         if not isinstance(row, Mapping):
             raise errors.no_effect(
                 errors.INVALID_RESPONSE,
-                f"Finvalda's {what} answer holds a row that is not a record; nothing was written",
+                f"Finvalda's {what} answer holds a row that is not a record",
             )
-        if identity and all(field(row, c) in (None, "") for c in identity):
+        missing = [
+            " or ".join(group) for group in required if all(_blank(field(row, c)) for c in group)
+        ]
+        if missing and strict:
             raise errors.no_effect(
                 errors.INVALID_RESPONSE,
-                f"Finvalda's {what} answer holds a row without its {' or '.join(identity)}; "
+                f"Finvalda's {what} answer holds a row without its {', '.join(missing)}; "
                 "nothing was written",
             )
+        if missing:
+            warn(f"Finvalda's {what} answer holds a row without its {', '.join(missing)}")
         out.append(dict(row))
     return out
+
+
+def _with_identity(
+    columns: list[str] | None, required: tuple[tuple[str, ...], ...]
+) -> list[str] | None:
+    """The columns asked for, with the identifying ones always among them."""
+    if not columns:
+        return columns
+    # The first column of a group is the documented one (Products: product).
+    extra = [group[0] for group in required if not any(c in columns for c in group)]
+    return [*columns, *extra]
 
 
 def read_list(
@@ -200,11 +237,15 @@ def read_list(
     limit: int,
     max_pages: int,
     meter: budget.Meter | None = None,
+    strict: bool = False,
 ) -> tuple[list[dict[str, Any]], bool]:
     """Rows of a GetDescriptions type and whether more may follow.
 
-    ``conditions`` belong to the type's first filter group.
+    ``conditions`` belong to the type's first filter group; ``strict`` for a
+    lookup whose result decides a write (``checked_rows``).
     """
+    required = _IDENTITY.get(kind, ())
+    columns = _with_identity(columns, required)
     groups = DESCRIPTION_TYPES[kind]["filters"]
     group = next(iter(groups))
     inputs: dict[str, Any] = {
@@ -218,7 +259,7 @@ def read_list(
     if read["timed_out"]:
         # Rows cut short by the clock are no answer: report the timeout, not "more".
         raise DeadlineReached
-    rows = checked_rows(read["records"], kind, _IDENTITY.get(kind, ()))
+    rows = checked_rows(read["records"], kind, required, strict=strict)
     return rows, bool(read["has_more"])
 
 
@@ -230,10 +271,23 @@ def describe(
     *,
     limit: int = 100,
     max_pages: int = 5,
+    strict: bool = True,
 ) -> list[dict[str, Any]]:
-    """Every row a lookup matches; a lookup that matches more is an error, never cut short."""
+    """Every row a lookup matches; a lookup that matches more is an error, never cut short.
+
+    ``strict`` (the default) for lookups that decide whether a step writes; reads
+    pass False.
+    """
     # One page more than allowed tells "exactly that many" from "more".
-    rows, more = read_list(context, kind, conditions, columns, limit=limit, max_pages=max_pages + 1)
+    rows, more = read_list(
+        context,
+        kind,
+        conditions,
+        columns,
+        limit=limit,
+        max_pages=max_pages + 1,
+        strict=strict,
+    )
     if more or len(rows) > limit * max_pages:
         raise errors.no_effect(
             errors.CONFLICT,
@@ -243,20 +297,22 @@ def describe(
 
 
 def operations_of(
-    context: Any, op_class: str, conditions: Mapping[str, Any], columns: list[str] | None = None
+    context: Any,
+    op_class: str,
+    conditions: Mapping[str, Any],
+    columns: list[str] | None = None,
+    *,
+    strict: bool = False,
 ) -> list[dict[str, Any]]:
+    """Operations of a class; ``strict`` for a lookup whose result decides a write."""
+    columns = _with_identity(columns, _OPERATION_IDENTITY)
     params: dict[str, Any] = {"OpClass": op_class, "fullOp": False, "filter": dict(conditions)}
     if columns:
         params["columns"] = {"column": columns}
     reply = context.call(
         "GetOperations", verb="POST", body={"opReadParams": params}, mutating=False
     )
-    # Operations are told apart by journal and number (every lookup asks for both).
-    identity = ("journal",) if columns and "journal" in columns else ()
-    rows = checked_rows(rows_of(reply.data), op_class, identity)
-    if columns and "op_number" in columns:
-        checked_rows(rows, op_class, ("op_number",))
-    return rows
+    return checked_rows(rows_of(reply.data), op_class, _OPERATION_IDENTITY, strict=strict)
 
 
 def _same(a: Any, b: Any) -> bool:
@@ -319,7 +375,7 @@ def same_document(
         conditions["Series"] = series
     if client:
         conditions["Client"] = client
-    rows = operations_of(context, op_class, conditions, OPERATION_COLUMNS)
+    rows = operations_of(context, op_class, conditions, OPERATION_COLUMNS, strict=True)
     rows = [r for r in rows if _same(field(r, "order_number"), document)]
     if series:
         rows = [r for r in rows if _same(field(r, "series"), series)]

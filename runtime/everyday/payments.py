@@ -47,6 +47,11 @@ PREPAYMENT = 0
 SETTLE_DOCUMENTS = 3
 
 
+def _identity(row: Mapping[str, Any]) -> str:
+    """Journal and number of an operation row (a strict lookup guarantees both)."""
+    return f"{field(row, 'journal')} #{_op_number(row)}"
+
+
 def payment_body(inputs: Mapping[str, Any], client: str) -> tuple[str, str, dict[str, Any]]:
     direction = inputs.get("direction")
     if direction not in {"incoming", "outgoing"}:
@@ -97,7 +102,7 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
         raise errors.no_effect(
             errors.CONFLICT,
             f"A payment of client {client} with document {document} is already in Finvalda "
-            f"({', '.join(str(field(r, 'journal') or '?') + ' #' + str(_op_number(r) or '?') for r in existing[:5])}). "
+            f"({', '.join(_identity(r) for r in existing[:5])}). "
             "If this is a rerun, nothing more is needed; if it is a different payment, give it "
             "a document number of its own",
         )

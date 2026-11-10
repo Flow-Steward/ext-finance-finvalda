@@ -378,6 +378,35 @@ def attached_files(data: Mapping[str, Any]) -> list[dict[str, Any]]:
     return files
 
 
+_HEX = re.compile(r"[0-9A-Fa-f]*")
+
+
+def attached_content(attached: Mapping[str, Any]) -> bytes:
+    """The bytes of an attached file (hex in GetAttachedDocument's answer)."""
+    try:
+        return bytes.fromhex(attached["data"])
+    except ValueError as exc:
+        raise errors.no_effect(
+            errors.INVALID_RESPONSE,
+            f"The content of the attached file {errors.safe_text(attached['name'], 200)} in "
+            "Finvalda's answer is not hex",
+        ) from exc
+
+
+def same_content(attached: Mapping[str, Any], content: bytes) -> bool:
+    """Whether an attached file holds exactly ``content``.
+
+    Content that is not hex is invalid_response whatever its length; otherwise the
+    lengths are compared before anything is decoded.
+    """
+    data = attached["data"]
+    if len(data) % 2 or not _HEX.fullmatch(data):
+        attached_content(attached)  # raises invalid_response
+    if len(data) != 2 * len(content):
+        return False
+    return attached_content(attached) == content
+
+
 def run_attached_documents(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
     inputs = context.operation_input
     allowed(inputs, {"entity_type", "entity_id1", "entity_id2", "file_name"})
@@ -399,12 +428,7 @@ def run_attached_documents(context: Context, spec: Mapping[str, Any]) -> dict[st
         match = next((f for f in files if f["name"] == wanted), None)
         if match is None:
             raise errors.no_effect(errors.NOT_FOUND, f"No attached file is named {wanted}")
-        try:
-            raw = bytes.fromhex(match["data"])
-        except ValueError as exc:
-            raise errors.no_effect(
-                errors.INVALID_RESPONSE, "The attached file's content is not hex"
-            ) from exc
+        raw = attached_content(match)
         if len(raw) > MAX_DOWNLOAD_BYTES:
             raise errors.no_effect(errors.RESPONSE_TOO_LARGE, "The file is larger than 40 MB")
         result.update(save_file(context, raw, wanted, what="The attached file"))
