@@ -291,15 +291,21 @@ class FinvaldaTransport:
     def scrub_answer(self, raw: bytes) -> dict[str, Any]:
         """``raw`` parsed, with the password removed from its texts.
 
-        The parsed answer is walked and copied only when the password could be in
-        it: one of its forms is in the text, or the text has escapes (``\\u…``,
-        ``&#…``) that could spell it.
+        The check runs on the parsed texts and keys (escapes and entities already
+        resolved), never on the raw bytes; the answer is copied only when one of
+        them holds a form of the password.
         """
         data = parse_body(raw)
-        text = raw.decode("utf-8", "replace")
-        if "\\u" in text or "&#" in text or any(f in text for f in self._secret_forms()):
-            return dict(self.scrub(data))
-        return data
+        return dict(self.scrub(data)) if self._holds_secret(data) else data
+
+    def _holds_secret(self, value: Any) -> bool:
+        if isinstance(value, str):
+            return bool(value) and any(f in value for f in self._secret_forms())
+        if isinstance(value, Mapping):
+            return any(self._holds_secret(k) or self._holds_secret(v) for k, v in value.items())
+        if isinstance(value, list):
+            return any(self._holds_secret(v) for v in value)
+        return False
 
     def scrub(self, value: Any) -> Any:
         """The password removed from every text of an already parsed answer.
@@ -638,9 +644,11 @@ def parse_body(raw: bytes) -> dict[str, Any]:
         tag = root.tag.split("}", 1)[-1]
         if tag.endswith("Out"):
             # The newer methods' XML answer is their result element itself
-            # (<InsertDocumentOut><errorCode>0</errorCode>…): kept under its name, so
-            # its errorCode is read as the method's own (manual 3.80, 3.82).
-            return {tag: value}
+            # (<InsertDocumentOut>, <GetRecommendedPriceOut>, <GetUserPermissionsOut>;
+            # manual 3.79-3.84): it is what the JSON form calls ``result``, and is read
+            # the same way — its errorCode as the method's own, its fields as the
+            # result's.
+            return {"result": value if isinstance(value, dict) else {"value": value}}
         return value if isinstance(value, dict) else {"value": value}
     try:
         data = json.loads(stripped, parse_float=Decimal)

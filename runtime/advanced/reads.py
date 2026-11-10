@@ -433,7 +433,10 @@ def run_user_permissions(context: Context, spec: Mapping[str, Any]) -> dict[str,
     if not permissions:
         result = field(reply.data, "result")
         found = field(result, "perrmissions") if isinstance(result, Mapping) else None
-        permissions = found if isinstance(found, list) else []
+        # One permission class in XML is one element, not a list.
+        permissions = (
+            found if isinstance(found, list) else [found] if isinstance(found, Mapping) else []
+        )
     return {
         "permissions": permissions,
         "count": len(permissions),

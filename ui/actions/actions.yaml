@@ -253,7 +253,8 @@ actions:
     computed from quantity, price, discount and VAT percent. The document number makes it safe to run
     again: the step first looks for a sales invoice of that client with that number and returns it instead
     of a second one, and Finvalda itself refuses a number already used. Can attach a file, such as the
-    PDF, for which the connection needs a Finvalda employee.'
+    PDF, for which the connection needs a Finvalda employee. If an earlier run already stored the file
+    in the register, attach it with Advanced · Attach a document.'
   required_scopes:
   - extension:invoke
   handler:
@@ -342,7 +343,8 @@ actions:
     computed from quantity, price, discount and VAT percent. The document number makes it safe to run
     again: the step first looks for a purchase invoice of that client with that number and returns it
     instead of a second one, and Finvalda itself refuses a number already used. Can attach a file, such
-    as the PDF, for which the connection needs a Finvalda employee.'
+    as the PDF, for which the connection needs a Finvalda employee. If an earlier run already stored the
+    file in the register, attach it with Advanced · Attach a document.'
   required_scopes:
   - extension:invoke
   handler:
@@ -558,7 +560,8 @@ actions:
 - action_id: attach_file
   title: Attach file
   description: Stores a workflow file in Finvalda and attaches it to a sale, a purchase or another operation,
-    or to a client or product. A file of the same name already attached there is not attached twice.
+    or to a client or product. A file of the same name already attached there is not attached twice. If
+    an earlier run already stored the file in the register, attach it with Advanced · Attach a document.
   required_scopes:
   - extension:invoke
   handler:
@@ -753,10 +756,10 @@ actions:
   - blocked_address
 - action_id: changes_since
   title: Changes since
-  description: 'Records or operations created or edited since a moment: clients, products, services, sales,
-    purchases, inflows, disbursements. Pass next_since as since next time. Since is inclusive and records
-    of one edit time are never split; next_since is the last edit time returned, so the records of that
-    time come again next time: repeated, never lost — skip them by code.'
+  description: 'Records or operations created or edited on or after a date: clients, products, services,
+    sales, purchases, inflows, disbursements, page by page in a fixed order. Finvalda filters by date
+    only, so asking again with the same date returns that day''s records again — skip them by code; nothing
+    is lost.'
   required_scopes:
   - extension:invoke
   handler:
@@ -773,20 +776,20 @@ actions:
   - name: since
     type: string
     required: true
-  - name: limit
+  - name: page
     type: integer
     required: false
-  - name: skip_group
-    type: boolean
+  - name: limit
+    type: integer
     required: false
   result_fields:
   - records
   - count
-  - latest_edited
-  - next_since
+  - total
+  - page
+  - next_page
   - has_more
-  - undated
-  - undated_count
+  - latest_edited
   - warnings
   error_codes:
   - invalid_payload

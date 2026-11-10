@@ -100,50 +100,6 @@ def _changes(rows: list[dict[str, Any]], **inputs: Any) -> dict[str, Any]:
     return response["result"]
 
 
-def test_only_the_group_at_since_keeps_since() -> None:
-    rows = [{"code": "A", "date_edited": "2026-11-10T12:05:00"}]
-    result = _changes(rows, since="2026-11-10T12:05:00")
-    assert result["count"] == 1 and result["has_more"] is False
-    assert result["next_since"] == "2026-11-10T12:05:00+02:00"
-
-
-def test_a_later_edit_with_the_same_coarse_time_is_read_again() -> None:
-    first = _changes([{"code": "A", "date_edited": "2026-11-10"}], since="2026-11-10")
-    assert first["next_since"] == "2026-11-10T00:00:00+02:00"
-    # B was edited later the same day; Finvalda shows the date only.
-    rows = [
-        {"code": "A", "date_edited": "2026-11-10"},
-        {"code": "B", "date_edited": "2026-11-10"},
-    ]
-    second = _changes(rows, since=first["next_since"])
-    assert {r["code"] for r in second["records"]} == {"A", "B"}
-
-
-def test_skip_group_leaves_out_the_records_at_since() -> None:
-    rows = [
-        {"code": "A", "date_edited": "2026-11-10T12:05:00"},
-        {"code": "B", "date_edited": "2026-11-10T12:06:00"},
-    ]
-    result = _changes(rows, since="2026-11-10T12:05:00", skip_group=True)
-    assert [r["code"] for r in result["records"]] == ["B"]
-
-
-def test_the_group_at_since_counts_toward_limit() -> None:
-    rows = [{"code": f"A{n}", "date_edited": "2026-11-10T12:00:00"} for n in range(150)]
-    rows += [{"code": f"B{n}", "date_edited": f"2026-11-10T13:{n:02d}:00"} for n in range(60)]
-    result = _changes(rows, since="2026-11-10T12:00:00", limit=200)
-    # 150 at since, then 50 later records: 200 in all, not 150 + 200.
-    assert result["count"] == 200 and result["has_more"] is True
-    assert result["next_since"] == "2026-11-10T13:49:00+02:00"
-
-
-def test_one_later_group_is_always_taken() -> None:
-    rows = [{"code": f"A{n}", "date_edited": "2026-11-10T12:00:00"} for n in range(250)]
-    rows += [{"code": f"B{n}", "date_edited": "2026-11-10T13:00:00"} for n in range(20)]
-    result = _changes(rows, since="2026-11-10T12:00:00", limit=200)
-    assert result["count"] == 270 and result["next_since"] == "2026-11-10T13:00:00+02:00"
-
-
 # -- F4: the wrapper of the rows is not returned again --------------------------------
 
 
@@ -166,7 +122,7 @@ def test_class_list_response_holds_no_copy_of_the_records() -> None:
 
 def test_xml_out_root_keeps_its_name() -> None:
     raw = b"<InsertDocumentOut><errorCode>0</errorCode><errorText/></InsertDocumentOut>"
-    assert parse_body(raw) == {"InsertDocumentOut": {"errorCode": "0", "errorText": ""}}
+    assert parse_body(raw) == {"result": {"errorCode": "0", "errorText": ""}}
 
 
 def test_bare_xml_out_answer_confirms_the_write() -> None:

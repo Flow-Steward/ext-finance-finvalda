@@ -119,7 +119,12 @@ def decimal_input(
     if minimum is not None and number < minimum:
         raise invalid(f"{name} must be at least {minimum}")
     if -number.as_tuple().exponent > places:  # type: ignore[operator]
-        raise invalid(f"{name} may have at most {places} decimal places")
+        # 10.000 is 10.00: trailing zeros are dropped without loss; a real
+        # fraction below the last place (10.005) is refused, never rounded.
+        shorter = number.quantize(Decimal(1).scaleb(-places))
+        if shorter != number:
+            raise invalid(f"{name} may have at most {places} decimal places")
+        number = shorter
     return number
 
 

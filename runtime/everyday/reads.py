@@ -9,11 +9,11 @@ from decimal import Decimal
 from typing import Any
 
 from ..shapes import shape
-from .. import budget, errors
+from .. import errors
 from ..advanced.reads import read_description_pages
 from ..errors import invalid
 from ..fields import field
-from ..inputs import _DATE_TIME_RE, date_input, flag_input, whole_input
+from ..inputs import date_input, whole_input
 from ..reference_data import CHANGE_ENTITIES, DESCRIPTION_TYPES
 from ..rows import rows_of
 from ..values import as_decimal, cents, finvalda_date, finvalda_datetime, iso_moment
@@ -129,7 +129,8 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     rows = [
         r
         for r in describe(context, "Products", {"Codes": codes}, columns, limit=500)
-        if str(field(r, "product") or "").strip().upper() in wanted
+        # The product's code as the record reads it: product, else code.
+        if str(field(r, "product") or field(r, "code") or "").strip().upper() in wanted
     ]
     if len(rows) > len(codes):
         raise errors.no_effect(
@@ -230,42 +231,34 @@ def _edited(row: Mapping[str, Any]) -> datetime | None:
     return finvalda_datetime(field(row, "date_edited"))
 
 
-#: Rows per step: 300 rows of up to 13 columns stay inside the step output's limits.
+#: Rows per page: 300 rows of up to 13 columns stay inside the step output's limits.
 CHANGES_MAX_LIMIT = 300
 
-#: Records of one edit time are never split; a group bigger than this cannot be read.
-MAX_GROUP = 600
 
-#: Rows whose edit time is in no known form, returned with the last page only.
-MAX_UNDATED = 100
+def _change_key(row: Mapping[str, Any]) -> tuple[str, str, int]:
+    """A fixed order for the pages: by code, or by journal and number."""
+    code = str(field(row, "code") or field(row, "product") or "")
+    return (code, str(field(row, "journal") or ""), _op_number(row) or 0)
 
 
 def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
-    """Records edited at or after ``since``, in whole groups of one edit time.
+    """Records created or edited on or after the day ``since``, page by page.
 
-    Finvalda's edit times are coarse (seconds, sometimes minutes or a date), and
-    a record edited later can keep the same stamp, so since is inclusive and a
-    group of one time is never split: next_since is the last group's time, never
-    past it, and that group comes again on the next call — repeated, never lost.
-    The group at since counts toward limit; one later group is always taken, so
-    the reading moves on. Only ``skip_group`` (the workflow's explicit choice)
-    leaves out the records at exactly since.
+    Finvalda filters by edit date only (EditedFrom, DateEditedFrom; manual: a
+    date), and its edit times are coarse, so nothing is filtered by time here:
+    every record Finvalda returns for the day and after is in the pages, in a fixed
+    order. Asking again with the same date returns that day's records again —
+    skip them by code; nothing is lost.
     """
     entity = inputs.get("entity")
     if entity not in CHANGE_ENTITIES:
         raise invalid(f"entity must be one of: {', '.join(CHANGE_ENTITIES)}")
-    raw_since = text("since", inputs, 35, required=True)
-    since = finvalda_datetime(raw_since)
-    if since is None or not _DATE_TIME_RE.fullmatch(raw_since.replace(" ", "T")):
-        raise invalid("since must be YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS")
-    # Finvalda's filters take a date only (manual: yyyy.MM.dd or yyyy-MM-dd); the time
-    # part of since is applied here, on the rows of that day.
-    day = since.date().isoformat()
+    day = date_input("since", inputs.get("since"), required=True)
     limit = (
         whole_input("limit", inputs.get("limit"), default=200, minimum=1, maximum=CHANGES_MAX_LIMIT)
         or 200
     )
-    skip_group = flag_input("skip_group", inputs.get("skip_group"))
+    page = whole_input("page", inputs.get("page"), default=1, minimum=1, maximum=1_000_000) or 1
     kind, name, _label = CHANGE_ENTITIES[entity]
     if kind == "descriptions":
         columns = {
@@ -284,93 +277,23 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         if more:
             raise errors.no_effect(
                 errors.RESPONSE_TOO_LARGE,
-                f"More than {CHANGES_MAX_ROWS} records changed since {raw_since}; use a later "
+                f"More than {CHANGES_MAX_ROWS} records changed since {day}; use a later "
                 "since, or Export a list to a file with the EditedFrom filter",
             )
     else:
         rows = operations_of(context, name, {"DateEditedFrom": day}, OPERATION_COLUMNS)
-    # Each row's edit time, read once.
-    dated: list[tuple[datetime, dict[str, Any]]] = []
-    undated: list[dict[str, Any]] = []
-    for row in rows:
-        if not isinstance(row, Mapping):
-            continue
-        moment = _edited(row)
-        if moment is None:
-            undated.append(dict(row))
-        elif moment > since or (moment == since and not skip_group):
-            dated.append((moment, dict(row)))
-    # By time, then by code (or journal and number), so a page reads in a fixed order.
-    dated.sort(
-        key=lambda item: (
-            item[0],
-            str(field(item[1], "code") or field(item[1], "product") or ""),
-            str(field(item[1], "journal") or ""),
-            _op_number(item[1]) or 0,
-        )
-    )
-    groups: list[tuple[datetime, list[dict[str, Any]]]] = []
-    for moment, row in dated:
-        if groups and groups[-1][0] == moment:
-            groups[-1][1].append(row)
-        else:
-            groups.append((moment, [row]))
-    for moment, members in groups:
-        if len(members) > MAX_GROUP or not budget.fits({"records": members}):
-            raise errors.no_effect(
-                errors.RESPONSE_TOO_LARGE,
-                f"{len(members)} records share the edit time {iso_moment(moment)}, more than one "
-                "step can return; read them with Export a list to a file"
-                + (
-                    ", then continue with this since and skip_group true"
-                    if moment == since
-                    else f", then continue with since = {iso_moment(moment)} and skip_group true"
-                ),
-            )
-
-    def fits(chosen: list[tuple[datetime, list[dict[str, Any]]]]) -> bool:
-        return budget.fits({"records": [r for _, g in chosen for r in g]})
-
-    page: list[tuple[datetime, list[dict[str, Any]]]] = []
-    rest = list(groups)
-    taken = 0
-    if rest and rest[0][0] == since:
-        # The group at since itself: repeated from the last call, counted in limit.
-        taken = len(rest[0][1])
-        page.append(rest.pop(0))
-    first = True
-    while rest:
-        size = len(rest[0][1])
-        # One later group is always taken, so the reading moves on; more while they
-        # stay within limit and the step's output.
-        if not first and taken + size > limit:
-            break
-        if not fits([*page, rest[0]]):
-            if first and page:
-                raise errors.no_effect(
-                    errors.RESPONSE_TOO_LARGE,
-                    f"The records at {iso_moment(since)} and the next edit time do not fit one "
-                    "step's output together; continue with this since and skip_group true if "
-                    "the records at since were already read",
-                )
-            break
-        page.append(rest.pop(0))
-        taken += size
-        first = False
-    has_more = bool(rest)
-    last = page[-1][0] if page else None
-    next_moment = last if last is not None else since
-    kind = CHANGE_SHAPES[name]
-    records = [shape(kind, row) for _, members in page for row in members]
-    result: dict[str, Any] = {
-        "records": records,
-        "count": len(records),
-        "latest_edited": iso_moment(last),
-        "next_since": iso_moment(next_moment),
+    ordered = sorted((dict(r) for r in rows if isinstance(r, Mapping)), key=_change_key)
+    start = (page - 1) * limit
+    chosen = ordered[start : start + limit]
+    has_more = start + limit < len(ordered)
+    times = [t for t in (_edited(r) for r in chosen) if t is not None]
+    kind_of = CHANGE_SHAPES[name]
+    return {
+        "records": [shape(kind_of, row) for row in chosen],
+        "count": len(chosen),
+        "total": len(ordered),
+        "page": page,
+        "next_page": page + 1 if has_more else None,
         "has_more": has_more,
-        "undated": [] if has_more else [shape(kind, row) for row in undated[:MAX_UNDATED]],
-        "undated_count": len(undated),
+        "latest_edited": iso_moment(max(times)) if times else None,
     }
-    if not budget.fits(result):
-        result["undated"] = []
-    return result

@@ -364,17 +364,6 @@ def test_failure_without_a_result_code_on_a_write_is_unknown() -> None:
     )
 
 
-def test_changes_since_with_a_time_filters_the_day() -> None:
-    rows = [
-        {"code": "A", "date_edited": "2026-11-01T09:00:00"},
-        {"code": "B", "date_edited": "2026-11-01T11:00:00"},
-    ]
-    fake = FakeFinvalda(GetDescriptions=items(*rows))
-    response = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-01T10:00:00"})
-    assert [r["code"] for r in response["result"]["records"]] == ["B"]
-    assert fake.calls[0].read_params()["Clients"] == {"EditedFrom": "2026-11-01"}
-
-
 @pytest.mark.parametrize("due", ["2026.10.01", "/Date(1759276800000+0300)/", "2026-10-01T00:00:00"])
 def test_debt_reads_finvaldas_date_forms(due: str) -> None:
     fake = FakeFinvalda(
@@ -647,35 +636,6 @@ def test_a_thousand_stock_rows_are_read_page_by_page() -> None:
     assert last["result"]["count"] == 200 and last["result"]["has_more"] is False
 
 
-def test_changes_since_returns_its_limit_of_many_rows() -> None:
-    rows = [
-        {
-            "code": f"K{n}",
-            "title": f"Klientas {n}",
-            "date_edited": f"2026-11-01T10:{n // 60:02d}:{n % 60:02d}",
-            "email": "k@k.lt",
-            "address": "Gatvė 1",
-            "city": "Vilnius",
-            "company_code": "300000000",
-            "vat_payer_code": "LT100",
-            "country": "LT",
-            "phone": "+370",
-            "type": "T",
-            "currency": "EUR",
-            "debt": 1,
-        }
-        for n in range(1500)
-    ]
-    pages = [items(*rows[i : i + 1000]) for i in range(0, 1500, 1000)]
-    fake = FakeFinvalda(GetDescriptions=pages)
-    response = run(
-        fake, "changes_since", {"entity": "clients", "since": "2026-11-01", "limit": 300}
-    )
-    assert response["ok"] is True, response
-    assert response["result"]["count"] == 300 and response["result"]["has_more"] is True
-    assert response["result"]["latest_edited"] == "2026-11-01T10:04:59+02:00"
-
-
 def test_password_digits_inside_numbers_and_dates_are_left_alone() -> None:
     from runtime.connection import Connection
     from runtime.transport import FinvaldaTransport
@@ -793,21 +753,6 @@ def test_a_lookup_cut_by_the_clock_is_a_timeout() -> None:
         friendly.describe(context, "Clients", {"Email": "x"}, ["code"], limit=2, max_pages=3)
 
 
-@pytest.mark.parametrize(
-    "edited", ["2026-11-10 10:30:00", "2026.11.10 10:30", "2026-11-10T10:30:00.123"]
-)
-def test_changes_since_reads_every_time_form(edited: str) -> None:
-    fake = FakeFinvalda(
-        GetDescriptions=items(
-            {"code": "A", "date_edited": edited}, {"code": "B", "date_edited": "garbled"}
-        )
-    )
-    response = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-10T10:00:00"})
-    assert [r["code"] for r in response["result"]["records"]] == ["A"]
-    assert [r["code"] for r in response["result"]["undated"]] == ["B"]
-    assert response["result"]["latest_edited"].startswith("2026-11-10T10:30")
-
-
 # -- second code review (1611add) -------------------------------------------------
 
 
@@ -841,45 +786,6 @@ def test_dotnet_edit_times_compare_in_local_time() -> None:
     ]
     assert [r["code"] for r in result["records"]] == ["A"]
     assert result["latest_edited"] == "2026-11-10T10:30:00+02:00"
-
-
-def test_four_hundred_records_of_one_time_are_returned_whole() -> None:
-    rows = [{"code": f"K{n:03d}", "date_edited": "2026-11-10T09:00:00"} for n in range(400)]
-    rows.append({"code": "Z", "date_edited": "2026-11-10T10:00:00"})
-    fake = FakeFinvalda(GetDescriptions=lambda call: items(*rows))
-    first = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-10", "limit": 200})[
-        "result"
-    ]
-    assert first["count"] == 400 and first["has_more"] is True
-    assert first["next_since"] == "2026-11-10T09:00:00+02:00"
-    second = run(
-        fake, "changes_since", {"entity": "clients", "since": first["next_since"], "limit": 200}
-    )["result"]
-    # The group at since comes again, whole, with the next edit time: never past it.
-    assert second["count"] == 401 and second["has_more"] is False
-    assert second["next_since"] == "2026-11-10T10:00:00+02:00"
-    third = run(
-        fake, "changes_since", {"entity": "clients", "since": second["next_since"], "limit": 200}
-    )["result"]
-    assert [r["code"] for r in third["records"]] == ["Z"] and third["has_more"] is False
-    assert third["next_since"] == "2026-11-10T10:00:00+02:00"
-
-
-def test_undated_records_come_with_the_last_page_only() -> None:
-    rows = [
-        {"code": "A", "date_edited": "2026-11-10T09:00:00"},
-        {"code": "B", "date_edited": "2026-11-10T10:00:00"},
-        {"code": "U", "date_edited": "?"},
-    ]
-    fake = FakeFinvalda(GetDescriptions=lambda call: items(*rows))
-    first = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-10", "limit": 1})[
-        "result"
-    ]
-    assert first["undated"] == [] and first["undated_count"] == 1 and first["has_more"] is True
-    last = run(
-        fake, "changes_since", {"entity": "clients", "since": first["next_since"], "limit": 1}
-    )["result"]
-    assert [r["code"] for r in last["undated"]] == ["U"] and last["has_more"] is False
 
 
 def test_only_the_documented_empty_list_means_no_rows() -> None:
@@ -1061,27 +967,6 @@ def test_attach_file_keeps_the_refusals_facts() -> None:
     # HTTP 400 on a write is an unknown outcome: passed on as it is, no hint, no attach.
     assert response["error_code"] == "timeout_unknown"
     assert not [c for c in fake.calls if c.method == "AttachDocument"]
-
-
-def test_a_large_group_at_since_comes_whole_with_the_next_time() -> None:
-    rows = [{"code": f"K{n:03d}", "date_edited": "2026-11-10T09:00:00"} for n in range(450)]
-    rows += [{"code": "Z", "date_edited": "2026-11-10T10:00:00"}]
-    fake = FakeFinvalda(GetDescriptions=lambda call: items(*rows))
-    page = run(
-        fake, "changes_since", {"entity": "clients", "since": "2026-11-10T09:00:00", "limit": 100}
-    )
-    assert page["ok"] is True, page
-    result = page["result"]
-    assert result["count"] == 451 and result["has_more"] is False
-    assert result["next_since"] == "2026-11-10T10:00:00+02:00"
-
-
-def test_a_group_too_large_for_any_step_says_how_to_step_over() -> None:
-    rows = [{"code": f"K{n:03d}", "date_edited": "2026-11-10T09:00:00"} for n in range(700)]
-    fake = FakeFinvalda(GetDescriptions=lambda call: items(*rows))
-    response = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-10"})
-    assert response["error_code"] == "response_too_large"
-    assert "since = 2026-11-10T09:00:00+02:00 and skip_group true" in response["error"]
 
 
 def test_payment_conflict_text_without_numbers() -> None:

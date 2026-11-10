@@ -530,20 +530,17 @@ forms:
     label: Since
     widget_type: text
     required: true
-    help_text: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS; records edited at or after it.
-  - name: limit
-    label: Rows
+    help_text: A date, YYYY-MM-DD; an ISO 8601 time is taken as its date in Lithuania.
+  - name: page
+    label: Page
     widget_type: number
     required: false
-    help_text: 'About this many rows, 1 to 300 (default 200), the records at since included. Records of
-      one edit time are never split, so a page may hold more: the next edit time is always included, up
-      to 600 records.'
-  - name: skip_group
-    label: Skip the records at since
-    widget_type: boolean
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
     required: false
-    help_text: 'Leave out the records edited exactly at since. Only when they were already read: a record
-      edited later with the same coarse time would be missed.'
+    help_text: Rows per page, 1 to 300. Default 200.
 - operation_id: descriptions_accounts
   title: Advanced · List · Chart of accounts
   fields:

@@ -87,13 +87,14 @@ def rest_of(data: Mapping[str, Any], rows: list[Any]) -> dict[str, Any] | None:
         return value
 
     rest = strip({k: v for k, v in data.items() if str(k).lower() not in _STATUS})
-    result = rest.get("result")
-    if isinstance(result, Mapping):
-        inner = {k: v for k, v in result.items() if str(k).lower() not in _RESULT_STATUS}
-        if inner:
-            rest["result"] = inner
-        else:
-            del rest["result"]
+    for key in [k for k in rest if str(k).lower() == "result"]:
+        result = rest[key]
+        if isinstance(result, Mapping):
+            inner = {k: v for k, v in result.items() if str(k).lower() not in _RESULT_STATUS}
+            if inner:
+                rest[key] = inner
+            else:
+                del rest[key]
     return rest or None
 
 

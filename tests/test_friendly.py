@@ -527,31 +527,6 @@ def test_product_prices_with_client_prices() -> None:
     assert fake.calls[1].read_params()["Prices"] == {"Type": 1, "Client": "K1", "Codes": ["P1"]}
 
 
-def test_changes_since_repeats_the_boundary_and_moves_on() -> None:
-    rows = [
-        {"code": "A", "date_edited": "2026-11-01T10:00:00"},
-        {"code": "B", "date_edited": "2026-11-01T11:00:00"},
-        {"code": "C", "date_edited": "2026-11-01T11:00:00"},
-        {"code": "D", "date_edited": "2026-11-01T12:00:00"},
-    ]
-    fake = FakeFinvalda(GetDescriptions=lambda call: items(*reversed(rows)))
-    first = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-01", "limit": 2})[
-        "result"
-    ]
-    # B and C share one time and would pass the limit: the group is left whole for later.
-    assert [r["code"] for r in first["records"]] == ["A"] and first["has_more"] is True
-    assert fake.calls[0].read_params()["Clients"] == {"EditedFrom": "2026-11-01"}
-    second = run(
-        fake, "changes_since", {"entity": "clients", "since": first["latest_edited"], "limit": 2}
-    )["result"]
-    # The boundary record comes again, then the whole next group.
-    assert [r["code"] for r in second["records"]] == ["A", "B", "C"] and second["has_more"] is True
-    third = run(
-        fake, "changes_since", {"entity": "clients", "since": second["latest_edited"], "limit": 2}
-    )["result"]
-    assert [r["code"] for r in third["records"]] == ["B", "C", "D"] and third["has_more"] is False
-
-
 def test_changes_since_for_operations() -> None:
     fake = FakeFinvalda(
         GetOperations=items(

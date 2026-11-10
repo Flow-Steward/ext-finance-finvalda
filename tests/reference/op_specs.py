@@ -33,10 +33,6 @@ DATE: dict[str, Any] = {
     "pattern": r"^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?(Z|[+-]\d{2}:\d{2})?)?$",
     "maxLength": 35,
 }
-DATE_TIME: dict[str, Any] = {
-    "pattern": r"^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?(Z|[+-]\d{2}:\d{2})?)?$",
-    "maxLength": 35,
-}
 
 
 @cache
@@ -2409,43 +2405,20 @@ EVERYDAY_OUTPUTS: dict[str, list[dict[str, Any]]] = {
             "array",
             {
                 "type": "array",
-                "description": "The records edited since, as client, product, service or operation records.",
+                "description": "The records of this page, as client, product, service or operation records.",
                 "items": _ENTITY_OF_CHANGES,
             },
         ),
         COUNT,
+        out("total", "integer", "integer", "How many records changed since the date, in all."),
+        out("page", "integer", "integer", "The page returned."),
+        out("next_page", "integer", ["integer", "null"], "The page to read next, or null."),
+        out("has_more", "boolean", "boolean", "True when more pages follow."),
         out(
             "latest_edited",
             "text",
             ["string", "null"],
-            "The edit time of the last record returned, ISO 8601.",
-        ),
-        out(
-            "next_since",
-            "text",
-            ["string", "null"],
-            "Pass it as since next time: the last edit time returned (its records come again), or since when nothing later was found.",
-        ),
-        out(
-            "has_more",
-            "boolean",
-            "boolean",
-            "True when more records follow; continue with since = next_since.",
-        ),
-        out_schema(
-            "undated",
-            "array",
-            {
-                "type": "array",
-                "description": "Records whose edit time Finvalda gives in no known form (up to 100), with the last page only.",
-                "items": _ENTITY_OF_CHANGES,
-            },
-        ),
-        out(
-            "undated_count",
-            "integer",
-            "integer",
-            "How many records have an edit time in no known form.",
+            "The latest edit time on this page, ISO 8601; for information.",
         ),
         WARNINGS,
     ],
@@ -2467,7 +2440,8 @@ def invoice_spec(operation_id: str, noun: str, header: str, journal_hint: str) -
             "from quantity, price, discount and VAT percent. The document number makes it safe to run "
             f"again: the step first looks for a {noun} of that client with that number and returns it "
             "instead of a second one, and Finvalda itself refuses a number already used. Can attach "
-            "a file, such as the PDF, for which the connection needs a Finvalda employee."
+            "a file, such as the PDF, for which the connection needs a Finvalda employee. "
+            "If an earlier run already stored the file in the register, attach it with Advanced · Attach a document."
         ),
         "inputs": [
             CONNECTION,
@@ -2759,7 +2733,7 @@ def everyday_specs() -> list[dict[str, Any]]:
             "display_name": "Attach file",
             "kind": "action",
             "calls": ["GetAttachedDocument", "InsertDocument", "AttachDocument"],
-            "description": "Stores a workflow file in Finvalda and attaches it to a sale, a purchase or another operation, or to a client or product. A file of the same name already attached there is not attached twice.",
+            "description": "Stores a workflow file in Finvalda and attaches it to a sale, a purchase or another operation, or to a client or product. A file of the same name already attached there is not attached twice. If an earlier run already stored the file in the register, attach it with Advanced · Attach a document.",
             "inputs": [
                 CONNECTION,
                 choice(
@@ -2884,7 +2858,7 @@ def everyday_specs() -> list[dict[str, Any]]:
             "display_name": "Changes since",
             "kind": "source",
             "calls": ["GetDescriptions (EditedFrom)", "GetOperations (DateEditedFrom)"],
-            "description": "Records or operations created or edited since a moment: clients, products, services, sales, purchases, inflows, disbursements. Pass next_since as since next time. Since is inclusive and records of one edit time are never split; next_since is the last edit time returned, so the records of that time come again next time: repeated, never lost — skip them by code.",
+            "description": "Records or operations created or edited on or after a date: clients, products, services, sales, purchases, inflows, disbursements, page by page in a fixed order. Finvalda filters by date only, so asking again with the same date returns that day's records again — skip them by code; nothing is lost.",
             "inputs": [
                 CONNECTION,
                 choice(
@@ -2898,24 +2872,23 @@ def everyday_specs() -> list[dict[str, Any]]:
                 text(
                     "since",
                     "Since",
-                    "YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS; records edited at or after it.",
+                    "A date, YYYY-MM-DD; an ISO 8601 time is taken as its date in Lithuania.",
                     required=True,
-                    **DATE_TIME,
+                    **DATE,
+                ),
+                whole(
+                    "page",
+                    "Page",
+                    "The page to read, from 1. Default 1.",
+                    minimum=1,
+                    maximum=1_000_000,
                 ),
                 whole(
                     "limit",
-                    "Rows",
-                    "About this many rows, 1 to 300 (default 200), the records at since "
-                    "included. Records of one edit time are never split, so a page may hold "
-                    "more: the next edit time is always included, up to 600 records.",
+                    "Rows per page",
+                    "Rows per page, 1 to 300. Default 200.",
                     minimum=1,
                     maximum=300,
-                ),
-                flag(
-                    "skip_group",
-                    "Skip the records at since",
-                    "Leave out the records edited exactly at since. Only when they were already "
-                    "read: a record edited later with the same coarse time would be missed.",
                 ),
             ],
             "outputs": EVERYDAY_OUTPUTS["changes_since"],
