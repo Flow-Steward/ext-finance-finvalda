@@ -83,9 +83,10 @@ against a live Finvalda. Where a published client of the same web service report
 name that differs from the manual (`sSandKod` for `sSanKod`; `tDataNuo`/`tDataIki` for
 `tNuo`/`tIki`), the step sends both names.
 
-Register payment registers a payment only when the client has no operation of that kind with
-the same document number. Otherwise it stops without a write: a rerun needs nothing more, and a
-different payment (one bank statement often holds several) needs a document number of its own.
+Register payment is not safe to run again by itself: when the client already has an inflow or
+disbursement with the document number, it stops with a conflict and writes nothing — after a
+rerun, check Finvalda. Two payments of one client under one bank statement number do not pass:
+give each its own document number.
 
 What to check first on a live server:
 
@@ -101,7 +102,7 @@ What to check first on a live server:
 
 Changes since reads `since` inclusively and never splits records of one edit time, because
 Finvalda's edit times are coarse: the records at the boundary come again on the next call
-(repeated, never lost), so skip them by code.
+(repeated, never lost), so skip them by code. Continue with `since = next_since`.
 
 Results give every number Finvalda returns as exact decimal text.
 

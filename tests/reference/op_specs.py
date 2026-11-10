@@ -2227,10 +2227,11 @@ def everyday_specs() -> list[dict[str, Any]]:
             "calls": ["GetOperations (look the payment up)", "InsertNewOperation IplDok / IsmDok"],
             "description": (
                 "Registers money received from a client (inflow) or paid to a supplier (disbursement), "
-                "against one document or as a prepayment. Safe to run again: a payment of the client "
-                "and that document number already in Finvalda stops the step without a write: if it "
-                "is a rerun nothing more is needed, and a different payment needs a document number "
-                "of its own (one bank statement often holds several payments)."
+                "against one document or as a prepayment. Not safe to run again by itself: when the "
+                "client already has an inflow or disbursement with this document number, the step "
+                "stops with a conflict and writes nothing — after a rerun, check Finvalda. Two "
+                "payments of one client under one bank statement number do not pass: give each its "
+                "own document number."
             ),
             "inputs": [
                 CONNECTION,
@@ -2496,7 +2497,7 @@ def everyday_specs() -> list[dict[str, Any]]:
             "display_name": "Changes since",
             "kind": "source",
             "calls": ["GetDescriptions (EditedFrom)", "GetOperations (DateEditedFrom)"],
-            "description": "Records or operations created or edited since a moment: clients, products, services, sales, purchases, inflows, disbursements. Pass latest_edited as since next time. Since is inclusive and records of one edit time are never split, so the records at the boundary come again: repeated, never lost — skip them by code.",
+            "description": "Records or operations created or edited since a moment: clients, products, services, sales, purchases, inflows, disbursements. Pass next_since as since next time. Since is inclusive and records of one edit time are never split, so the records at the boundary may come again: repeated, never lost — skip them by code.",
             "inputs": [
                 CONNECTION,
                 choice(
@@ -2529,13 +2530,19 @@ def everyday_specs() -> list[dict[str, Any]]:
                     "latest_edited",
                     "text",
                     ["string", "null"],
-                    "The edit time of the last record; pass it as since next time.",
+                    "The edit time of the last record returned.",
+                ),
+                out(
+                    "next_since",
+                    "text",
+                    ["string", "null"],
+                    "Pass it as since next time: the last edit time, or just after it when a whole large group was returned.",
                 ),
                 out(
                     "has_more",
                     "boolean",
                     "boolean",
-                    "True when more records follow; continue with since = latest_edited.",
+                    "True when more records follow; continue with since = next_since.",
                 ),
                 out(
                     "undated",

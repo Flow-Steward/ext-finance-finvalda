@@ -455,9 +455,10 @@ def rows_of(data: Mapping[str, Any], *, strict: bool = True) -> list[Any]:
     """The list of rows in a Finvalda answer.
 
     ``strict`` (the reads everyday steps rely on, lookups before a create among
-    them): only the form every read example of Finvalda's Postman collection shows,
-    ``{"AccessResult": "Success", "error": "", "items": [...]}`` — an empty list is
-    "no rows". Anything else (no ``items``, ``items: null``) is an error, never "no
+    them): the form every read example of Finvalda's Postman collection shows,
+    ``{"AccessResult": "Success", "error": "", "items": [...]}``. No rows: an empty
+    or null ``items``, or no data key at all (the empty answer the collection shows
+    for GetInvoicesRelatedToCustomer). Any other data key is an error, never "no
     rows": a lookup would otherwise create a record that already exists.
 
     Not strict (the older methods, whose answers the manual describes by their
@@ -471,6 +472,10 @@ def rows_of(data: Mapping[str, Any], *, strict: bool = True) -> list[Any]:
     items = field(rest, "items")
     if isinstance(items, list):
         return items
+    if not rest or (items is None and {str(k).lower() for k in rest} == {"items"}):
+        # No data key at all (as GetInvoicesRelatedToCustomer's empty example shows:
+        # AccessResult, error, nResult) or "items": null: no rows.
+        return []
     if strict:
         raise errors.no_effect(
             errors.INVALID_RESPONSE,

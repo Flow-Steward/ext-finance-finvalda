@@ -428,7 +428,12 @@ def test_attachment_names_keep_sales_and_purchases_apart() -> None:
         "document_file": "a",
     }
     response = run(fake, "create_purchase_invoice", inputs, files=Files(b"%PDF"))
-    assert response["result"]["attachment_name"] == "purchase-SUP-AB1.pdf", response
+    from runtime.friendly import own_file_name
+
+    name = response["result"]["attachment_name"]
+    assert name == own_file_name("purchase", "SUP", "", "AB1") and name.startswith(
+        "purchase-SUP-AB1-"
+    )
 
 
 @pytest.mark.parametrize(
@@ -843,9 +848,14 @@ def test_four_hundred_records_of_one_time_are_returned_whole() -> None:
     ]
     assert first["count"] == 400 and first["has_more"] is True
     second = run(
-        fake, "changes_since", {"entity": "clients", "since": first["latest_edited"], "limit": 200}
+        fake, "changes_since", {"entity": "clients", "since": first["next_since"], "limit": 200}
     )["result"]
-    assert second["records"][-1]["code"] == "Z" and second["has_more"] is False
+    # The group at since is larger than limit: it comes alone, and next_since moves past it.
+    assert second["count"] == 400 and second["next_since"] == "2026-11-10T09:00:00.000001"
+    third = run(
+        fake, "changes_since", {"entity": "clients", "since": second["next_since"], "limit": 200}
+    )["result"]
+    assert [r["code"] for r in third["records"]] == ["Z"] and third["has_more"] is False
 
 
 def test_undated_records_come_with_the_last_page_only() -> None:
@@ -860,7 +870,7 @@ def test_undated_records_come_with_the_last_page_only() -> None:
     ]
     assert first["undated"] == [] and first["undated_count"] == 1 and first["has_more"] is True
     last = run(
-        fake, "changes_since", {"entity": "clients", "since": first["latest_edited"], "limit": 1}
+        fake, "changes_since", {"entity": "clients", "since": first["next_since"], "limit": 1}
     )["result"]
     assert [r["code"] for r in last["undated"]] == ["U"] and last["has_more"] is False
 
@@ -876,7 +886,14 @@ def test_only_the_documented_empty_list_means_no_rows() -> None:
     }
     fake = FakeFinvalda(GetOperations=[{**OK, "items": []}, items()], InsertNewOperation=saved())
     assert run(fake, "create_sales_invoice", inputs)["result"]["created"] is True
-    for answer in ({**OK, "Operations": None}, {**OK, "items": None}, {**OK, "Operations": []}, OK):
+    # No data key at all — the empty answer the collection shows for
+    # GetInvoicesRelatedToCustomer ({"AccessResult": "Success", "error": "", "nResult": 0})
+    # — and items: null are no rows too.
+    for empty in ({**OK, "nResult": 0}, {**OK, "items": None}):
+        fake = FakeFinvalda(GetOperations=[empty, items()], InsertNewOperation=saved())
+        assert run(fake, "create_sales_invoice", inputs)["result"]["created"] is True, empty
+    # Another data key is no answer to trust: no write.
+    for answer in ({**OK, "Operations": None}, {**OK, "Operations": []}):
         fake = FakeFinvalda(GetOperations=answer)
         response = run(fake, "create_sales_invoice", inputs)
         assert response["error_code"] == "invalid_response" and fake.writes() == [], answer
@@ -932,9 +949,12 @@ def test_invoice_rerun_attaches_its_own_stored_file() -> None:
     response = run(fake, "create_sales_invoice", inputs, files=Files(b"%PDF"))
     assert response["ok"] is True, response
     assert response["result"]["created"] is False
-    assert response["result"]["attachment_name"] == "sale-K1-S-1.pdf"
+    from runtime.friendly import own_file_name
+
+    name = own_file_name("sale", "K1", "", "S-1")
+    assert response["result"]["attachment_name"] == name
     attach = [c for c in fake.calls if c.method == "AttachDocument"][0]
-    assert attach.query["documentId"] == "sale-K1-S-1.pdf"
+    assert attach.query["documentId"] == name
 
 
 def test_attach_file_refused_store_says_how_to_finish() -> None:
@@ -956,3 +976,103 @@ def test_attach_file_refused_store_says_how_to_finish() -> None:
     assert response["error_code"] == "upstream_validation_failed"
     assert "Attach a document" in response["error"]
     assert not [c for c in fake.calls if c.method == "AttachDocument"]
+
+
+# -- fourth code review (dca3ebb) -------------------------------------------------
+
+
+def test_client_debt_without_unpaid_documents() -> None:
+    fake = FakeFinvalda(
+        GetDescriptions=items({"code": "K1", "title": "K", "debt": 0}),
+        GetNeapmoketiKliDok={**OK, "nResult": 0},
+    )
+    result = run(fake, "client_debt", {"client_code": "K1"})["result"]
+    assert result["documents"] == [] and result["unpaid_total"] == "0.00"
+
+
+@pytest.mark.parametrize(
+    "first, second",
+    [(("A1", "23"), ("A", "123")), (("AB", "12"), ("", "AB12")), (("", "AB/12"), ("", "AB 12"))],
+)
+def test_own_file_names_never_meet(first: tuple[str, str], second: tuple[str, str]) -> None:
+    from runtime.friendly import own_file_name
+
+    assert own_file_name("sale", "K1", *first) != own_file_name("sale", "K1", *second)
+
+
+def test_too_long_own_file_name_is_refused() -> None:
+    from runtime.friendly import own_file_name
+
+    with pytest.raises(ExtensionError):
+        own_file_name("purchase", "K" * 15, "S" * 10, "D" * 200)
+
+
+def test_a_network_failure_on_store_is_not_taken_for_a_refusal() -> None:
+    sale = {"journal": "PARD", "op_number": 77, "order_number": "S-1", "client": "K1"}
+    fake = FakeFinvalda(
+        GetOperations=items(sale),
+        GetAttachedDocument={**OK, "result": {"enitityDocs": [], "errorCode": 0}},
+        InsertDocument=OSError("connection reset"),
+    )
+    inputs = {
+        "client_code": "K1",
+        "document": "S-1",
+        "warehouse": "W",
+        "lines": [{"code": "P1", "quantity": 1, "price": 1}],
+        "document_file": "a",
+    }
+    response = run(fake, "create_sales_invoice", inputs, files=Files(b"%PDF"))
+    assert response["error_code"] == "timeout_unknown"
+    assert not [c for c in fake.calls if c.method == "AttachDocument"]
+
+
+def test_attach_file_keeps_the_refusals_facts() -> None:
+    fake = FakeFinvalda(
+        GetAttachedDocument={**OK, "result": {"enitityDocs": [], "errorCode": 0}},
+        InsertDocument=(400, b"bad"),
+    )
+    response = run(
+        fake,
+        "attach_file",
+        {
+            "entity_type": 3,
+            "entity_id1": "PARD",
+            "entity_id2": "1",
+            "document_file": "a",
+            "file_name": "x.pdf",
+        },
+    )
+    # HTTP 400 on a write is an unknown outcome: passed on as it is, no hint, no attach.
+    assert response["error_code"] == "timeout_unknown"
+    assert not [c for c in fake.calls if c.method == "AttachDocument"]
+
+
+def test_a_large_group_at_since_comes_alone_and_is_stepped_over() -> None:
+    rows = [{"code": f"K{n:03d}", "date_edited": "2026-11-10T09:00:00"} for n in range(450)]
+    rows += [{"code": "Z", "date_edited": "2026-11-10T10:00:00"}]
+    fake = FakeFinvalda(GetDescriptions=lambda call: items(*rows))
+    page = run(
+        fake, "changes_since", {"entity": "clients", "since": "2026-11-10T09:00:00", "limit": 100}
+    )
+    assert page["ok"] is True, page
+    result = page["result"]
+    assert result["count"] == 450 and result["has_more"] is True
+    assert result["next_since"] == "2026-11-10T09:00:00.000001"
+
+
+def test_a_group_too_large_for_any_step_says_how_to_step_over() -> None:
+    rows = [{"code": f"K{n:03d}", "date_edited": "2026-11-10T09:00:00"} for n in range(700)]
+    fake = FakeFinvalda(GetDescriptions=lambda call: items(*rows))
+    response = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-10"})
+    assert response["error_code"] == "response_too_large"
+    assert "2026-11-10T09:00:00.000001" in response["error"]
+
+
+def test_payment_conflict_text_without_numbers() -> None:
+    fake = FakeFinvalda(GetOperations=items({"order_number": "B", "client": "K1"}))
+    response = run(
+        fake,
+        "register_payment",
+        {"direction": "incoming", "client_code": "K1", "document": "B", "amount": 1},
+    )
+    assert "? #?" in response["error"] and "None" not in response["error"]

@@ -7,10 +7,12 @@ call fails, exactly what it already saved in Finvalda.
 
 from __future__ import annotations
 
+import hashlib
 import re
 from collections.abc import Callable, Mapping
 from datetime import date as Date
 from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
@@ -737,6 +739,22 @@ def find_operation(
     return dict(mine[0])
 
 
+def own_file_name(kind: str, client: str, series: str, document: str) -> str:
+    """The register name of an invoice step's file: readable, and one per document.
+
+    The register's names are global and the step later trusts a stored file of this
+    name as its own, so the name must belong to this document alone: the parts are
+    kept apart by "-" and a hash of the exact values follows, so "A1"+"23" and
+    "A"+"123", or "AB/12" and "AB 12", never meet.
+    """
+    digest = hashlib.sha256("\x1f".join((kind, client, series, document)).encode()).hexdigest()
+    readable = "-".join(ops.safe_name(part) for part in (kind, client, series, document) if part)
+    name = f"{readable}-{digest[:12]}.pdf"
+    if len(name) > 200:
+        raise invalid("The client code, series and document are too long for a file name")
+    return name
+
+
 def operation_identity(record: Mapping[str, Any], document: str) -> dict[str, Any]:
     """Journal, number, series and document of an operation read from Finvalda."""
     return {
@@ -816,8 +834,7 @@ def invoice_op(
         entity = 3 if head == "PardDok" else 7
         # The register's file names are global: the kind and the client keep a sale's
         # and a purchase's (or two suppliers') equal document numbers apart.
-        stem = f"{'sale' if head == 'PardDok' else 'purchase'}-{client}-{series}{document}"
-        name = f"{ops.safe_name(stem)[:190]}.pdf"
+        name = own_file_name("sale" if head == "PardDok" else "purchase", client, series, document)
         attachment = store_and_attach(
             context,
             {
@@ -912,7 +929,7 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
         raise errors.no_effect(
             errors.CONFLICT,
             f"A payment of client {client} with document {document} is already in Finvalda "
-            f"({', '.join(str(field(r, 'journal') or '?') + ' #' + str(_op_number(r)) for r in existing[:5])}). "
+            f"({', '.join(str(field(r, 'journal') or '?') + ' #' + str(_op_number(r) or '?') for r in existing[:5])}). "
             "If this is a rerun, nothing more is needed; if it is a different payment, give it "
             "a document number of its own",
         )
@@ -988,7 +1005,12 @@ def store_and_attach(
             lambda: context.call("InsertDocument", verb="POST", body=body, mutating=True),
         )
     except ExtensionError as refused:
-        if refused.definitely_no_external_effect is not True:
+        # Only Finvalda's own refusal (nothing saved) can mean "already stored";
+        # a network failure or a timeout is passed on as it is.
+        if refused.definitely_no_external_effect is not True or refused.code not in {
+            errors.UPSTREAM_VALIDATION_FAILED,
+            errors.CONFLICT,
+        }:
             raise
         if not own_name:
             raise ExtensionError(
@@ -996,7 +1018,7 @@ def store_and_attach(
                 f"{refused.message}. If an earlier run stored {name}, attach it with "
                 "Advanced · Attach a document",
                 failure_class=refused.failure_class,
-                retryable=False,
+                retryable=refused.retryable,
                 definitely_no_external_effect=refused.definitely_no_external_effect,
                 external_effect_status=refused.external_effect_status,
                 http_status=refused.http_status,
@@ -1189,7 +1211,7 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     )
     documents = []
     unpaid = overdue = Decimal(0)
-    for row in ops.rows_of(reply.data):
+    for row in ops.rows_of(reply.data, strict=False):
         if not isinstance(row, Mapping):
             continue
         remaining = as_decimal(field(row, "likusi_skola"))
@@ -1244,14 +1266,21 @@ def finvalda_date(value: Any) -> Date | None:
     return moment.date() if moment else None
 
 
-def _zone_offset(moment: datetime) -> timedelta | None:
-    """Europe/Vilnius's offset from the time zone database, when the runtime has one."""
+@lru_cache(maxsize=1)
+def _vilnius_zone() -> Any:
+    """Europe/Vilnius from the time zone database, looked up once; None without one."""
     try:
         from zoneinfo import ZoneInfo
 
-        return moment.astimezone(ZoneInfo("Europe/Vilnius")).utcoffset()
-    except Exception:  # noqa: BLE001 - no time zone data: the caller uses the EU rule
+        return ZoneInfo("Europe/Vilnius")
+    except Exception:  # noqa: BLE001 - no time zone data: the EU rule is used
         return None
+
+
+def _zone_offset(moment: datetime) -> timedelta | None:
+    """Europe/Vilnius's offset at ``moment``, when the runtime has time zone data."""
+    zone = _vilnius_zone()
+    return moment.astimezone(zone).utcoffset() if zone is not None else None
 
 
 def _vilnius_offset(moment: datetime) -> timedelta:
@@ -1399,46 +1428,67 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             _op_number(item[1]) or 0,
         )
     )
-    # The group at since itself (repeated from the last call), then whole groups of
-    # later times up to the limit — always at least one later group, so it moves on.
-    at_since = [item for item in dated if item[0] == since]
-    later = [item for item in dated if item[0] > since]
-    page = list(at_since)
-    taken = 0
-    index = 0
-    while index < len(later):
-        moment = later[index][0]
-        group_end = index
-        while group_end < len(later) and later[group_end][0] == moment:
-            group_end += 1
-        if taken and taken + (group_end - index) > limit:
-            break
-        page.extend(later[index:group_end])
-        taken += group_end - index
-        index = group_end
-        if taken >= limit:
-            break
-    has_more = index < len(later)
-    if len(page) > MAX_GROUP + limit:
-        raise errors.no_effect(
-            errors.RESPONSE_TOO_LARGE,
-            f"More than {MAX_GROUP} records share one edit time; narrow the list (for example "
-            "with Export a list to a file and a filter)",
-        )
+    groups: list[tuple[datetime, list[dict[str, Any]]]] = []
+    for moment, row in dated:
+        if groups and groups[-1][0] == moment:
+            groups[-1][1].append(row)
+        else:
+            groups.append((moment, [row]))
+    for moment, members in groups:
+        if len(members) > MAX_GROUP or not budget.fits({"records": members}):
+            skip = (moment + timedelta(microseconds=1)).isoformat()
+            raise errors.no_effect(
+                errors.RESPONSE_TOO_LARGE,
+                f"{len(members)} records share the edit time {moment.isoformat()}, more than one "
+                f"step can return; read them with Export a list to a file, then continue with "
+                f"since = {skip}",
+            )
+    page: list[tuple[datetime, list[dict[str, Any]]]] = []
+    rest = list(groups)
+    moved_on = True
+    if rest and rest[0][0] == since:
+        # The group at since itself, repeated from the last call ("better again than
+        # lost"). When it is larger than limit it comes alone, and the next call starts
+        # just after it — every record of it is in this page.
+        if len(rest[0][1]) > limit:
+            page, rest, moved_on = [rest[0]], rest[1:], False
+        else:
+            page.append(rest.pop(0))
+    if moved_on:
+        taken = 0
+        while rest:
+            size = len(rest[0][1])
+            if taken and taken + size > limit:
+                break
+            candidate = [*page, rest[0]]
+            if taken and not budget.fits({"records": [r for _, g in candidate for r in g]}):
+                break
+            page.append(rest.pop(0))
+            taken += size
+            if taken >= limit:
+                break
+    while len(page) > 1 and not budget.fits({"records": [r for _, g in page for r in g]}):
+        rest.insert(0, page.pop())
+    has_more = bool(rest)
     last = page[-1][0] if page else None
+    if last is None:
+        next_since = since.isoformat()
+    elif not moved_on or (len(page) == 1 and last == since):
+        next_since = (last + timedelta(microseconds=1)).isoformat()
+    else:
+        next_since = last.isoformat()
+    records = [row for _, members in page for row in members]
     result: dict[str, Any] = {
-        "records": [item[1] for item in page],
-        "count": len(page),
+        "records": records,
+        "count": len(records),
         "latest_edited": last.isoformat() if last else None,
+        "next_since": next_since,
         "has_more": has_more,
         "undated": [] if has_more else undated[:MAX_UNDATED],
         "undated_count": len(undated),
     }
     if not budget.fits(result):
-        raise errors.no_effect(
-            errors.RESPONSE_TOO_LARGE,
-            "These changes do not fit one step output; use a lower limit",
-        )
+        result["undated"] = []
     return result
 
 
