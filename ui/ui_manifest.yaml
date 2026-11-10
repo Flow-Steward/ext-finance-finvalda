@@ -1,0 +1,7 @@
+version: "1"
+pages:
+  - ref: pages/setup-guide.yaml
+  - ref: pages/connection.yaml
+  - ref: pages/finvalda-api.yaml
+  - ref: pages/coverage.yaml
+  - ref: pages/changelog.yaml

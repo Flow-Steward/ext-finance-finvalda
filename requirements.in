@@ -1,0 +1,2 @@
+# No runtime dependencies: the extension uses the Python standard library and the
+# Flow Steward extension SDK the host provides.

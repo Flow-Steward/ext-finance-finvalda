@@ -1,0 +1,85 @@
+page_id: connection
+title: Connection
+description: Add and test the Finvalda web service of a company.
+components:
+  - component_id: finvalda_connections
+    type: connection_form
+    title: Finvalda companies
+    description: Add one connection per company and web service user, then test it. The password is stored encrypted and never shown again.
+    data:
+      connection_kind: extension
+      connection_type: finvalda
+      config_fields: [label, base_url, user_name, company_id, operation_parameter, item_parameter, fin_user, language]
+      secret_fields: [password]
+      test_action: test_connection
+    defaults:
+      label: ''
+      base_url: ''
+      user_name: ''
+      company_id: ''
+      operation_parameter: ''
+      item_parameter: ''
+      fin_user: ''
+      language: lt
+    fields:
+      - path: label
+        widget: text
+        label: Label
+        placeholder: UAB X
+      - path: base_url
+        widget: text
+        label: Web service address
+        placeholder: https://fvs.example.lt/FvsServicePure.svc
+        required: true
+        help: The address of the FvsServicePure interface, https only.
+      - path: user_name
+        widget: text
+        label: Web service user
+        required: true
+        help: The Finvalda user the web service logs in as.
+      - path: password
+        widget: secret
+        label: Password
+        required: true
+        help: That user's password.
+      - path: company_id
+        widget: text
+        label: Company
+        help: The company code (CompanyID), when the web service serves several companies.
+      - path: operation_parameter
+        widget: text
+        label: Operation import parameter
+        help: For invoices and payments, from FvsNETParamKonfig.
+      - path: item_parameter
+        widget: text
+        label: Item import parameter
+        help: For new clients, products and services.
+      - path: fin_user
+        widget: text
+        label: Finvalda employee
+        help: Optional. Documents and prices are recorded for this employee; default the web service user.
+      - path: language
+        widget: select
+        label: Answer language
+        help: Column names of the older read methods.
+        options:
+          - label: Lithuanian
+            value: lt
+          - label: English
+            value: en
+    ui_schema:
+      actions:
+        test_label: Test connection
+  - component_id: connection_credentials
+    type: markdown
+    title: Where the details come from
+    body: |
+      1. The address, user and company come from whoever administers Finvalda at your company (see **Setup Guide**).
+      2. The import parameters are the names of presets in Finvalda's FvsNETParamKonfig tool.
+      3. Paste them above and press **Test connection**.
+
+      **If the test fails:**
+
+      - **Authentication failed** — the user name, password or company is wrong, or the user may not use the web service.
+      - **Not found** — check the address: it ends with the interface, usually `/FvsServicePure.svc`.
+      - **Connection failed or blocked address** — the web service must be reachable from the internet over https.

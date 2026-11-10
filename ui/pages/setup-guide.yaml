@@ -1,0 +1,27 @@
+page_id: setup-guide
+title: Setup Guide
+description: How to open Finvalda's web service to Flow Steward and connect it — about two minutes to read.
+components:
+  - component_id: setup_finvalda
+    type: markdown
+    title: For the person who administers Finvalda
+    body: |
+      1. **Check the web service.** The steps use Finvalda's web service (its API), an add-on module of Finvalda MINI, MIDI and MAXI. If your company does not have it, ask Finvalda or your Finvalda partner to install it.
+      2. **Make it reachable over https.** The web service runs on your server. Give it an https address the internet can reach, with a valid certificate, for example `https://fvs.example.lt/FvsServicePure.svc`. Flow Steward does not connect over plain http or to private network addresses.
+      3. **Create a user for the web service.** Use a Finvalda user with only the rights the workflows need: the steps can do exactly what that user can do. Note its user name and password.
+      4. **Note the company code** (CompanyID) if the web service serves more than one company.
+      5. **Prepare the import parameters** in Finvalda's FvsNETParamKonfig tool:
+         - one for operations: it sets the journal, operation type, series and accounts of sales, purchases and payments;
+         - one for new clients, products and services: it sets their accounts, VAT and unit.
+         - Note their names. Without an operation parameter Finvalda accepts no invoice or payment.
+
+      [Finvalda: web service reference (Postman)](https://documenter.getpostman.com/view/7208231/2s8YmRMLvd)
+  - component_id: setup_flow_steward
+    type: markdown
+    title: For the person who connects in Flow Steward
+    body: |
+      1. Open **Connection** and add a connection. Name it after the company, for example `UAB X`.
+      2. Enter the web service address, the user and its password, and the company code if there is one.
+      3. Enter the two import parameters. A step can still name another one.
+      4. Save and press **Test connection**. It reads one client to check everything.
+      5. In a workflow, add a Finvalda step and pick this connection. Start with the everyday steps on **Finvalda API**.

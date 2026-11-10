@@ -1,0 +1,191 @@
+manifest_version: 2
+lifecycle:
+  data_schema_version: 1
+  data_migrations: []
+extension_id: flowsteward.finvalda
+kind: tool_provider
+version: 0.1.0
+release_stage: active
+billing_mode: free
+display_name: Finvalda
+description: Finvalda accounting through its web service (FvsServicePure) for workflows. Everyday steps
+  — find or create clients, products and services, create sales and purchase invoices, register payments,
+  invoice PDFs, attach files, stock levels, prices, client debt and changes since a date — plus every
+  documented web service method, list and operation class as a typed workflow step.
+vendor:
+  name: Flow Steward
+  support_url: https://github.com/Flow-Steward/ext-finance-finvalda/issues
+  website_url: https://github.com/Flow-Steward/ext-finance-finvalda
+listing:
+  category: finance
+  tags:
+  - finvalda
+  - accounting
+  - erp
+  - lithuania
+  - invoices
+  - inventory
+  - payments
+  summary: Everyday Finvalda steps — invoices, clients, products, payments, stock, prices, debts — plus
+    every documented web service method.
+  categories:
+  - finance
+  - inventory
+  - sales
+features:
+- tool
+- action
+required_scopes:
+- extension:invoke
+- artifact:read
+- artifact:write
+machine_auth:
+  service_account_key: svc_ext_finvalda
+  required_scopes:
+  - extension:invoke
+  - artifact:read
+  - artifact:write
+account_scope:
+  scope_type: project
+  description: Each Finvalda web service user and company is a project connection. A project may hold
+    several, for example one per company.
+egress:
+  connection_fields:
+  - finvalda.base_url
+external_effects:
+- operation_id: find_or_create_client
+  effect_kind: finvalda_find_or_create_client
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: find_or_create_product
+  effect_kind: finvalda_find_or_create_product
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: find_or_create_service
+  effect_kind: finvalda_find_or_create_service
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: create_sales_invoice
+  effect_kind: finvalda_create_sales_invoice
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: create_purchase_invoice
+  effect_kind: finvalda_create_purchase_invoice
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: register_payment
+  effect_kind: finvalda_register_payment
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: attach_file
+  effect_kind: finvalda_attach_file
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: insert_item
+  effect_kind: finvalda_insert_item
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: edit_item
+  effect_kind: finvalda_edit_item
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: edit_item_props
+  effect_kind: finvalda_edit_item_props
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: delete_item
+  effect_kind: finvalda_delete_item
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: append_group
+  effect_kind: finvalda_append_group
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: insert_operation
+  effect_kind: finvalda_insert_operation
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: update_operation
+  effect_kind: finvalda_update_operation
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: delete_operation
+  effect_kind: finvalda_delete_operation
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: lock_operation
+  effect_kind: finvalda_lock_operation
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: unlock_operation
+  effect_kind: finvalda_unlock_operation
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: change_journal
+  effect_kind: finvalda_change_journal
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: copy_operation
+  effect_kind: finvalda_copy_operation
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: insert_document
+  effect_kind: finvalda_insert_document
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: delete_document
+  effect_kind: finvalda_delete_document
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: attach_document
+  effect_kind: finvalda_attach_document
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: call_method
+  effect_kind: finvalda_call_method
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+runtime:
+  contract_version: extension_host_v2
+  extension_contract_v2:
+    connection_types: contracts/connection_types.yaml
+    operation_manifest: contracts/operation_manifest.yaml
+    step_ui_manifest: contracts/step_ui_manifest.yaml
+    artifact_policies: contracts/artifact_policies.yaml
+entrypoint:
+  mode: subprocess
+  command:
+  - python3
+  - main.py
+  timeout_seconds: 600
+health:
+  command:
+  - python3
+  - health.py
+  timeout_seconds: 5
+ui_manifest: ui/ui_manifest.yaml
+action_manifest: ui/actions/actions.yaml
+python_requirements: []

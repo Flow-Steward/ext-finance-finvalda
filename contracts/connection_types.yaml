@@ -1,0 +1,72 @@
+connection_types:
+  - connection_type_id: finvalda
+    display_name: Finvalda web service
+    description: One Finvalda company reached through its web service (FvsServicePure), with the web service user and password the steps run as.
+    auth:
+      type: static_secret
+    config_schema:
+      type: object
+      additionalProperties: false
+      required: [base_url, user_name]
+      properties:
+        label:
+          type: string
+          maxLength: 190
+          title: Label
+          description: Optional name for this connection, for example the company.
+        base_url:
+          type: string
+          maxLength: 300
+          pattern: "^https://[^/?#@ ]+(/[A-Za-z0-9._~-]+)*/[A-Za-z0-9._~-]+\\.svc/?$"
+          title: Web service address
+          description: The address of the FvsServicePure interface, for example https://fvs.example.lt/FvsServicePure.svc. https only.
+        user_name:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: "^[\\x21-\\x7e]+$"
+          title: Web service user
+          description: The Finvalda user the web service logs in as.
+        company_id:
+          type: string
+          maxLength: 64
+          pattern: "^[\\x21-\\x7e]*$"
+          title: Company
+          description: The company's unique code (CompanyID), when the web service serves several companies.
+        operation_parameter:
+          type: string
+          maxLength: 100
+          pattern: "^[\\x20-\\x7e]*$"
+          title: Operation import parameter
+          description: The default import parameter (sParametras) for sales, purchases and payments, set up in FvsNETParamKonfig.
+        item_parameter:
+          type: string
+          maxLength: 100
+          pattern: "^[\\x20-\\x7e]*$"
+          title: Item import parameter
+          description: The default import parameter (sFvsImportoParametras) for new clients, products and services.
+        fin_user:
+          type: string
+          maxLength: 64
+          pattern: "^[\\x21-\\x7e]*$"
+          title: Finvalda employee
+          description: The employee documents and prices are recorded for. Default the web service user.
+        language:
+          type: string
+          enum: [lt, en]
+          default: lt
+          title: Answer language
+          description: The column names of the older read methods, Lithuanian (lt) or English (en).
+    secret_schema:
+      type: object
+      additionalProperties: false
+      required: [password]
+      properties:
+        password:
+          type: string
+          minLength: 1
+          maxLength: 256
+          title: Password
+          description: The web service user's password.
+    capabilities:
+      test_connection: true

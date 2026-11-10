@@ -1,0 +1,2655 @@
+{
+ "sources": {
+  "postman": {
+   "url": "https://documenter.getpostman.com/view/7208231/2s8YmRMLvd",
+   "sha256": "6de5f1cd12ede2afba8394c1a3b29469182bb9a09ee5d7a12cb586cedc69b80f"
+  },
+  "manual": {
+   "url": "https://github.com/arturas88/finvalda-sdk/blob/dcdf7ca27d033eae5cb18e839d1c3c76f012c6d0/docs/FVS_Webservice.md",
+   "sha256": "d74d6b5a91388140bc22feb013ff056e171c5fa7d09a5c5b2094406f34ccb74e"
+  }
+ },
+ "entries": {
+  "GetDescriptions:Accounts": {
+   "operation": "descriptions_accounts",
+   "reason": "",
+   "sources": [
+    "postman"
+   ]
+  },
+  "GetDescriptions:Address": {
+   "operation": "descriptions_address",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:BarCodes": {
+   "operation": "descriptions_bar_codes",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:CalendarEvents": {
+   "operation": "descriptions_calendar_events",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:ClientGroups": {
+   "operation": "descriptions_client_groups",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:ClientIndividualCards": {
+   "operation": "descriptions_client_individual_cards",
+   "reason": "",
+   "sources": [
+    "postman"
+   ]
+  },
+  "GetDescriptions:Clients": {
+   "operation": "descriptions_clients",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:CompanyWorkStart": {
+   "operation": "descriptions_company_work_start",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:CountClients": {
+   "operation": "descriptions_count_clients",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:CountSales": {
+   "operation": "descriptions_count_sales",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:CurrencyRates": {
+   "operation": "descriptions_currency_rates",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:CurrentStock": {
+   "operation": "descriptions_current_stock",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:CurrentStockDet": {
+   "operation": "descriptions_current_stock_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:DocumentSeries": {
+   "operation": "descriptions_document_series",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:FixedAsset": {
+   "operation": "descriptions_fixed_asset",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:InvoiceList": {
+   "operation": "descriptions_invoice_list",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:LogbookGroups": {
+   "operation": "descriptions_logbook_groups",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:OpTypeGroups": {
+   "operation": "descriptions_op_type_groups",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:OperationStatuses": {
+   "operation": "descriptions_operation_statuses",
+   "reason": "",
+   "sources": [
+    "postman"
+   ]
+  },
+  "GetDescriptions:PartnerProducts": {
+   "operation": "descriptions_partner_products",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:Prices": {
+   "operation": "descriptions_prices",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:PricesByClientAndItemTypes": {
+   "operation": "descriptions_prices_by_client_and_item_types",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:PricesByClientType": {
+   "operation": "descriptions_prices_by_client_type",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:PricesByItemType": {
+   "operation": "descriptions_prices_by_item_type",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:ProductionItem": {
+   "operation": "descriptions_production_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:Products": {
+   "operation": "descriptions_products",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:ReportList": {
+   "operation": "descriptions_report_list",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:Services": {
+   "operation": "descriptions_services",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:StockOnDate": {
+   "operation": "descriptions_stock_on_date",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:TagsAndTypes": {
+   "operation": "descriptions_types_and_tags",
+   "reason": "The manual's section heading; the type it describes is TypesAndTags.",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:TypesAndTags": {
+   "operation": "descriptions_types_and_tags",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:Vehicles": {
+   "operation": "descriptions_vehicles",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:WareHouseGroups": {
+   "operation": "descriptions_warehouse_groups",
+   "reason": "The manual's section heading; the type it describes is WarehouseGroups.",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetDescriptions:WarehouseGroups": {
+   "operation": "descriptions_warehouse_groups",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:Capitalization": {
+   "operation": "operations_capitalization",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:CapitalizationDet": {
+   "operation": "operations_capitalization_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:ClearingOff": {
+   "operation": "operations_clearing_off",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:ClearingOffDet": {
+   "operation": "operations_clearing_off_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:Disbursement": {
+   "operation": "operations_disbursement",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:DisbursementDet": {
+   "operation": "operations_disbursement_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:GenLeadger": {
+   "operation": "operations_gen_leadger",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:GenLeadgerDet": {
+   "operation": "operations_gen_leadger_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:Inflows": {
+   "operation": "operations_inflows",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:InflowsDet": {
+   "operation": "operations_inflows_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:InternalTransactions": {
+   "operation": "operations_internal_transactions",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:InternalTransactionsDet": {
+   "operation": "operations_internal_transactions_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:Production": {
+   "operation": "operations_production",
+   "reason": "",
+   "sources": [
+    "postman"
+   ]
+  },
+  "GetOperations:PurchaseOrders": {
+   "operation": "operations_purchase_orders",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:PurchaseOrdersDet": {
+   "operation": "operations_purchase_orders_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:Purchases": {
+   "operation": "operations_purchases",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:PurchasesDet": {
+   "operation": "operations_purchases_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:PurchasesReturns": {
+   "operation": "operations_purchases_returns",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:PurchasesReturnsDet": {
+   "operation": "operations_purchases_returns_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:Sales": {
+   "operation": "operations_sales",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:SalesDet": {
+   "operation": "operations_sales_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:SalesReservations": {
+   "operation": "operations_sales_reservations",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:SalesReservationsDet": {
+   "operation": "operations_sales_reservations_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:SalesReturns": {
+   "operation": "operations_sales_returns",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:SalesReturnsDet": {
+   "operation": "operations_sales_returns_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:WriteOff": {
+   "operation": "operations_write_off",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "GetOperations:WriteOffDet": {
+   "operation": "operations_write_off_det",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:AddPrekeDetEil": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelGamybaDok": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelIplDok": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelPardDok": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelPardGrazDok": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelPardRezDok": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelPaslaugaDetEil": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelPirkDok": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelPirkGrazDok": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelPirkUzsDok": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelPrekeDetEil": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelUVMPirkUzsDok": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:DelVidPerkDok": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.Adresas": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.AtsTerminas": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.Bankas": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.Klientas": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.KlientoIIIPoz": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.KlientoIIPoz": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.KlientoIPoz": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.KlientoIndividKort": {
+   "operation": "insert_item",
+   "reason": "Field names come from the Postman example only.",
+   "sources": [
+    "postman"
+   ]
+  },
+  "class:Fvs.KlientoRusis": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.ObjektasI": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.ObjektasII": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.ObjektasIII": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.ObjektasIV": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.ObjektasV": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.ObjektasVI": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.Paslauga": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.Paslaugos": {
+   "operation": "edit_item_props",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.Preke": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.Prekes": {
+   "operation": "edit_item_props",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz1": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz10": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz11": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz12": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz13": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz14": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz15": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz16": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz17": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz18": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz19": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz2": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz20": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz3": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz4": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz5": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz6": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz7": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz8": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesPoz9": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.PrekesRusis": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Fvs.Sandelis": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:GamybaDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:GamybaGDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:GamybaPDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:GamybaZDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Inventorizacija": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:IplDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:IplDokDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:IsmDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:IsmDokDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:KoregPardDok": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:KoregPardRezDok": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:KoregPirkDok": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:KoregPirkGrazDok": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:KoregPirkUzsDok": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:KoregVidPerkDok": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:KtNeanalitDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:KtNeanalitDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:Mokejimas": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:NurasymasDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:NurasymasDokDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PajamavimasDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PajamavimasDokDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PardDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PardDokGaminysDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PardDokHeadEil": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PardDokPaslaugaDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PardDokPrekeDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PardDokSaskaitaDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PardGrazDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PardRezDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PirkDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PirkDokHeadEil": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PirkDokPaslaugaDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PirkDokPrekeDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PirkDokSaskaitaDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PirkGrazDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:PirkUzsDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:TrumpasPardDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:TrumpasPardGrazDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:TrumpasPardRezDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:TrumpasPirkDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:TrumpasPirkGrazDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:TrumpasPirkUzsDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:TrumpasUVMPardRDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:TrumpasUVMPardRezDok": {
+   "operation": "insert_operation",
+   "reason": "The method's class list name; its fields are those of TrumpasUVMPardRDok.",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:TrumpasUVMPirkUzsDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:UVMAnulDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:UVMAnulDokDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:UVMPardRezDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:UVMPirkUzsDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:UpdPrekeDetEil": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:UzskaitaDebitDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:UzskaitaDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:UzskaitaKreditDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:VidPerkDok": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:VidPerkDokDetEil": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "class:VidPerkDokHeadEil": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual"
+   ]
+  },
+  "method:AppendGroup": {
+   "operation": "append_group",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:AttachDocument": {
+   "operation": "attach_document",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:ChangeJournal": {
+   "operation": "change_journal",
+   "reason": "",
+   "sources": [
+    "postman"
+   ]
+  },
+  "method:CopyOperation": {
+   "operation": "copy_operation",
+   "reason": "",
+   "sources": [
+    "postman"
+   ]
+  },
+  "method:DeleteDocument": {
+   "operation": "delete_document",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:DeleteDokumentas": {
+   "operation": "delete_document",
+   "reason": "The revision history's name of DeleteDocument.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:DeleteItem": {
+   "operation": "delete_item",
+   "reason": "",
+   "sources": [
+    "postman"
+   ]
+  },
+  "method:DeleteOperation": {
+   "operation": "delete_operation",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:EditItem": {
+   "operation": "edit_item",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:EditItemProps": {
+   "operation": "edit_item_props",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:EditItemsProps": {
+   "operation": "edit_item_props",
+   "reason": "The method list's spelling of EditItemProps.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetAtsiskaitymaiUzDok": {
+   "operation": "get_atsiskaitymai_uz_dok",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetAtsiskaitymaiUzDokDataNuoDet": {
+   "operation": "get_atsiskaitymai_uz_dok_data_nuo_det",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetAtsiskaitymaiUzDokDataNuoDetParam": {
+   "operation": "get_atsiskaitymai_uz_dok_data_nuo_det_param",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:GetAtsiskaitymaiUzDokDataNuoDetXml": {
+   "operation": "get_atsiskaitymai_uz_dok_data_nuo_det",
+   "reason": "The same data as GetAtsiskaitymaiUzDokDataNuoDet as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetAtsiskaitymaiUzDokDet": {
+   "operation": "get_atsiskaitymai_uz_dok_det",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetAtsiskaitymaiUzDokDetXml": {
+   "operation": "get_atsiskaitymai_uz_dok_det",
+   "reason": "The same data as GetAtsiskaitymaiUzDokDet as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetAtsiskaitymaiUzDokXml": {
+   "operation": "get_atsiskaitymai_uz_dok",
+   "reason": "The same data as GetAtsiskaitymaiUzDok as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetAtsiskaitymoTerm": {
+   "operation": "get_atsiskaitymo_term",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetAtsiskaitymoTermXml": {
+   "operation": "get_atsiskaitymo_term",
+   "reason": "The same data as GetAtsiskaitymoTerm as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetAttachedDocument": {
+   "operation": "attached_documents",
+   "reason": "The Pure interface's name of GetAttachedDocuments.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:GetAttachedDocuments": {
+   "operation": "attached_documents",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:GetAutoReport": {
+   "operation": "auto_report",
+   "reason": "",
+   "sources": [
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:GetAutoReportsList": {
+   "operation": "auto_reports_list",
+   "reason": "",
+   "sources": [
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:GetDescriptions": {
+   "operation": "descriptions_clients",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:GetEinamiejiLikuciai": {
+   "operation": "get_einamieji_likuciai",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:GetEinamiejiLikuciaiExt": {
+   "operation": "get_einamieji_likuciai_ext",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetEinamiejiLikuciaiExtSuKainom": {
+   "operation": "get_einamieji_likuciai_ext_su_kainom",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:GetEinamiejiLikuciaiExtSuKainomXml": {
+   "operation": "get_einamieji_likuciai_ext_su_kainom",
+   "reason": "The same data as GetEinamiejiLikuciaiExtSuKainom as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:GetEinamiejiLikuciaiExtXml": {
+   "operation": "get_einamieji_likuciai_ext",
+   "reason": "The same data as GetEinamiejiLikuciaiExt as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetEinamiejiLikuciaiGrp": {
+   "operation": "get_einamieji_likuciai_grp",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetEinamiejiLikuciaiGrpXml": {
+   "operation": "get_einamieji_likuciai_grp",
+   "reason": "The same data as GetEinamiejiLikuciaiGrp as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetEinamiejiLikuciaiSandelyje": {
+   "operation": "get_einamieji_likuciai",
+   "reason": "Removed by the manual's revision 4; GetEinamiejiLikuciai takes the warehouse instead.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:GetEinamiejiLikuciaiXml": {
+   "operation": "get_einamieji_likuciai",
+   "reason": "The same data as GetEinamiejiLikuciai as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetFvsUser": {
+   "operation": null,
+   "reason": "Not offered: it takes another Finvalda user's name and password as parameters, and a workflow input is no place for a password. The connection's own user is checked by Test the connection.",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetInvoicesRelatedToCustomer": {
+   "operation": "invoices_related_to_customer",
+   "reason": "",
+   "sources": [
+    "postman"
+   ]
+  },
+  "method:GetKliPrekPasNuolPapKain": {
+   "operation": "get_kli_prek_pas_nuol_pap_kain",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKliPrekPasNuolPapKainXml": {
+   "operation": "get_kli_prek_pas_nuol_pap_kain",
+   "reason": "The same data as GetKliPrekPasNuolPapKain as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKliPrekPasRusNuolPapKain": {
+   "operation": "get_kli_prek_pas_rus_nuol_pap_kain",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKliPrekPasRusNuolPapKainXml": {
+   "operation": "get_kli_prek_pas_rus_nuol_pap_kain",
+   "reason": "The same data as GetKliPrekPasRusNuolPapKain as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKliRusPrekPasNuolPapKain": {
+   "operation": "get_kli_rus_prek_pas_nuol_pap_kain",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKliRusPrekPasNuolPapKainXml": {
+   "operation": "get_kli_rus_prek_pas_nuol_pap_kain",
+   "reason": "The same data as GetKliRusPrekPasNuolPapKain as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKliRusPrekPasRusNuolPapKain": {
+   "operation": "get_kli_rus_prek_pas_rus_nuol_pap_kain",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKliRusPrekPasRusNuolPapKainXml": {
+   "operation": "get_kli_rus_prek_pas_rus_nuol_pap_kain",
+   "reason": "The same data as GetKliRusPrekPasRusNuolPapKain as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientas": {
+   "operation": "get_klientas",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientasEMail": {
+   "operation": "get_klientas_e_mail",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:GetKlientoSaskaitas": {
+   "operation": "get_kliento_saskaitas",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientoSaskaitasXml": {
+   "operation": "get_kliento_saskaitas",
+   "reason": "The same data as GetKlientoSaskaitas as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPaslauguNuol": {
+   "operation": "get_klientu_paslaugu_nuol",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPaslauguNuolXml": {
+   "operation": "get_klientu_paslaugu_nuol",
+   "reason": "The same data as GetKlientuPaslauguNuol as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPaslauguPapKainas": {
+   "operation": "get_klientu_paslaugu_pap_kainas",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPaslauguPapKainasXml": {
+   "operation": "get_klientu_paslaugu_pap_kainas",
+   "reason": "The same data as GetKlientuPaslauguPapKainas as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPaslauguRusNuol": {
+   "operation": "get_klientu_paslaugu_rus_nuol",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPaslauguRusNuolXml": {
+   "operation": "get_klientu_paslaugu_rus_nuol",
+   "reason": "The same data as GetKlientuPaslauguRusNuol as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPaslauguRusPapKainas": {
+   "operation": "get_klientu_paslaugu_rus_pap_kainas",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPaslauguRusPapKainasXml": {
+   "operation": "get_klientu_paslaugu_rus_pap_kainas",
+   "reason": "The same data as GetKlientuPaslauguRusPapKainas as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPrekiuNuol": {
+   "operation": "get_klientu_prekiu_nuol",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPrekiuNuolXml": {
+   "operation": "get_klientu_prekiu_nuol",
+   "reason": "The same data as GetKlientuPrekiuNuol as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPrekiuPapKainas": {
+   "operation": "get_klientu_prekiu_pap_kainas",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPrekiuPapKainasXml": {
+   "operation": "get_klientu_prekiu_pap_kainas",
+   "reason": "The same data as GetKlientuPrekiuPapKainas as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPrekiuRusNuol": {
+   "operation": "get_klientu_prekiu_rus_nuol",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPrekiuRusNuolXml": {
+   "operation": "get_klientu_prekiu_rus_nuol",
+   "reason": "The same data as GetKlientuPrekiuRusNuol as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPrekiuRusPapKainas": {
+   "operation": "get_klientu_prekiu_rus_pap_kainas",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuPrekiuRusPapKainasXml": {
+   "operation": "get_klientu_prekiu_rus_pap_kainas",
+   "reason": "The same data as GetKlientuPrekiuRusPapKainas as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPaslauguNuol": {
+   "operation": "get_klientu_rus_paslaugu_nuol",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPaslauguNuolXml": {
+   "operation": "get_klientu_rus_paslaugu_nuol",
+   "reason": "The same data as GetKlientuRusPaslauguNuol as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPaslauguPapKainas": {
+   "operation": "get_klientu_rus_paslaugu_pap_kainas",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPaslauguPapKainasXml": {
+   "operation": "get_klientu_rus_paslaugu_pap_kainas",
+   "reason": "The same data as GetKlientuRusPaslauguPapKainas as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPaslauguRusNuol": {
+   "operation": "get_klientu_rus_paslaugu_rus_nuol",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPaslauguRusNuolXml": {
+   "operation": "get_klientu_rus_paslaugu_rus_nuol",
+   "reason": "The same data as GetKlientuRusPaslauguRusNuol as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPaslauguRusPapKainas": {
+   "operation": "get_klientu_rus_paslaugu_rus_pap_kainas",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPaslauguRusPapKainasXml": {
+   "operation": "get_klientu_rus_paslaugu_rus_pap_kainas",
+   "reason": "The same data as GetKlientuRusPaslauguRusPapKainas as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPrekiuNuol": {
+   "operation": "get_klientu_rus_prekiu_nuol",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPrekiuNuolXml": {
+   "operation": "get_klientu_rus_prekiu_nuol",
+   "reason": "The same data as GetKlientuRusPrekiuNuol as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPrekiuPapKainas": {
+   "operation": "get_klientu_rus_prekiu_pap_kainas",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPrekiuPapKainasXml": {
+   "operation": "get_klientu_rus_prekiu_pap_kainas",
+   "reason": "The same data as GetKlientuRusPrekiuPapKainas as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPrekiuRusNuol": {
+   "operation": "get_klientu_rus_prekiu_rus_nuol",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPrekiuRusNuolXml": {
+   "operation": "get_klientu_rus_prekiu_rus_nuol",
+   "reason": "The same data as GetKlientuRusPrekiuRusNuol as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPrekiuRusPapKainas": {
+   "operation": "get_klientu_rus_prekiu_rus_pap_kainas",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusPrekiuRusPapKainasXml": {
+   "operation": "get_klientu_rus_prekiu_rus_pap_kainas",
+   "reason": "The same data as GetKlientuRusPrekiuRusPapKainas as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusisPozymius": {
+   "operation": "get_klientu_rusis_pozymius",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuRusisPozymiusXml": {
+   "operation": "get_klientu_rusis_pozymius",
+   "reason": "The same data as GetKlientuRusisPozymius as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientuSet": {
+   "operation": "get_klientus_set",
+   "reason": "A misspelling of GetKlientusSet in the revision history.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:GetKlientus": {
+   "operation": "get_klientus",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientusRusiesSudeti": {
+   "operation": "get_klientus_rusies_sudeti",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientusRusiesSudetiXml": {
+   "operation": "get_klientus_rusies_sudeti",
+   "reason": "The same data as GetKlientusRusiesSudeti as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetKlientusSet": {
+   "operation": "get_klientus_set",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:GetKlientusSetXml": {
+   "operation": "get_klientus_set",
+   "reason": "The same data as GetKlientusSet as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetMatavimoVienetus": {
+   "operation": "get_matavimo_vienetus",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetMatavimoVienetusXml": {
+   "operation": "get_matavimo_vienetus",
+   "reason": "The same data as GetMatavimoVienetus as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:GetMokeciai": {
+   "operation": "get_mokesciai",
+   "reason": "A misspelling of GetMokesciai in a signature.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:GetMokesciai": {
+   "operation": "get_mokesciai",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetMokesciaiXml": {
+   "operation": "get_mokesciai",
+   "reason": "The same data as GetMokesciai as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetNeapmoketiKliDok": {
+   "operation": "get_neapmoketi_kli_dok",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetNeapmoketiKliDokXml": {
+   "operation": "get_neapmoketi_kli_dok",
+   "reason": "The same data as GetNeapmoketiKliDok as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai1Set": {
+   "operation": "get_objektai1_set",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai1SetXml": {
+   "operation": "get_objektai1_set",
+   "reason": "The same data as GetObjektai1Set as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai2Set": {
+   "operation": "get_objektai2_set",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai2SetXml": {
+   "operation": "get_objektai2_set",
+   "reason": "The same data as GetObjektai2Set as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai3Set": {
+   "operation": "get_objektai3_set",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai3SetXml": {
+   "operation": "get_objektai3_set",
+   "reason": "The same data as GetObjektai3Set as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai4Set": {
+   "operation": "get_objektai4_set",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai4SetXml": {
+   "operation": "get_objektai4_set",
+   "reason": "The same data as GetObjektai4Set as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai5Set": {
+   "operation": "get_objektai5_set",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai5SetXml": {
+   "operation": "get_objektai5_set",
+   "reason": "The same data as GetObjektai5Set as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai6Set": {
+   "operation": "get_objektai6_set",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektai6SetXml": {
+   "operation": "get_objektai6_set",
+   "reason": "The same data as GetObjektai6Set as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektas1": {
+   "operation": "get_objektas1",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektas2": {
+   "operation": "get_objektas2",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektas3": {
+   "operation": "get_objektas3",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektas4": {
+   "operation": "get_objektas4",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektas5": {
+   "operation": "get_objektas5",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetObjektas6": {
+   "operation": "get_objektas6",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetOperations": {
+   "operation": "operations_sales",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:GetPalsaugosSet": {
+   "operation": "get_paslaugos_set",
+   "reason": "A misspelling of GetPaslaugosSet in a signature.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:GetPardPrekPerPerioda": {
+   "operation": "get_pard_prek_per_perioda",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPardPrekPerPeriodaXml": {
+   "operation": "get_pard_prek_per_perioda",
+   "reason": "The same data as GetPardPrekPerPerioda as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPaslauga": {
+   "operation": "get_paslauga",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPaslaugos": {
+   "operation": "get_paslaugos",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPaslaugosSet": {
+   "operation": "get_paslaugos_set",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:GetPaslaugosSetXml": {
+   "operation": "get_paslaugos_set",
+   "reason": "The same data as GetPaslaugosSet as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPaslauguRusiesSudeti": {
+   "operation": "get_paslaugu_rusies_sudeti",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPaslauguRusiesSudetiXml": {
+   "operation": "get_paslaugu_rusies_sudeti",
+   "reason": "The same data as GetPaslauguRusiesSudeti as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPaslauguRusisPozymius": {
+   "operation": "get_paslaugu_rusis_pozymius",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPaslauguRusisPozymiusXml": {
+   "operation": "get_paslaugu_rusis_pozymius",
+   "reason": "The same data as GetPaslauguRusisPozymius as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPreke": {
+   "operation": "get_preke",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekes": {
+   "operation": "get_prekes",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekesImage": {
+   "operation": "product_image",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekesIstorija": {
+   "operation": "get_prekes_istorija",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekesIstorijaXml": {
+   "operation": "get_prekes_istorija",
+   "reason": "The same data as GetPrekesIstorija as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekesSandelyje": {
+   "operation": "get_prekes_sandelyje",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekesSandelyjeOrder": {
+   "operation": "get_prekes_sandelyje_order",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:GetPrekesSet": {
+   "operation": "get_prekes_set",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:GetPrekesSetExt": {
+   "operation": "get_prekes_set_ext",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekesSetExtXml": {
+   "operation": "get_prekes_set_ext",
+   "reason": "The same data as GetPrekesSetExt as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekesSetXml": {
+   "operation": "get_prekes_set",
+   "reason": "The same data as GetPrekesSet as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekiuRusiesSudeti": {
+   "operation": "get_prekiu_rusies_sudeti",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekiuRusiesSudetiXml": {
+   "operation": "get_prekiu_rusies_sudeti",
+   "reason": "The same data as GetPrekiuRusiesSudeti as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekiuRusisPozymius": {
+   "operation": "get_prekiu_rusis_pozymius",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:GetPrekiuRusisPozymiusXml": {
+   "operation": "get_prekiu_rusis_pozymius",
+   "reason": "The same data as GetPrekiuRusisPozymius as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekiuRusiuGrupes": {
+   "operation": "get_prekiu_rusiu_grupes",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekiuRusiuGrupesSudeti": {
+   "operation": "get_prekiu_rusiu_grupes_sudeti",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekiuRusiuGrupesSudetiXml": {
+   "operation": "get_prekiu_rusiu_grupes_sudeti",
+   "reason": "The same data as GetPrekiuRusiuGrupesSudeti as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetPrekiuRusiuGrupesXml": {
+   "operation": "get_prekiu_rusiu_grupes",
+   "reason": "The same data as GetPrekiuRusiuGrupes as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetRecommendedPrice": {
+   "operation": "recommended_price",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:GetSandelius": {
+   "operation": "get_sandelius",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetSandeliusXml": {
+   "operation": "get_sandelius",
+   "reason": "The same data as GetSandelius as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetUVMPardRAnuliuoti": {
+   "operation": "get_uvm_pard_r_anuliuoti",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetUVMPardRAnuliuotiXml": {
+   "operation": "get_uvm_pard_r_anuliuoti",
+   "reason": "The same data as GetUVMPardRAnuliuoti as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetUVMPardRBusena": {
+   "operation": "get_uvm_pard_r_busena",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetUVMPardRIvykdyti": {
+   "operation": "get_uvm_pard_r_ivykdyti",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetUVMPardRIvykdytiXml": {
+   "operation": "get_uvm_pard_r_ivykdyti",
+   "reason": "The same data as GetUVMPardRIvykdyti as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetUVMPardRNeivykdyti": {
+   "operation": "get_uvm_pard_r_neivykdyti",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetUVMPardRNeivykdytiXml": {
+   "operation": "get_uvm_pard_r_neivykdyti",
+   "reason": "The same data as GetUVMPardRNeivykdyti as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual list",
+    "manual text"
+   ]
+  },
+  "method:GetUserPermissions": {
+   "operation": "user_permissions",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:GetUzsakytasPrekes": {
+   "operation": "call_method",
+   "reason": "Named only in the manual's revision history (revision 13), with no section and no parameters: reachable through Call a Finvalda method.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:GetVeiklaPagalObjektus": {
+   "operation": "get_veikla_pagal_objektus",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:GetVeiklaPagalObjektusXml": {
+   "operation": "get_veikla_pagal_objektus",
+   "reason": "The same data as GetVeiklaPagalObjektus as an XML string; that step returns it as JSON.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:InsertDocument": {
+   "operation": "insert_document",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text"
+   ]
+  },
+  "method:InsertNew": {
+   "operation": "insert_operation",
+   "reason": "Short for InsertNewOperation in the revision history.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:InsertNewItem": {
+   "operation": "insert_item",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:InsertNewOperation": {
+   "operation": "insert_operation",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual list",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:IsLocked": {
+   "operation": "is_operation_locked",
+   "reason": "The answer field of IsOperationLocked, not a method.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:IsOperationLocked": {
+   "operation": "is_operation_locked",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:IsOperatonLocked": {
+   "operation": "is_operation_locked",
+   "reason": "A misspelling of IsOperationLocked in the revision history.",
+   "sources": [
+    "manual text"
+   ]
+  },
+  "method:LockOperation": {
+   "operation": "lock_operation",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:MakeInvoice": {
+   "operation": "make_invoice",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:MakeReport": {
+   "operation": "make_report",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:UnLockOperation": {
+   "operation": "unlock_operation",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text",
+    "postman"
+   ]
+  },
+  "method:UpdateOperation": {
+   "operation": "update_operation",
+   "reason": "",
+   "sources": [
+    "manual",
+    "manual text",
+    "postman"
+   ]
+  }
+ }
+}
