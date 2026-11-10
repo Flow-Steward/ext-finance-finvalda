@@ -105,29 +105,6 @@ none; the **Finvalda API** page lists each step's inputs and results with their 
 - **The password stays secret.** It travels only in the header the web service requires and is
   removed from every answer before it is read.
 
-## Limits of 0.1.0
-
-No Finvalda server was available while version 0.1.0 was built. The steps follow Finvalda's manual
-(revision 110) and its published Postman collection and are tested against answers recorded from
-them; they have **not been run against a live Finvalda**.
-
-What to check first on a live server:
-
-- the operation lists' `client` column holds the client's code (the Postman example of Sales shows
-  it so); the purchase and payment steps find earlier documents by it;
-- the form of the answers of the older methods that return one record of a class (GetKlientas,
-  GetPreke …) — as an object, or as XML text, which is then returned as it came;
-- `/Date(ms)/` times without an offset are read as Lithuanian local time;
-- whether the operation amount (`amount`) includes VAT and is in the invoice's currency; a rerun of
-  an invoice step accepts either reading;
-- Invoices related to a client sends the client as `sKlientoKodas`, a name from a published client
-  of the web service, not from Finvalda's documents;
-- where a published client reports a parameter name that differs from the manual (`sSandKod` for
-  `sSanKod`; `tDataNuo`/`tDataIki` for `tNuo`/`tIki`), the step sends both names.
-
-Register payment stops with a conflict when the client already has a payment with that document
-number: two payments under one bank statement number need a document number each.
-
 ## Installing and developing
 
 Requirements: Flow Steward Core with the extension host contract `extension_host_v2`; the
