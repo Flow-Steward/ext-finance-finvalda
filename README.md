@@ -158,9 +158,8 @@ Neither source is committed — only the facts extracted from them
 `FINVALDA_MANUAL` (the manual as Markdown) and `FINVALDA_POSTMAN` (the Postman collection's JSON
 export) name the pinned copies.
 
-## License, support and links
+## Support and links
 
-- License: no license has been chosen for this repository yet.
 - Support and issues: <https://github.com/Flow-Steward/ext-finance-finvalda/issues>
 - Changes: [CHANGELOG.md](CHANGELOG.md)
 - Finvalda's web service reference (Postman):

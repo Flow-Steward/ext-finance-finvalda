@@ -252,7 +252,9 @@ def test_prices_keep_only_the_codes_asked_for() -> None:
             ),
         ]
     )
-    result = run(fake, "product_prices", {"product_codes": ["P1"], "client_code": "K1"})["result"]
+    result = run(fake, "product_prices", {"product_codes": ["P1", "P2"], "client_code": "K1"})[
+        "result"
+    ]
     assert [i["code"] for i in result["items"]] == ["P1"]
     assert [(p["client_code"], p["code"]) for p in result["client_prices"]] == [("K1", "P1")]
 

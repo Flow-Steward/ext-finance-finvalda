@@ -196,6 +196,7 @@ def checked_rows(
     a warning; a row that is not a record is still an error.
     """
     out: list[dict[str, Any]] = []
+    without: dict[str, int] = {}
     for row in rows:
         if not isinstance(row, Mapping):
             raise errors.no_effect(
@@ -212,8 +213,12 @@ def checked_rows(
                 "nothing was written",
             )
         if missing:
-            warn(f"Finvalda's {what} answer holds a row without its {', '.join(missing)}")
+            key = ", ".join(missing)
+            without[key] = without.get(key, 0) + 1
         out.append(dict(row))
+    # One warning per call, so the rows cannot crowd out the step's other warnings.
+    for key, count in without.items():
+        warn(f"Finvalda's {what} answer holds {count} row(s) without its {key}")
     return out
 
 
@@ -237,7 +242,7 @@ def read_list(
     limit: int,
     max_pages: int,
     meter: budget.Meter | None = None,
-    strict: bool = False,
+    strict: bool = True,
 ) -> tuple[list[dict[str, Any]], bool]:
     """Rows of a GetDescriptions type and whether more may follow.
 
@@ -302,9 +307,10 @@ def operations_of(
     conditions: Mapping[str, Any],
     columns: list[str] | None = None,
     *,
-    strict: bool = False,
+    strict: bool = True,
 ) -> list[dict[str, Any]]:
-    """Operations of a class; ``strict`` for a lookup whose result decides a write."""
+    """Operations of a class; ``strict`` (the default) for a lookup whose result
+    decides a write, False for a read."""
     columns = _with_identity(columns, _OPERATION_IDENTITY)
     params: dict[str, Any] = {"OpClass": op_class, "fullOp": False, "filter": dict(conditions)}
     if columns:
@@ -339,7 +345,7 @@ def client_code_of(context: Any, inputs: Mapping[str, Any]) -> str:
             errors.CONFLICT,
             f"{len(rows)} Finvalda clients have company code {company}; give client_code",
         )
-    return str(field(rows[0], "code"))
+    return row_code(rows[0])
 
 
 def insert_item(context: Any, cls: str, fields: dict[str, Any], inputs: Mapping[str, Any]) -> None:

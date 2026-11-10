@@ -16,6 +16,7 @@ from ..rows import op_result
 from ..transport import dumps_json
 from ..values import CENT
 from .common import (
+    operation_identity,
     Progress,
     _best_effort,
     _op_number,
@@ -48,8 +49,13 @@ SETTLE_DOCUMENTS = 3
 
 
 def _identity(row: Mapping[str, Any]) -> str:
-    """Journal and number of an operation row (a strict lookup guarantees both)."""
-    return f"{field(row, 'journal')} #{_op_number(row)}"
+    """Journal and number of an operation row, as safe text (a strict lookup
+    guarantees both; a number that is not whole is shown as Finvalda sent it)."""
+    found = operation_identity(row, "")
+    number = found["op_number"]
+    if number is None:
+        number = errors.safe_text(str(field(row, "op_number")), 20)
+    return f"{found['journal']} #{number}"
 
 
 def payment_body(inputs: Mapping[str, Any], client: str) -> tuple[str, str, dict[str, Any]]:

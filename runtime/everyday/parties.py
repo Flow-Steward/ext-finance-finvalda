@@ -91,7 +91,7 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
                 raise errors.no_effect(
                     errors.CONFLICT,
                     f"No Finvalda client has code {values['code']}, but client "
-                    f"{field(record, 'code')} has {matched_by} {wanted}; nothing was written. "
+                    f"{row_code(record)} has {matched_by} {wanted}; nothing was written. "
                     "Check the client in Finvalda and give its code, or another "
                     f"{matched_by}",
                 )
@@ -103,7 +103,7 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
                 if values[other] and found and not _same(found, values[other]):
                     raise errors.no_effect(
                         errors.CONFLICT,
-                        f"Client {field(record, 'code')} has {other} {found}, not {values[other]}",
+                        f"Client {row_code(record)} has {other} {found}, not {values[other]}",
                     )
             return {
                 "client_code": row_code(record),
@@ -169,7 +169,7 @@ def barcode_owners(rows: list[dict[str, Any]], barcode: str) -> list[str]:
     """
     owners: set[str] = set()
     for row in rows:
-        code = str(field(row, "code") or field(row, "product") or "").strip()
+        code = row_code(row, "Products")
         values = {
             str(v).strip()
             for k, v in row.items()

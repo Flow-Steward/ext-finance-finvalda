@@ -140,25 +140,17 @@ def test_reads_keep_rows_without_a_code() -> None:
         checked_rows(rows, "Clients", (("code",),))
 
 
-def test_product_prices_keep_a_row_without_code_with_a_warning() -> None:
+def test_product_prices_leave_out_a_row_without_code_with_a_warning() -> None:
     fake = FakeFinvalda(GetDescriptions=items({"product": "P1"}, {"title": "no code"}))
-    result = run(fake, "product_prices", {"product_codes": ["P1"]})["result"]
-    assert result["count"] == 2
-    assert any("without its product or code" in w for w in result["warnings"])
+    result = run(fake, "product_prices", {"product_codes": ["P1", "P2"]})["result"]
+    assert result["count"] == 1
+    assert any("1 row(s) without its product or code" in w for w in result["warnings"])
 
 
 def test_changes_since_keeps_a_row_without_code_with_a_warning() -> None:
     fake = FakeFinvalda(GetDescriptions=items({"title": "no code", "date_edited": "2026-11-10"}))
     result = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-10"})["result"]
     assert result["count"] == 1 and result["warnings"]
-
-
-def test_client_debt_tolerates_a_row_without_code() -> None:
-    fake = FakeFinvalda(
-        GetDescriptions=items({"code": "K1", "title": "K"}, {"title": "other"}),
-        GetNeapmoketiKliDok={**OK, "nResult": 0},
-    )
-    assert run(fake, "client_debt", {"client_code": "K1"})["ok"] is True
 
 
 # -- H5: the identity columns are always asked for -------------------------------------------

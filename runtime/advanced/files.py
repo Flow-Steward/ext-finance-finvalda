@@ -378,9 +378,6 @@ def attached_files(data: Mapping[str, Any]) -> list[dict[str, Any]]:
     return files
 
 
-_HEX = re.compile(r"[0-9A-Fa-f]*")
-
-
 def attached_content(attached: Mapping[str, Any]) -> bytes:
     """The bytes of an attached file (hex in GetAttachedDocument's answer)."""
     try:
@@ -396,14 +393,9 @@ def attached_content(attached: Mapping[str, Any]) -> bytes:
 def same_content(attached: Mapping[str, Any], content: bytes) -> bool:
     """Whether an attached file holds exactly ``content``.
 
-    Content that is not hex is invalid_response whatever its length; otherwise the
-    lengths are compared before anything is decoded.
+    The hex is decoded as Finvalda sends it (``bytes.fromhex`` takes spaces and
+    line breaks); content that is not hex is invalid_response.
     """
-    data = attached["data"]
-    if len(data) % 2 or not _HEX.fullmatch(data):
-        attached_content(attached)  # raises invalid_response
-    if len(data) != 2 * len(content):
-        return False
     return attached_content(attached) == content
 
 

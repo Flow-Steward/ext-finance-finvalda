@@ -36,7 +36,7 @@ from .common import (
 
 def test_connection_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     started = context.clock()
-    rows, _more = read_list(context, "Clients", {}, ["code"], limit=1, max_pages=1)
+    rows, _more = read_list(context, "Clients", {}, ["code"], limit=1, max_pages=1, strict=False)
     warnings = []
     if not context.connection.fin_user:
         warnings.append(
@@ -127,24 +127,26 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         "vat_percent",
     ]
     wanted = {c.upper() for c in codes}
-    # A read: a row without its code is kept, with a warning (checked_rows); a row
-    # of another product is left out.
-    rows = [
-        r
+    found = [
+        (row_code(r, "Products").upper(), r)
         for r in describe(context, "Products", {"Codes": codes}, columns, limit=500, strict=False)
-        if not row_code(r, "Products") or row_code(r, "Products").upper() in wanted
     ]
-    if len([r for r in rows if row_code(r, "Products")]) > len(codes):
+    # Every row counts: had Finvalda ignored Codes, rows without a code would be
+    # other products, not prices of these.
+    if len(found) > len(codes):
         raise errors.no_effect(
             errors.INVALID_RESPONSE,
             "Finvalda returned more products than were asked for; nothing is passed on",
         )
+    # A row without its code is no price of the products asked for: left out (and
+    # warned once, by checked_rows); so is a row of another product.
+    rows = [r for code, r in found if code in wanted]
     items = [shape("product_price", r) for r in rows]
     client_prices: list[Any] = []
     client = text("client_code", inputs, 15)
     if client:
-        client_prices = [
-            r
+        prices = [
+            (row_code(r, "Prices").upper(), r)
             for r in describe(
                 context,
                 "Prices",
@@ -154,9 +156,13 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
                 max_pages=5,
                 strict=False,
             )
-            # Only the prices of the codes asked for (or of no code, warned), of this client.
-            if (not row_code(r, "Prices") or row_code(r, "Prices").upper() in wanted)
-            and _same(field(r, "client") or client, client)
+        ]
+        # Only the prices of the codes asked for, of this client; a row without its
+        # code is left out (warned once).
+        client_prices = [
+            r
+            for code, r in prices
+            if code in wanted and _same(field(r, "client") or client, client)
         ]
     return {
         "items": items,
@@ -175,9 +181,9 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             "Clients",
             {"Codes": [client]},
             ["code", "title", "debt", "current_debt"],
-            strict=False,
         )
-        if _same(field(r, "code"), client)
+        # Strict: a row without its code is invalid_response, never "no such client".
+        if _same(row_code(r), client)
     ]
     if not rows:
         raise errors.no_effect(errors.NOT_FOUND, f"Finvalda has no client {client}")
@@ -244,8 +250,7 @@ CHANGES_MAX_LIMIT = 300
 
 def _change_key(row: Mapping[str, Any]) -> tuple[str, str, int]:
     """A fixed order for the pages: by code, or by journal and number."""
-    code = str(field(row, "code") or field(row, "product") or "")
-    return (code, str(field(row, "journal") or ""), _op_number(row) or 0)
+    return (row_code(row, "Products"), str(field(row, "journal") or ""), _op_number(row) or 0)
 
 
 def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
@@ -280,6 +285,7 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             columns,
             limit=1000,
             max_pages=CHANGES_MAX_ROWS // 1000,
+            strict=False,
         )
         if more:
             raise errors.no_effect(
@@ -288,7 +294,9 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
                 "since, or Export a list to a file with the EditedFrom filter",
             )
     else:
-        rows = operations_of(context, name, {"DateEditedFrom": day}, OPERATION_COLUMNS)
+        rows = operations_of(
+            context, name, {"DateEditedFrom": day}, OPERATION_COLUMNS, strict=False
+        )
     ordered = sorted(rows, key=_change_key)
     start = (page - 1) * limit
     chosen = ordered[start : start + limit]
