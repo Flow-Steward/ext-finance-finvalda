@@ -1,9 +1,10 @@
 """Every name Finvalda documents is offered by a step, or is listed with the reason it is not.
 
 The reference (``tests/reference/fvs_reference.json``) is extracted from the
-pinned Postman collection (committed) and the pinned manual (by SHA-256). When
-the manual is available (``FINVALDA_MANUAL`` names it), the extraction is run
-again and must give the committed reference.
+pinned Postman collection and the pinned manual (both by SHA-256; neither is
+committed). When a source is available (``FINVALDA_POSTMAN`` and
+``FINVALDA_MANUAL`` name the copies), its part of the extraction is run again and
+must give the committed reference.
 """
 
 from __future__ import annotations
@@ -30,17 +31,18 @@ REF = json.loads((REFERENCE / "fvs_reference.json").read_text("utf-8"))
 
 
 def test_sources_are_the_pinned_ones() -> None:
-    postman = REFERENCE / "sources" / "finvalda_postman_collection.json"
-    assert hashlib.sha256(postman.read_bytes()).hexdigest() == extract_reference.POSTMAN_SHA256
     assert REF["sources"]["postman"]["sha256"] == extract_reference.POSTMAN_SHA256
     assert REF["sources"]["manual"]["sha256"] == extract_reference.MANUAL_SHA256
     assert REF["manual"]["meta"]["revision"] == "110"
 
 
+@pytest.mark.skipif(
+    not os.environ.get("FINVALDA_POSTMAN"), reason="the Postman collection is not committed"
+)
 def test_postman_part_of_the_reference_is_current() -> None:
-    data = json.loads(
-        (REFERENCE / "sources" / "finvalda_postman_collection.json").read_text("utf-8")
-    )
+    postman = Path(os.environ["FINVALDA_POSTMAN"])
+    assert hashlib.sha256(postman.read_bytes()).hexdigest() == extract_reference.POSTMAN_SHA256
+    data = json.loads(postman.read_text("utf-8"))
     assert extract_reference.parse_postman(data) == REF["postman"]
 
 

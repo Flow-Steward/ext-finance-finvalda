@@ -5,3 +5,4 @@ dist/
 logs/
 .mypy_cache/
 .ruff_cache/
+tests/reference/sources/

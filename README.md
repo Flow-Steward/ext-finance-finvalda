@@ -111,7 +111,7 @@ Results give every number Finvalda returns as exact decimal text.
 From the extension folder:
 
 ```bash
-python3 tests/reference/extract_reference.py <FVS_Webservice.md>   # re-extract the reference
+python3 tests/reference/extract_reference.py <FVS_Webservice.md> <collection.json>  # re-extract
 python3 tests/reference/build_contracts.py                         # regenerate contracts and pages
 ```
 
@@ -124,5 +124,8 @@ EXT=/path/to/ext-finance-finvalda
 ./flow-steward extensions validate flowsteward.finvalda --root <bundle folder> --health --marketplace
 ```
 
-`tests/test_reference.py` re-extracts the manual and compares it with the committed reference when
-`FINVALDA_MANUAL` names the pinned copy (SHA-256 in `tests/reference/extract_reference.py`).
+Neither source is committed, only the facts extracted from them (`tests/reference/fvs_reference.json`).
+`tests/test_reference.py` re-extracts each source and compares it with the committed reference when
+`FINVALDA_MANUAL` and `FINVALDA_POSTMAN` name the pinned copies (SHA-256 in
+`tests/reference/extract_reference.py`): the manual as Markdown, the Postman collection as its JSON
+export.

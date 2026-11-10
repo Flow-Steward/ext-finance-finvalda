@@ -4,8 +4,8 @@
 Two sources, both pinned by SHA-256:
 
 * Finvalda's published Postman collection "Finvaldos webservisas V2"
-  (https://documenter.getpostman.com/view/7208231/2s8YmRMLvd), committed as
-  ``sources/finvalda_postman_collection.json``;
+  (https://documenter.getpostman.com/view/7208231/2s8YmRMLvd), exported as JSON.
+  It is not committed: only the facts extracted from it are;
 * Finvalda's manual "FVS Webserviso metodų naudojimo instrukcija", revision 110
   (2025-04-14). Finvalda gives it to customers as a Word file; the copy read here
   is the Markdown conversion published in the MIT-licensed finvalda-sdk
@@ -15,11 +15,12 @@ Two sources, both pinned by SHA-256:
 
 Run from the bundle root:
 
-    python3 tests/reference/extract_reference.py <path to FVS_Webservice.md>
+    python3 tests/reference/extract_reference.py <FVS_Webservice.md> <collection.json>
 
 ``tests/test_reference.py`` checks that the committed contracts cover every
-method and class recorded here; it re-runs this extraction when the manual is
-available (``FINVALDA_MANUAL`` names its path) and compares the result.
+method and class recorded here; it re-runs each part of this extraction when its
+source is available (``FINVALDA_MANUAL`` and ``FINVALDA_POSTMAN`` name the
+pinned copies) and compares the result.
 """
 
 from __future__ import annotations
@@ -33,7 +34,6 @@ from pathlib import Path
 from typing import Any
 
 HERE = Path(__file__).resolve().parent
-POSTMAN = HERE / "sources" / "finvalda_postman_collection.json"
 OUTPUT = HERE / "fvs_reference.json"
 
 POSTMAN_URL = "https://documenter.getpostman.com/view/7208231/2s8YmRMLvd"
@@ -424,9 +424,9 @@ def parse_postman(data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def build(manual: Path) -> dict[str, Any]:
-    if sha256(POSTMAN) != POSTMAN_SHA256:
-        raise SystemExit(f"{POSTMAN.name}: unexpected SHA-256; update POSTMAN_SHA256 on purpose")
+def build(manual: Path, postman: Path) -> dict[str, Any]:
+    if sha256(postman) != POSTMAN_SHA256:
+        raise SystemExit(f"{postman}: unexpected SHA-256; update POSTMAN_SHA256 on purpose")
     if sha256(manual) != MANUAL_SHA256:
         raise SystemExit(f"{manual}: unexpected SHA-256; update MANUAL_SHA256 on purpose")
     return {
@@ -435,7 +435,7 @@ def build(manual: Path) -> dict[str, Any]:
             "manual": {"url": MANUAL_URL, "sha256": MANUAL_SHA256},
         },
         "manual": parse_manual(manual.read_text(encoding="utf-8")),
-        "postman": parse_postman(json.loads(POSTMAN.read_text(encoding="utf-8"))),
+        "postman": parse_postman(json.loads(postman.read_text(encoding="utf-8"))),
     }
 
 
@@ -444,9 +444,9 @@ def dumps(reference: dict[str, Any]) -> str:
 
 
 def main() -> None:
-    if len(sys.argv) != 2:
-        raise SystemExit("usage: extract_reference.py <FVS_Webservice.md>")
-    reference = build(Path(sys.argv[1]))
+    if len(sys.argv) != 3:
+        raise SystemExit("usage: extract_reference.py <FVS_Webservice.md> <collection.json>")
+    reference = build(Path(sys.argv[1]), Path(sys.argv[2]))
     OUTPUT.write_text(dumps(reference), encoding="utf-8")
     manual = reference["manual"]
     print(
