@@ -1,0 +1,94 @@
+"""The rows and the saved operation in a Finvalda answer."""
+
+from __future__ import annotations
+
+import re
+from collections.abc import Mapping
+from typing import Any
+
+from . import errors
+from .fields import field
+
+
+def rows_of(data: Mapping[str, Any], *, strict: bool = True) -> list[Any]:
+    """The list of rows in a Finvalda answer.
+
+    ``strict`` (the reads everyday steps rely on, lookups before a create among
+    them): the form every read example of Finvalda's Postman collection shows,
+    ``{"AccessResult": "Success", "error": "", "items": [...]}``. No rows: an empty
+    or null ``items``, or no data key at all (the empty answer the collection shows
+    for GetInvoicesRelatedToCustomer). Any other data key is an error, never "no
+    rows": a lookup would otherwise create a record that already exists.
+
+    Not strict (the older methods, whose answers the manual describes by their
+    columns only): ``items``, or the one list the answer holds, or nothing.
+    """
+    rest = {
+        k: v
+        for k, v in data.items()
+        if str(k).lower() not in {"accessresult", "error", "serror", "nresult"}
+    }
+    items = field(rest, "items")
+    if isinstance(items, list):
+        return items
+    if not rest or (items is None and {str(k).lower() for k in rest} == {"items"}):
+        # No data key at all (as GetInvoicesRelatedToCustomer's empty example shows:
+        # AccessResult, error, nResult) or "items": null: no rows.
+        return []
+    if strict:
+        raise errors.no_effect(
+            errors.INVALID_RESPONSE,
+            "Finvalda's answer has no list of rows (items)"
+            + (": " + ", ".join(sorted(str(k) for k in rest))[:200] if rest else ""),
+        )
+    if all(value in (None, "", []) for value in rest.values()):
+        return []
+    lists = [v for v in rest.values() if isinstance(v, list)]
+    if len(lists) == 1:
+        return lists[0]
+    if len(rest) == 1:
+        (only,) = rest.values()
+        if isinstance(only, Mapping):
+            nested = [v for v in only.values() if isinstance(v, list)]
+            if len(nested) == 1:
+                return nested[0]
+            if len(only) == 1:
+                (inner,) = only.values()
+                if isinstance(inner, Mapping):
+                    return [inner]
+    return []
+
+
+def rest_of(data: Mapping[str, Any], rows: list[Any]) -> dict[str, Any] | None:
+    rest = {
+        k: v
+        for k, v in data.items()
+        if str(k).lower() not in {"accessresult", "error", "serror"} and v is not rows
+    }
+    return rest or None
+
+
+def op_result(data: Mapping[str, Any]) -> dict[str, Any]:
+    """Journal, number, series and document of a saved operation (OP_DUOMENYS)."""
+    info = field(data, "OP_DUOMENYS")
+    if not isinstance(info, Mapping):
+        text = field(data, "error") or field(data, "sError") or ""
+        info = {}
+        if isinstance(text, str) and "<OP_DUOMENYS>" in text:
+            for tag in ("SERIJA", "DOKUMENTAS", "ZURNALAS", "NUMERIS"):
+                match = re.search(rf"<{tag}>(.*?)</\s*{tag}>", text, re.S)
+                if match:
+                    info[tag] = match.group(1).strip()
+    number = field(info, "NUMERIS")
+    try:
+        op_number = int(str(number).strip()) if number not in (None, "") else None
+    except ValueError:
+        op_number = None
+    code = field(data, "nResult")
+    return {
+        "journal": errors.safe_text(field(info, "ZURNALAS"), 20) or None,
+        "op_number": op_number,
+        "series": errors.safe_text(field(info, "SERIJA"), 20) or None,
+        "document": errors.safe_text(field(info, "DOKUMENTAS"), 40) or None,
+        "finvalda_result": code if isinstance(code, int) and not isinstance(code, bool) else None,
+    }

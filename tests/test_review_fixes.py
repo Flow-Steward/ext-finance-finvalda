@@ -428,7 +428,7 @@ def test_attachment_names_keep_sales_and_purchases_apart() -> None:
         "document_file": "a",
     }
     response = run(fake, "create_purchase_invoice", inputs, files=Files(b"%PDF"))
-    from runtime.friendly import own_file_name
+    from runtime.everyday.common import own_file_name
 
     name = response["result"]["attachment_name"]
     assert name == own_file_name("purchase", "SUP", "", "AB1") and name.startswith(
@@ -537,9 +537,9 @@ def test_related_invoices_of_other_clients_are_not_passed_on() -> None:
 
 
 def test_exactly_the_page_limit_is_not_a_conflict() -> None:
-    from runtime import friendly
+    from runtime.everyday import common as friendly
     from runtime.connection import Connection
-    from runtime.operations import Context
+    from runtime.context import Context
     from runtime.transport import FinvaldaTransport
 
     connection = Connection(
@@ -767,9 +767,9 @@ def test_attachment_uses_the_read_back_operation_when_the_answer_names_none() ->
 
 
 def test_a_lookup_cut_by_the_clock_is_a_timeout() -> None:
-    from runtime import friendly
+    from runtime.everyday import common as friendly
     from runtime.connection import Connection
-    from runtime.operations import Context
+    from runtime.context import Context
     from runtime.transport import FinvaldaTransport
 
     connection = Connection(
@@ -903,7 +903,7 @@ def test_test_mode_checks_the_same_code_limit_as_the_step() -> None:
     codes = [f"P{n}" for n in range(300)]
     response = run(FakeFinvalda(), "product_prices", {"product_codes": codes})
     assert response["error_code"] == "invalid_payload"
-    from runtime import friendly
+    from runtime import everyday as friendly
 
     with pytest.raises(ExtensionError):
         friendly.validate("product_prices", {"product_codes": codes})
@@ -912,7 +912,7 @@ def test_test_mode_checks_the_same_code_limit_as_the_step() -> None:
 def test_eu_rule_without_time_zone_data(monkeypatch: pytest.MonkeyPatch) -> None:
     from datetime import datetime, timedelta, timezone
 
-    from runtime import friendly
+    from runtime import values as friendly
 
     monkeypatch.setattr(friendly, "_zone_offset", lambda moment: None)
     assert friendly._vilnius_offset(datetime(2026, 7, 1, tzinfo=timezone.utc)) == timedelta(hours=3)
@@ -949,7 +949,7 @@ def test_invoice_rerun_attaches_its_own_stored_file() -> None:
     response = run(fake, "create_sales_invoice", inputs, files=Files(b"%PDF"))
     assert response["ok"] is True, response
     assert response["result"]["created"] is False
-    from runtime.friendly import own_file_name
+    from runtime.everyday.common import own_file_name
 
     name = own_file_name("sale", "K1", "", "S-1")
     assert response["result"]["attachment_name"] == name
@@ -995,13 +995,13 @@ def test_client_debt_without_unpaid_documents() -> None:
     [(("A1", "23"), ("A", "123")), (("AB", "12"), ("", "AB12")), (("", "AB/12"), ("", "AB 12"))],
 )
 def test_own_file_names_never_meet(first: tuple[str, str], second: tuple[str, str]) -> None:
-    from runtime.friendly import own_file_name
+    from runtime.everyday.common import own_file_name
 
     assert own_file_name("sale", "K1", *first) != own_file_name("sale", "K1", *second)
 
 
 def test_too_long_own_file_name_is_refused() -> None:
-    from runtime.friendly import own_file_name
+    from runtime.everyday.common import own_file_name
 
     with pytest.raises(ExtensionError):
         own_file_name("purchase", "K" * 15, "S" * 10, "D" * 200)

@@ -305,7 +305,7 @@ def test_invoice_with_file_is_attached() -> None:
         fake, "create_sales_invoice", {**INVOICE, "document_file": "art_1"}, files=Files(b"PDF")
     )
     assert response["ok"] is True, response
-    from runtime.friendly import own_file_name
+    from runtime.everyday.common import own_file_name
 
     assert response["result"]["attachment_name"] == own_file_name("sale", "K1", "", "S-1001")
     attach = [c for c in fake.calls if c.method == "AttachDocument"][0]

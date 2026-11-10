@@ -15,7 +15,7 @@ sys.path.insert(0, str(BUNDLE_ROOT / "tests" / "reference"))
 
 import build_contracts  # noqa: E402
 
-from runtime import catalog, operations  # noqa: E402
+from runtime import advanced, catalog, limits  # noqa: E402
 from runtime.operations import neutral_result  # noqa: E402
 
 
@@ -56,7 +56,7 @@ def test_operations_match_the_runtime_registry(built) -> None:
     for spec in built["specs"]:
         runtime = spec.get("runtime")
         if runtime:
-            assert runtime["runner"] in operations.RUNNERS, spec["operation_id"]
+            assert runtime["runner"] in advanced.RUNNERS, spec["operation_id"]
 
 
 def test_neutral_test_mode_result_has_every_declared_output(built) -> None:
@@ -122,10 +122,10 @@ def test_file_inputs_and_outputs_have_grants(built) -> None:
             assert op["operation_id"] in catalog.FILE_OUTPUT_IDS
             if op["operation_id"] == "export_list":
                 assert output["binding_key"] == catalog.EXPORT_BINDING
-                assert output["content_type"] == operations.EXPORT_CONTENT_TYPE
+                assert output["content_type"] == limits.EXPORT_CONTENT_TYPE
             else:
                 assert output["binding_key"] == catalog.DOWNLOAD_BINDING
-                assert output["content_type"] == operations.DOWNLOAD_CONTENT_TYPE
+                assert output["content_type"] == limits.DOWNLOAD_CONTENT_TYPE
     file_ops = {
         op["operation_id"]
         for op in built["operations"]
