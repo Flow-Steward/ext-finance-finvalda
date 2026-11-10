@@ -42,13 +42,6 @@ def test_attach_file_with_spaced_hex_is_already_attached() -> None:
 # -- K2: rows without a code are no prices of the products asked for --------------------
 
 
-def test_prices_count_every_row_against_the_codes_asked_for() -> None:
-    rows = [{"title": f"other {n}", "sell_price1": n} for n in range(5)]
-    fake = FakeFinvalda(GetDescriptions=items({"product": "P1"}, *rows))
-    response = run(fake, "product_prices", {"product_codes": ["P1"]})
-    assert response["error_code"] == "invalid_response"
-
-
 def test_client_prices_without_a_code_are_left_out_with_one_warning() -> None:
     fake = FakeFinvalda(
         GetDescriptions=[
@@ -175,7 +168,7 @@ def test_barcode_owner_is_read_as_the_product_code() -> None:
 def test_changes_order_reads_the_product_first() -> None:
     from runtime.everyday.reads import _change_key
 
-    assert _change_key({"product": "B", "code": "A"})[0] == "B"
+    assert _change_key("Products")({"product": "B", "code": "A"})[0] == "B"
 
 
 # -- K8: an operation's identity is safe text -------------------------------------------------

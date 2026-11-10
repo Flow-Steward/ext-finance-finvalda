@@ -378,6 +378,9 @@ def attached_files(data: Mapping[str, Any]) -> list[dict[str, Any]]:
     return files
 
 
+_HEX = re.compile(r"[0-9A-Fa-f]*")
+
+
 def attached_content(attached: Mapping[str, Any]) -> bytes:
     """The bytes of an attached file (hex in GetAttachedDocument's answer)."""
     try:
@@ -393,10 +396,21 @@ def attached_content(attached: Mapping[str, Any]) -> bytes:
 def same_content(attached: Mapping[str, Any], content: bytes) -> bool:
     """Whether an attached file holds exactly ``content``.
 
-    The hex is decoded as Finvalda sends it (``bytes.fromhex`` takes spaces and
-    line breaks); content that is not hex is invalid_response.
+    The hex is read as Finvalda sends it, spaces and line breaks included; content
+    that is not hex is invalid_response; sizes are compared before anything is
+    decoded.
     """
+    compact = "".join(attached["data"].split())
+    if len(compact) % 2 or not _HEX.fullmatch(compact):
+        attached_content(attached)  # raises invalid_response
+    if len(compact) // 2 != len(content):
+        return False
     return attached_content(attached) == content
+
+
+def attached_size(attached: Mapping[str, Any]) -> int:
+    """An attached file's size in bytes, from its hex without spaces."""
+    return len("".join(attached["data"].split())) // 2
 
 
 def run_attached_documents(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
@@ -407,7 +421,7 @@ def run_attached_documents(context: Context, spec: Mapping[str, Any]) -> dict[st
     reply = context.call("GetAttachedDocument", verb="GET", query=query, mutating=False)
     files = attached_files(reply.data)
     listing = [
-        {"name": errors.safe_text(f["name"], 200), "size_bytes": len(f["data"]) // 2} for f in files
+        {"name": errors.safe_text(f["name"], 200), "size_bytes": attached_size(f)} for f in files
     ]
     result: dict[str, Any] = {
         "files": listing,

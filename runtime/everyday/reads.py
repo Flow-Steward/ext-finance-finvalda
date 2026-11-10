@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+import hashlib
+import json
+from collections.abc import Callable, Mapping
 from datetime import date as Date
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-from ..shapes import shape
+from ..shapes import shape, warn
 from .. import errors
 from ..advanced.reads import read_description_pages
 from ..errors import invalid
@@ -131,16 +133,23 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         (row_code(r, "Products").upper(), r)
         for r in describe(context, "Products", {"Codes": codes}, columns, limit=500, strict=False)
     ]
-    # Every row counts: had Finvalda ignored Codes, rows without a code would be
-    # other products, not prices of these.
-    if len(found) > len(codes):
+    # A row without its code (warned by checked_rows) or of a product not asked for
+    # is no price of these products: left out, with one warning. Two rows for one
+    # code asked for cannot be told apart: an error.
+    rows = [r for code, r in found if code in wanted]
+    other = sum(1 for code, _r in found if code and code not in wanted)
+    if other:
+        warn(f"Finvalda returned {other} row(s) of products not asked for; they are left out")
+    per_code: dict[str, int] = {}
+    for code, _r in found:
+        if code in wanted:
+            per_code[code] = per_code.get(code, 0) + 1
+    doubled = sorted(c for c, n in per_code.items() if n > 1)
+    if doubled:
         raise errors.no_effect(
             errors.INVALID_RESPONSE,
-            "Finvalda returned more products than were asked for; nothing is passed on",
+            f"Finvalda returned more than one row for product {', '.join(doubled[:5])}",
         )
-    # A row without its code is no price of the products asked for: left out (and
-    # warned once, by checked_rows); so is a row of another product.
-    rows = [r for code, r in found if code in wanted]
     items = [shape("product_price", r) for r in rows]
     client_prices: list[Any] = []
     client = text("client_code", inputs, 15)
@@ -157,13 +166,20 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
                 strict=False,
             )
         ]
-        # Only the prices of the codes asked for, of this client; a row without its
-        # code is left out (warned once).
+        # Only the prices of the codes asked for and of this client, by the row's own
+        # client column: a row without it, or of another client, is no special price
+        # of this client — left out, with one warning.
         client_prices = [
-            r
-            for code, r in prices
-            if code in wanted and _same(field(r, "client") or client, client)
+            r for code, r in prices if code in wanted and _same(field(r, "client"), client)
         ]
+        dropped = sum(
+            1 for code, r in prices if code in wanted and not _same(field(r, "client"), client)
+        )
+        if dropped:
+            warn(
+                f"Finvalda returned {dropped} price row(s) without client {client}; "
+                "they are left out"
+            )
     return {
         "items": items,
         "client_prices": [shape("client_price", r) for r in client_prices],
@@ -248,9 +264,24 @@ def _edited(row: Mapping[str, Any]) -> datetime | None:
 CHANGES_MAX_LIMIT = 300
 
 
-def _change_key(row: Mapping[str, Any]) -> tuple[str, str, int]:
-    """A fixed order for the pages: by code, or by journal and number."""
-    return (row_code(row, "Products"), str(field(row, "journal") or ""), _op_number(row) or 0)
+def _change_key(name: str) -> Callable[[Mapping[str, Any]], tuple[Any, ...]]:
+    """A fully fixed order for the pages, whatever order Finvalda answers in.
+
+    By the entity's own code, or by journal and number (the number as sent when it
+    is not whole), then by a hash of the whole row, so rows without a code or with
+    the same number still have one place.
+    """
+
+    def key(row: Mapping[str, Any]) -> tuple[Any, ...]:
+        number = _op_number(row)
+        raw = field(row, "op_number")
+        whole = (0, number, "") if number is not None else (1, 0, "" if raw is None else str(raw))
+        digest = hashlib.sha256(
+            json.dumps(row, sort_keys=True, default=str, ensure_ascii=False).encode()
+        ).hexdigest()
+        return (row_code(row, name), str(field(row, "journal") or ""), whole, digest)
+
+    return key
 
 
 def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
@@ -297,7 +328,7 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         rows = operations_of(
             context, name, {"DateEditedFrom": day}, OPERATION_COLUMNS, strict=False
         )
-    ordered = sorted(rows, key=_change_key)
+    ordered = sorted(rows, key=_change_key(name))
     start = (page - 1) * limit
     chosen = ordered[start : start + limit]
     has_more = start + limit < len(ordered)

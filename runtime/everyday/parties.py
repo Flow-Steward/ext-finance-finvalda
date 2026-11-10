@@ -11,6 +11,7 @@ from ..errors import invalid
 from ..fields import field
 from ..inputs import flag_input
 from .common import (
+    the_row,
     row_code,
     _EMAIL_RE,
     CLIENT_COLUMNS,
@@ -40,6 +41,15 @@ CLIENT_INPUTS = {
     "is_person",
     "item_parameter",
 }
+
+
+def _read_back(
+    progress: Progress, kind: str, rows: list[dict[str, Any]] | None, code: str, name: str
+) -> dict[str, Any] | None:
+    """The created record read back: the row of its code, or None when the read
+    failed (warned). Rows of other codes are an error that names what was saved."""
+    found = progress.guard(f"Reading the {kind} back", lambda: the_row(rows, code, name))
+    return shape(kind, found) if found else None
 
 
 def _client_values(inputs: Mapping[str, Any]) -> dict[str, Any]:
@@ -141,7 +151,7 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
         "client_code": values["code"],
         "created": True,
         "matched_by": None,
-        "client": shape("client", record[0]) if record else None,
+        "client": _read_back(progress, "client", record, values["code"], "Clients"),
         "warnings": warnings,
     }
 
@@ -201,7 +211,7 @@ def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
                 "product_code": code,
                 "created": False,
                 "matched_by": "code",
-                "product": shape("product", rows[0]),
+                "product": shape("product", the_row(rows, code, "Products") or {}),
                 "warnings": [],
             }
     if barcode:
@@ -215,11 +225,12 @@ def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
                     errors.CONFLICT, f"Barcode {barcode} belongs to product {codes[0]}, not {code}"
                 )
             rows = describe(context, "Products", {"Codes": codes}, PRODUCT_COLUMNS)
+            found = the_row(rows, codes[0], "Products")
             return {
                 "product_code": codes[0],
                 "created": False,
                 "matched_by": "barcode",
-                "product": shape("product", rows[0]) if rows else None,
+                "product": shape("product", found) if found else None,
                 "warnings": [],
             }
     name = text("name", inputs, 50)
@@ -252,7 +263,7 @@ def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
         "product_code": code,
         "created": True,
         "matched_by": None,
-        "product": shape("product", rows[0]) if rows else None,
+        "product": _read_back(progress, "product", rows, code, "Products"),
         "warnings": warnings,
     }
 
@@ -280,7 +291,7 @@ def service_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
         return {
             "service_code": code,
             "created": False,
-            "service": shape("service", rows[0]),
+            "service": shape("service", the_row(rows, code, "Services") or {}),
             "warnings": [],
         }
     name = text("name", inputs, 50)
@@ -310,6 +321,6 @@ def service_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     return {
         "service_code": code,
         "created": True,
-        "service": shape("service", rows[0]) if rows else None,
+        "service": _read_back(progress, "service", rows, code, "Services"),
         "warnings": warnings,
     }

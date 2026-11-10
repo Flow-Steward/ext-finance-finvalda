@@ -53,9 +53,10 @@ def _identity(row: Mapping[str, Any]) -> str:
     guarantees both; a number that is not whole is shown as Finvalda sent it)."""
     found = operation_identity(row, "")
     number = found["op_number"]
-    if number is None:
-        number = errors.safe_text(str(field(row, "op_number")), 20)
-    return f"{found['journal']} #{number}"
+    # A number that is not whole is shown as sent; the error text is made safe as a
+    # whole (ExtensionError), so it is not cleaned twice here.
+    shown = number if number is not None else field(row, "op_number")
+    return f"{found['journal'] or '?'} #{shown}"
 
 
 def payment_body(inputs: Mapping[str, Any], client: str) -> tuple[str, str, dict[str, Any]]:
