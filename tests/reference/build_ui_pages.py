@@ -34,6 +34,7 @@ BEHAVIOUR = """\
 
 - Fields of records and operations use the names of Finvalda's manual (sKodas, sPavadinimas, tData, PardDokPrekeDetEil …). They are checked against the manual before anything is sent: an unknown field, a text that is too long or a value of the wrong kind is refused.
 - Dates are YYYY-MM-DD. Amounts are exact decimals with "." as the decimal point.
+- Results give every number Finvalda returns as exact decimal text ("12.50"), never rounded through floating point.
 
 ### Writes, retries and errors
 
@@ -240,6 +241,11 @@ def coverage_page(cov: dict[str, Any], ops: list[dict[str, Any]]) -> dict[str, A
         "order management reads). Those steps send both names.",
         "- The document methods (InsertDocument, AttachDocument, GetAttachedDocument) are written as "
         "the manual's Pure examples show them.",
+        "- The everyday steps take the operation lists' client column for the client's code (as in "
+        "the Postman example of Sales, where client_code holds the company code). If a live server "
+        "shows otherwise, a purchase or payment could be registered twice: check this first.",
+        "- Invoices related to a client sends the client as sKlientoKodas, a name from a published "
+        "client, not from Finvalda; the step passes on only rows that show they belong to that client.",
     ]
     return {
         "page_id": "coverage",

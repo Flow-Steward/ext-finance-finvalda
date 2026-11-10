@@ -183,7 +183,9 @@ NUMBER = whole(
     required=True,
     minimum=1,
 )
-RECORDS = out("records", "array", "array", "The rows Finvalda returned.")
+RECORDS = out(
+    "records", "array", "array", "The rows Finvalda returned; numbers as exact decimal text."
+)
 RECORD = out("record", "object", ["object", "null"], "The first row, or null.")
 COUNT = out("count", "integer", "integer", "How many rows were returned.")
 RESPONSE = out("response", "object", ["object", "null"], "Finvalda's whole answer.")

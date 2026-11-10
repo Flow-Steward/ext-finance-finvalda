@@ -7,7 +7,6 @@ call fails, exactly what it already saved in Finvalda.
 
 from __future__ import annotations
 
-import json
 import re
 from collections.abc import Callable, Mapping
 from datetime import date as Date
@@ -20,7 +19,7 @@ from .errors import ExtensionError, invalid
 from .fields import field
 from .reference_data import CHANGE_ENTITIES, DESCRIPTION_TYPES
 from . import budget
-from .transport import DeadlineReached
+from .transport import dumps_json, DeadlineReached
 
 CENT = Decimal("0.01")
 MAX_AMOUNT = Decimal("9999999999.99")
@@ -211,8 +210,9 @@ def describe(
     max_pages: int = 5,
 ) -> list[dict[str, Any]]:
     """Every row a lookup matches; a lookup that matches more is an error, never cut short."""
-    rows, more = read_list(context, kind, conditions, columns, limit=limit, max_pages=max_pages)
-    if more:
+    # One page more than allowed tells "exactly that many" from "more".
+    rows, more = read_list(context, kind, conditions, columns, limit=limit, max_pages=max_pages + 1)
+    if more or len(rows) > limit * max_pages:
         raise errors.no_effect(
             errors.CONFLICT,
             f"More than {len(rows)} Finvalda {kind} rows match {dict(conditions)}; give a code",
@@ -770,7 +770,7 @@ def invoice_op(
         body = {
             "ItemClassName": head,
             "sParametras": parameter,
-            "xmlstring": json.dumps({head: operation}, ensure_ascii=False),
+            "xmlstring": dumps_json({head: operation}),
         }
         reply = context.call("InsertNewOperation", verb="POST", body=body, mutating=True)
         saved = ops.op_result(reply.data)
@@ -895,7 +895,9 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     document = operation["sDokumentas"]
     amount = Decimal(operation[next(k for k in operation if k.endswith("DetEil"))][0]["dSumaV"])
     invoice = text("invoice_document", inputs, 20)
-    existing = find_payment(context, op_class, client, document, amount, invoice)
+    existing = find_payment(
+        context, op_class, client, document, amount, invoice, operation["sValiuta"]
+    )
     if existing is not None:
         return {
             "journal": errors.safe_text(field(existing, "journal"), 20) or None,
@@ -910,7 +912,7 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     body = {
         "ItemClassName": head,
         "sParametras": parameter,
-        "xmlstring": json.dumps({head: operation}, ensure_ascii=False),
+        "xmlstring": dumps_json({head: operation}),
     }
     reply = context.call("InsertNewOperation", verb="POST", body=body, mutating=True)
     saved = ops.op_result(reply.data)
@@ -938,60 +940,63 @@ def _amount_of(row: Mapping[str, Any]) -> Decimal | None:
 
 
 def find_payment(
-    context: Any, op_class: str, client: str, document: str, amount: Decimal, invoice: str
+    context: Any,
+    op_class: str,
+    client: str,
+    document: str,
+    amount: Decimal,
+    invoice: str,
+    currency: str,
 ) -> dict[str, Any] | None:
     """The same payment made before, if this step already made it.
 
     One bank statement usually holds several payments of a client, so its number
-    alone is no key: a payment is the same only with the same client, statement
-    number and amount and — when it pays an invoice — a line naming that invoice.
-    When that cannot be told, the step stops instead of guessing either way.
+    alone is no key. A payment is taken as made before only when it is the one
+    payment of this client with this statement number and amount and — when it pays
+    an invoice — a line of it names that invoice. Any other match stops the step:
+    the manual's line columns (3.77) name no paid document, and the header amount may
+    be in EUR while the payment is in another currency, so a missing confirmation is
+    no proof of a different payment.
     """
     rows = same_document(context, op_class, document, client=client)
     if not rows:
         return None
-    if any(_amount_of(r) is None for r in rows):
-        raise errors.no_effect(
+
+    def stop(detail: str) -> ExtensionError:
+        return errors.no_effect(
             errors.CONFLICT,
-            f"Payment document {document} of client {client} exists in Finvalda, but its amount "
-            "could not be read; check Finvalda before registering it",
+            f"Payment document {document} of client {client} already exists in Finvalda and "
+            f"{detail}; check Finvalda — register it under another document number if it is "
+            "a different payment",
         )
+
+    if currency != "EUR":
+        raise stop("its amount cannot be compared in another currency")
+    if any(_amount_of(r) is None for r in rows):
+        raise stop("its amount could not be read")
     same_amount = [r for r in rows if _amount_of(r) == amount]
     if not same_amount:
         return None
-    if invoice:
-        confirmed, unknown = [], 0
-        for row in same_amount:
-            number = _op_number(row)
-            lines = (
-                operations_of(
-                    context,
-                    f"{op_class}Det",
-                    {"Journal": str(field(row, "journal") or ""), "OpNumber": number},
-                )
-                if number is not None
-                else []
-            )
-            if not lines:
-                unknown += 1
-            elif any(
-                _same(value, invoice)
-                for line in lines
-                for value in line.values()
-                if isinstance(value, str)
-            ):
-                confirmed.append(row)
-        if len(confirmed) == 1 and not unknown:
-            return confirmed[0]
-        if not confirmed and not unknown:
-            return None
-    elif len(same_amount) == 1:
-        return same_amount[0]
-    raise errors.no_effect(
-        errors.CONFLICT,
-        f"{len(same_amount)} payments of client {client} with document {document} and amount "
-        f"{amount} exist in Finvalda and this one cannot be told apart; check Finvalda",
+    if len(same_amount) > 1:
+        raise stop(f"{len(same_amount)} payments have the amount {amount}")
+    row = same_amount[0]
+    if not invoice:
+        return row
+    number = _op_number(row)
+    lines = (
+        operations_of(
+            context,
+            f"{op_class}Det",
+            {"Journal": str(field(row, "journal") or ""), "OpNumber": number},
+        )
+        if number is not None
+        else []
     )
+    if any(
+        _same(value, invoice) for line in lines for value in line.values() if isinstance(value, str)
+    ):
+        return row
+    raise stop(f"has the same amount, but Finvalda's answer does not show that it pays {invoice}")
 
 
 # ---------------------------------------------------------------------------

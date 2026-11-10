@@ -83,6 +83,16 @@ against a live Finvalda. Where a published client of the same web service report
 name that differs from the manual (`sSandKod` for `sSanKod`; `tDataNuo`/`tDataIki` for
 `tNuo`/`tIki`), the step sends both names.
 
+What to check first on a live server:
+
+- the operation lists' `client` column is the client's code (the Postman example of Sales shows
+  it so, with `client_code` holding the company code); the everyday purchase and payment steps
+  find earlier documents by it, so if it were otherwise they could register one twice;
+- Invoices related to a client sends the client as `sKlientoKodas` (a name from a published
+  client, not from Finvalda) and passes on only rows that show they belong to that client.
+
+Results give every number Finvalda returns as exact decimal text.
+
 ## Development
 
 From the extension folder:

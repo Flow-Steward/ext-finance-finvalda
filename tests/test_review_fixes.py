@@ -256,18 +256,25 @@ def test_same_payment_again_is_a_rerun() -> None:
     assert fake.writes() == []
 
 
-def test_same_amount_for_another_invoice_is_registered() -> None:
+def test_same_amount_without_a_line_naming_the_invoice_stops() -> None:
+    # The line columns name no paid document (manual 3.77): an unconfirmed match is
+    # no proof of a different payment, so the step stops instead of paying twice.
     row = {"order_number": "BANK-7", "client": "K1", "journal": "IPL", "op_number": 5, "amount": 99}
     fake = FakeFinvalda(
         GetOperations=[
             items(row),
-            items({"journal": "IPL", "op_number": 5, "order_number": "S-1"}),
-            items(),
-        ],
-        InsertNewOperation=saved("IPL", 6),
+            items({"journal": "IPL", "op_number": 5, "code": "X", "amount": 99}),
+        ]
     )
     response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "S-2"})
-    assert response["result"]["created"] is True, response
+    assert response["error_code"] == "conflict" and fake.writes() == []
+
+
+def test_foreign_currency_payment_with_an_existing_document_stops() -> None:
+    row = {"order_number": "BANK-7", "client": "K1", "journal": "IPL", "op_number": 5, "amount": 90}
+    fake = FakeFinvalda(GetOperations=items(row))
+    response = run(fake, "register_payment", {**PAYMENT, "currency": "USD"})
+    assert response["error_code"] == "conflict" and fake.writes() == []
 
 
 def test_undecidable_payment_stops_the_step() -> None:
@@ -306,7 +313,7 @@ def test_barcode_row_of_another_barcode_is_ignored() -> None:
 
 def test_a_lookup_that_matches_too_many_is_an_error() -> None:
     full = items(*({"code": f"K{i}", "email": "k@k.lt"} for i in range(100)))
-    fake = FakeFinvalda(GetDescriptions=[full] * 5)
+    fake = FakeFinvalda(GetDescriptions=[full] * 6)
     response = run(fake, "find_or_create_client", {"email": "k@k.lt"})
     assert response["error_code"] == "conflict"
 
@@ -519,3 +526,131 @@ def test_api_page_ids_are_plain() -> None:
     page = yaml.safe_load((BUNDLE / "ui/pages/finvalda-api.yaml").read_text("utf-8"))
     for component in page["components"]:
         assert component["component_id"].replace("_", "").isalnum(), component["component_id"]
+
+
+# -- second review (d21138d) ------------------------------------------------------
+
+
+def test_export_with_decimal_numbers() -> None:
+    fake = FakeFinvalda(
+        GetDescriptions=items({"code": "K1", "debt": 12.5}, {"code": "K2", "debt": 0.1})
+    )
+    files = Files()
+    response = run(fake, "export_list", {"list_type": "Clients"}, files=files)
+    assert response["ok"] is True, response
+    assert files.written[0]["data"].decode().splitlines() == [
+        '{"code":"K1","debt":12.5}',
+        '{"code":"K2","debt":0.1}',
+    ]
+
+
+def test_report_filter_with_a_decimal_number() -> None:
+    import base64
+
+    fake = FakeFinvalda(MakeReport={**OK, "fileContents": base64.b64encode(b"%PDF").decode()})
+    response = run(
+        fake, "make_report", {"report_code": "PELN_01", "filter": {"IncludeReturns": 1.0}}
+    )
+    assert response["ok"] is True, response
+    assert fake.calls[0].query["sParam"] == '{"Code":"PELN_01","IncludeReturns":1.0}'
+
+
+def test_related_invoices_of_other_clients_are_not_passed_on() -> None:
+    fake = FakeFinvalda(
+        GetInvoicesRelatedToCustomer=items(
+            {"client": "K1", "doc": "A"}, {"client": "K2", "doc": "B"}
+        )
+    )
+    response = run(fake, "invoices_related_to_customer", {"client_code": "K1"})
+    assert response["error_code"] == "invalid_response"
+    fake = FakeFinvalda(GetInvoicesRelatedToCustomer=items({"client": "K1", "doc": "A"}))
+    assert run(fake, "invoices_related_to_customer", {"client_code": "K1"})["result"]["count"] == 1
+    fake = FakeFinvalda(GetInvoicesRelatedToCustomer=items({"doc": "A"}))
+    assert (
+        run(fake, "invoices_related_to_customer", {"client_code": "K1"})["error_code"]
+        == "invalid_response"
+    )
+
+
+def test_exactly_the_page_limit_is_not_a_conflict() -> None:
+    from runtime import friendly
+    from runtime.connection import Connection
+    from runtime.operations import Context
+    from runtime.transport import FinvaldaTransport
+
+    connection = Connection(
+        "c1", "https://fvs.example.lt/FvsServicePure.svc", "W", "", "", "", "", "lt", "secret-pw"
+    )
+
+    def lookup(fake: FakeFinvalda) -> list[dict[str, Any]]:
+        transport = FinvaldaTransport(connection, opener=fake)
+        context = Context(
+            payload={},
+            operation_input={},
+            transport=transport,
+            artifact_reader=Files().reader,
+            artifact_writer=Files().writer,
+        )
+        return friendly.describe(
+            context, "Clients", {"Email": "k@k.lt"}, ["code"], limit=2, max_pages=2
+        )
+
+    exact = FakeFinvalda(
+        GetDescriptions=[
+            items({"code": "A"}, {"code": "B"}),
+            items({"code": "C"}, {"code": "D"}),
+            items(),
+        ]
+    )
+    assert [r["code"] for r in lookup(exact)] == ["A", "B", "C", "D"]
+    more = FakeFinvalda(
+        GetDescriptions=[
+            items({"code": "A"}, {"code": "B"}),
+            items({"code": "C"}, {"code": "D"}),
+            items({"code": "E"}),
+        ]
+    )
+    with pytest.raises(ExtensionError) as exc:
+        lookup(more)
+    assert exc.value.code == errors.CONFLICT
+
+
+def test_a_server_that_stalls_in_its_headers_is_cut_at_the_deadline() -> None:
+    import time as real_time
+
+    from runtime.connection import Connection
+    from runtime.transport import FinvaldaTransport, MIN_CALL_WINDOW_SECONDS
+
+    def stalling(request, *, timeout_seconds, purpose):
+        real_time.sleep(3)  # never answers within the step
+        raise AssertionError("not reached in time")
+
+    connection = Connection(
+        "c1", "https://fvs.example.lt/FvsServicePure.svc", "W", "", "", "", "", "lt", "secret-pw"
+    )
+    expectations: tuple[tuple[bool, type[BaseException]], ...] = (
+        (False, DeadlineReached),
+        (True, ExtensionError),
+    )
+    for mutating, expected in expectations:
+        transport = FinvaldaTransport(connection, opener=stalling)
+        # Room to start the call; the exchange itself must end within 0.3 s.
+        transport.deadline = transport.clock() + MIN_CALL_WINDOW_SECONDS + 5
+        started = real_time.monotonic()
+        expiry = transport.clock() + 0.3
+
+        def read_expiry(at: float = expiry) -> float:
+            return at
+
+        transport._read_expiry = read_expiry  # type: ignore[method-assign]
+        with pytest.raises(expected) as exc:
+            transport.request(
+                "GetSandelius" if not mutating else "InsertNewItem",
+                verb="POST",
+                body={},
+                mutating=mutating,
+            )
+        assert real_time.monotonic() - started < 2
+        if mutating:
+            assert isinstance(exc.value, ExtensionError)
+            assert exc.value.code == errors.TIMEOUT_UNKNOWN

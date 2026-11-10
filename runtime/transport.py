@@ -26,6 +26,7 @@ import http.client
 import json
 import re
 import secrets
+import threading
 import time
 
 # DTDs and entity declarations are refused before anything is parsed (parse_body).
@@ -177,10 +178,39 @@ class FinvaldaTransport:
         return None if self.deadline is None else self.deadline + MIN_CALL_WINDOW_SECONDS
 
     def _open(self, request: Request, method_name: str, *, mutating: bool) -> tuple[int, bytes]:
+        """One exchange — connect, headers and body — bounded by the step's deadline.
+
+        A socket timeout applies to each receive, and a server can answer one byte
+        at a time, while it connects, while it sends its headers and while it sends
+        its body. So the whole exchange runs in a worker thread that is waited for
+        only until the read deadline; past it the step reports a timeout (an unknown
+        outcome for a write) and the abandoned exchange ends with the process.
+        """
+        self.attempted = True
+        if mutating:
+            self.mutated = True
+        expires = self._read_expiry()
+        if expires is None:
+            return self._exchange(request, method_name, mutating=mutating)
+        outcome: dict[str, Any] = {}
+
+        def work() -> None:
+            try:
+                outcome["value"] = self._exchange(request, method_name, mutating=mutating)
+            except BaseException as exc:  # handed to the caller below
+                outcome["error"] = exc
+
+        worker = threading.Thread(target=work, name="finvalda-call", daemon=True)
+        worker.start()
+        worker.join(max(0.0, expires - self.clock()))
+        if worker.is_alive():
+            _late(mutating)
+        if "error" in outcome:
+            raise outcome["error"]
+        return outcome["value"]
+
+    def _exchange(self, request: Request, method_name: str, *, mutating: bool) -> tuple[int, bytes]:
         try:
-            self.attempted = True
-            if mutating:
-                self.mutated = True
             with self._opener(
                 request, timeout_seconds=self._call_timeout, purpose="Finvalda web service"
             ) as response:
@@ -241,6 +271,7 @@ class FinvaldaTransport:
             forms = {
                 secret,
                 json.dumps(secret, ensure_ascii=False)[1:-1],
+                json.dumps(secret, ensure_ascii=False)[1:-1].replace("/", "\\/"),
                 html.escape(secret, quote=True),
                 html.escape(secret, quote=True).replace("&#x27;", "&apos;"),
                 html.escape(secret, quote=False),

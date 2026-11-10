@@ -1614,7 +1614,7 @@ operations:
     value_type: array
     schema:
       type: array
-      description: The rows Finvalda returned.
+      description: The rows Finvalda returned; numbers as exact decimal text.
   - *id012
   - name: latest_edited
     value_type: text

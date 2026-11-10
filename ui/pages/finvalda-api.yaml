@@ -153,6 +153,7 @@ components:
 
     - Fields of records and operations use the names of Finvalda's manual (sKodas, sPavadinimas, tData, PardDokPrekeDetEil …). They are checked against the manual before anything is sent: an unknown field, a text that is too long or a value of the wrong kind is refused.
     - Dates are YYYY-MM-DD. Amounts are exact decimals with "." as the decimal point.
+    - Results give every number Finvalda returns as exact decimal text ("12.50"), never rounded through floating point.
 
     ### Writes, retries and errors
 

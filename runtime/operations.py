@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import base64
 import binascii
-import json
 import math
 import re
 import time
@@ -24,7 +23,13 @@ from .connection import Connection, connection_from_payload
 from .errors import ExtensionError, error_response, invalid
 from .fields import field
 from .reference_data import CALLABLE_METHODS, CLASSES, DESCRIPTION_TYPES, OPERATIONS
-from .transport import MIN_CALL_WINDOW_SECONDS, DeadlineReached, FinvaldaTransport, Reply
+from .transport import (
+    dumps_json,
+    MIN_CALL_WINDOW_SECONDS,
+    DeadlineReached,
+    FinvaldaTransport,
+    Reply,
+)
 
 #: The entrypoint is given 600 s (extension.yaml). Every request must start early
 #: enough to finish inside it; a step that saves a file keeps the artifact write's
@@ -626,7 +631,7 @@ def _method_query(spec: Mapping[str, Any], inputs: Mapping[str, Any]) -> list[tu
         else:  # json
             if not isinstance(value, Mapping):
                 raise invalid(f"{name} must be an object")
-            rendered = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+            rendered = dumps_json(value)
             if len(rendered) > 20_000:
                 raise invalid(f"{name} is too large")
         for wire_name in (wire, *aliases):
@@ -929,7 +934,7 @@ def item_write_body(
     code = str(fields.get("sKodas") or fields.get("code") or "")
     body: dict[str, Any] = {
         "ItemClassName": cls,
-        "xmlstring": json.dumps({cls: fields} if not free_form else fields, ensure_ascii=False),
+        "xmlstring": dumps_json({cls: fields} if not free_form else fields),
     }
     if not inserting:
         item_code = text_input(
@@ -976,7 +981,7 @@ def props_body(spec: Mapping[str, Any], inputs: Mapping[str, Any]) -> dict[str, 
         checked = check_fields(cls, rest)
         checked["Kodas"] = [text_input(f"changes.{cls}.Kodas", c, limit=20) for c in codes]
         groups[cls] = checked
-    return {"xmlstring": json.dumps({"Fvs.EditItemProps": groups}, ensure_ascii=False)}
+    return {"xmlstring": dumps_json({"Fvs.EditItemProps": groups})}
 
 
 def _validate_props(spec: Mapping[str, Any], inputs: Mapping[str, Any], _: Any) -> None:
@@ -1095,7 +1100,7 @@ def operation_body(
     return cls, {
         "ItemClassName": cls,
         "sParametras": parameter,
-        "xmlstring": json.dumps({cls: operation}, ensure_ascii=False),
+        "xmlstring": dumps_json({cls: operation}),
     }
 
 
@@ -1142,9 +1147,7 @@ def delete_operation_body(inputs: Mapping[str, Any], context: Context | None) ->
     return {
         "ItemClassName": cls,
         "sParametras": import_parameter(context, inputs),
-        "xmlstring": json.dumps(
-            {cls: {"sZurnalas": journal, "nNumeris": number}}, ensure_ascii=False
-        ),
+        "xmlstring": dumps_json({cls: {"sZurnalas": journal, "nNumeris": number}}),
     }
 
 
@@ -1367,7 +1370,7 @@ def make_invoice_pdf(context: Context, inputs: Mapping[str, Any]) -> dict[str, A
     reply = context.call(
         "MakeInvoice",
         verb="GET",
-        query=[("sParam", json.dumps(param, ensure_ascii=False, separators=(",", ":")))],
+        query=[("sParam", dumps_json(param))],
         mutating=False,
     )
     raw = file_contents(reply.data, "MakeInvoice")
@@ -1410,7 +1413,7 @@ def run_make_report(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]
     reply = context.call(
         "MakeReport",
         verb="GET",
-        query=[("sParam", json.dumps(param, ensure_ascii=False, separators=(",", ":")))],
+        query=[("sParam", dumps_json(param))],
         mutating=False,
     )
     raw = file_contents(reply.data, "MakeReport")
@@ -1785,6 +1788,30 @@ def run_related_invoices(context: Context, spec: Mapping[str, Any]) -> dict[str,
     reply = context.call(
         "GetInvoicesRelatedToCustomer", verb="POST", query=query, body={}, mutating=False
     )
+    rows_all = rows_of(reply.data)
+    if client:
+        # The client parameter's name comes from a published client of the web service,
+        # not from Finvalda's documents. Were it ignored, Finvalda would answer with every
+        # client's invoices: each row must show it belongs to the client asked for.
+        for row in rows_all:
+            owner = next(
+                (
+                    field(row, key)
+                    for key in ("client", "klientas", "kliento_kodas", "sKlientas", "client_code")
+                    if field(row, key) not in (None, "")
+                ),
+                None,
+            )
+            if (
+                not isinstance(row, Mapping)
+                or owner is None
+                or str(owner).strip().upper() != client.upper()
+            ):
+                raise errors.no_effect(
+                    errors.INVALID_RESPONSE,
+                    f"Finvalda's answer holds invoices that are not shown to belong to client "
+                    f"{client}; it is not passed on",
+                )
     rows = rows_of(reply.data)
     return {
         "records": rows,
@@ -1844,7 +1871,7 @@ def run_export(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
             stopped = f"{exc.code}: {exc.message}"
             break
         rows = rows_of(reply.data)
-        page_chunks = [(json.dumps(row, ensure_ascii=False) + "\n").encode("utf-8") for row in rows]
+        page_chunks = [(dumps_json(row) + "\n").encode("utf-8") for row in rows]
         page_bytes = sum(len(c) for c in page_chunks)
         if size + page_bytes > MAX_EXPORT_BYTES:
             if fetched == 0:
@@ -1901,7 +1928,7 @@ def call_request(
         if not _QUERY_NAME_RE.fullmatch(name):
             raise invalid("query parameter names are letters, digits and _ only")
         if isinstance(value, (Mapping, list)):
-            rendered = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+            rendered = dumps_json(value)
         elif isinstance(value, bool):
             rendered = "true" if value else "false"
         elif isinstance(value, Decimal):

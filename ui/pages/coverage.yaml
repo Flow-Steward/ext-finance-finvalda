@@ -40,3 +40,5 @@ components:
     - No Finvalda server was available while this version was built, so every step follows the manual and the Postman collection and has been tested against recorded answers only.
     - For a few parameters, a published client reports that the live interface reads another name than the manual (sSandKod for sSanKod; tDataNuo and tDataIki for tNuo and tIki of the order management reads). Those steps send both names.
     - The document methods (InsertDocument, AttachDocument, GetAttachedDocument) are written as the manual's Pure examples show them.
+    - The everyday steps take the operation lists' client column for the client's code (as in the Postman example of Sales, where client_code holds the company code). If a live server shows otherwise, a purchase or payment could be registered twice: check this first.
+    - Invoices related to a client sends the client as sKlientoKodas, a name from a published client, not from Finvalda; the step passes on only rows that show they belong to that client.
