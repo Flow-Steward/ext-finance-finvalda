@@ -6,6 +6,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from .. import errors
+from ..shapes import shape
 from ..errors import invalid
 from ..fields import field
 from ..inputs import flag_input
@@ -97,7 +98,8 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
                 "client_code": str(field(record, "code")),
                 "created": False,
                 "matched_by": matched_by,
-                "record": dict(record),
+                "client": shape("client", record),
+                "warnings": [],
             }
     if not values["code"] or not values["name"]:
         raise invalid("No client matches; give code and name to create it")
@@ -118,14 +120,18 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
         fields["nFizinisAsmuo"] = 1
     insert_item(context, "Fvs.Klientas", fields, inputs)
     progress.add(f"client {values['code']}")
+    warnings: list[str] = []
     record = _best_effort(
-        lambda: describe(context, "Clients", {"Codes": [values["code"]]}, CLIENT_COLUMNS)
+        lambda: describe(context, "Clients", {"Codes": [values["code"]]}, CLIENT_COLUMNS),
+        warnings,
+        f"client {values['code']}",
     )
     return {
         "client_code": values["code"],
         "created": True,
         "matched_by": None,
-        "record": dict(record[0]) if record else None,
+        "client": shape("client", record[0]) if record else None,
+        "warnings": warnings,
     }
 
 
@@ -183,7 +189,8 @@ def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
                 "product_code": code,
                 "created": False,
                 "matched_by": "code",
-                "record": dict(rows[0]),
+                "product": shape("product", rows[0]),
+                "warnings": [],
             }
     if barcode:
         hits = describe(context, "BarCodes", {"BarCodes": [barcode]}, None)
@@ -200,7 +207,8 @@ def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
                 "product_code": codes[0],
                 "created": False,
                 "matched_by": "barcode",
-                "record": dict(rows[0]) if rows else None,
+                "product": shape("product", rows[0]) if rows else None,
+                "warnings": [],
             }
     name = text("name", inputs, 50)
     if not code or not name:
@@ -222,12 +230,18 @@ def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
         fields["dPirkimoKaina"] = str(money("purchase_price", inputs["purchase_price"]))
     insert_item(context, "Fvs.Preke", fields, inputs)
     progress.add(f"product {code}")
-    rows = _best_effort(lambda: describe(context, "Products", {"Codes": [code]}, PRODUCT_COLUMNS))
+    warnings: list[str] = []
+    rows = _best_effort(
+        lambda: describe(context, "Products", {"Codes": [code]}, PRODUCT_COLUMNS),
+        warnings,
+        f"product {code}",
+    )
     return {
         "product_code": code,
         "created": True,
         "matched_by": None,
-        "record": dict(rows[0]) if rows else None,
+        "product": shape("product", rows[0]) if rows else None,
+        "warnings": warnings,
     }
 
 
@@ -251,7 +265,12 @@ def service_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
         if _same(field(r, "code"), code)
     ]
     if rows:
-        return {"service_code": code, "created": False, "record": dict(rows[0])}
+        return {
+            "service_code": code,
+            "created": False,
+            "service": shape("service", rows[0]),
+            "warnings": [],
+        }
     name = text("name", inputs, 50)
     if not name:
         raise invalid("No service has this code; give name to create it")
@@ -270,5 +289,15 @@ def service_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
         fields["dPirkimoKaina"] = str(money("purchase_price", inputs["purchase_price"]))
     insert_item(context, "Fvs.Paslauga", fields, inputs)
     progress.add(f"service {code}")
-    rows = _best_effort(lambda: describe(context, "Services", {"Codes": [code]}, SERVICE_COLUMNS))
-    return {"service_code": code, "created": True, "record": dict(rows[0]) if rows else None}
+    warnings: list[str] = []
+    rows = _best_effort(
+        lambda: describe(context, "Services", {"Codes": [code]}, SERVICE_COLUMNS),
+        warnings,
+        f"service {code}",
+    )
+    return {
+        "service_code": code,
+        "created": True,
+        "service": shape("service", rows[0]) if rows else None,
+        "warnings": warnings,
+    }

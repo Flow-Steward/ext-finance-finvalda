@@ -8,7 +8,7 @@ from decimal import Decimal
 from typing import Any
 
 from .errors import invalid
-from .inputs import _COLUMN_RE, _DATE_TIME_RE, decimal_input, text_input, whole_input
+from .inputs import _COLUMN_RE, _FINVALDA_DATE_TIME_RE, decimal_input, text_input, whole_input
 from .limits import MAX_LIST_ITEMS, MAX_TEXT
 from .reference_data import CLASSES
 
@@ -50,7 +50,7 @@ def _field_value(cls: str, spec: Mapping[str, Any], value: Any) -> Any:
         return str(number)
     if kind.startswith("datetime") or kind == "date":
         text = text_input(where, value, limit=27)
-        if not _DATE_TIME_RE.fullmatch(text):
+        if not _FINVALDA_DATE_TIME_RE.fullmatch(text):
             raise invalid(f"{where} must be a date, YYYY-MM-DD")
         return text
     if isinstance(value, bool):

@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import sys
+import traceback
+
 from collections.abc import Callable, Mapping
 from typing import Any
 
@@ -106,8 +109,14 @@ def handle_runtime(
         return error_response(
             exc.code, exc.message, retry_facts=exc.retry_facts(), finvalda_code=exc.finvalda_code
         )
-    except Exception:
-        response = error_response(errors.INTERNAL_ERROR, "The operation could not be completed")
+    except Exception as exc:
+        where = _where(exc)
+        # A safe trace for the operator: the exception's type and place, never its text
+        # (which could hold data), on stderr for the host's logs and in the message.
+        print(f"flowsteward.finvalda internal error: {where}", file=sys.stderr)
+        response = error_response(
+            errors.INTERNAL_ERROR, f"The operation could not be completed ({where})"
+        )
         if transport is None or not transport.mutated:
             response["definitely_no_external_effect"] = True
             response["external_effect_status"] = "failed"
@@ -115,6 +124,19 @@ def handle_runtime(
             response["definitely_no_external_effect"] = False
             response["external_effect_status"] = "timeout_unknown"
         return response
+
+
+def _where(exc: BaseException) -> str:
+    """``TypeError at runtime/everyday/invoices.py:123 in invoice_op`` — no values."""
+    frames = traceback.extract_tb(exc.__traceback__)
+    inside = [f for f in frames if "/runtime/" in f.filename.replace("\\", "/")]
+    chosen = inside or list(frames)
+    if not chosen:
+        return type(exc).__name__
+    frame = chosen[-1]
+    path = frame.filename.replace("\\", "/")
+    path = path[path.rfind("/runtime/") + 1 :] if "/runtime/" in path else path.rsplit("/", 1)[-1]
+    return f"{type(exc).__name__} at {path}:{frame.lineno} in {frame.name}"
 
 
 def _mark_unsent(exc: ExtensionError, transport: FinvaldaTransport | None) -> None:

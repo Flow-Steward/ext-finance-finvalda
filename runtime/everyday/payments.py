@@ -7,6 +7,7 @@ from typing import Any
 
 from .. import errors
 from ..advanced.writes import import_parameter
+from ..shapes import shape
 from ..errors import invalid
 from ..fields import field
 from ..inputs import date_input
@@ -107,14 +108,28 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     }
     reply = context.call("InsertNewOperation", verb="POST", body=body, mutating=True)
     saved = op_result(reply.data)
+    warnings: list[str] = []
     record = _best_effort(
         lambda: next(
             (
                 r
                 for r in same_document(context, op_class, document, client=client)
-                if _op_number(r) == saved["op_number"]
+                if saved["op_number"] is None or _op_number(r) == saved["op_number"]
             ),
             None,
-        )
+        ),
+        warnings,
+        f"payment {document}",
     )
-    return {**saved, "created": True, "client_code": client, "record": record}
+    payment = shape("operation", record)
+    return {
+        "journal": saved["journal"] or (payment or {}).get("journal"),
+        "op_number": saved["op_number"]
+        if saved["op_number"] is not None
+        else (payment or {}).get("op_number"),
+        "series": saved["series"],
+        "document": saved["document"] or document,
+        "client_code": client,
+        "payment": payment,
+        "warnings": warnings,
+    }

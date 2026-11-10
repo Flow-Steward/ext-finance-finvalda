@@ -163,6 +163,7 @@ class FinvaldaTransport:
         data = self._decode(raw, status, method_name, mutating=mutating)
         self._verdict(data, status, method_name, mutating=mutating)
         if mutating:
+            confirm_write(data, method_name, status=status)
             self.committed = True
         return Reply(status=status, data=data)
 
@@ -491,6 +492,59 @@ def refusal(
     )
 
 
+#: Writes whose answer carries Finvalda's result code: saved only with nResult 0
+#: (manual 3.66-3.74 "nResult – klaidos kodas"; every Postman example of them).
+RESULT_CODE_WRITES: frozenset[str] = frozenset(
+    {
+        "InsertNewItem",
+        "EditItem",
+        "EditItemProps",
+        "DeleteItem",
+        "AppendGroup",
+        "InsertNewOperation",
+        "UpdateOperation",
+        "DeleteOperation",
+        "LockOperation",
+        "UnLockOperation",
+        "ChangeJournal",
+        "CopyOperation",
+    }
+)
+#: The newer document writes answer with a result object: saved only with errorCode 0
+#: (manual 3.80 InsertDocumentOut, 3.82 AttachDocumentOut).
+RESULT_OBJECT_WRITES: frozenset[str] = frozenset({"InsertDocument", "AttachDocument"})
+
+
+def confirm_write(data: Mapping[str, Any], method_name: str, *, status: int) -> None:
+    """Accept a write only on Finvalda's positive confirmation.
+
+    An answer that refuses nothing but confirms nothing either (``{}``, an unknown
+    AccessResult, a missing result code) leaves the outcome unknown: the write was
+    sent, and nothing says it was saved.
+    """
+    access = field(data, "AccessResult")
+    confirmed = isinstance(access, str) and access.lower() == "success"
+    if confirmed and method_name in RESULT_CODE_WRITES:
+        confirmed = result_code(data, keys=("nResult",)) == 0
+    elif confirmed and method_name in RESULT_OBJECT_WRITES:
+        code, _ = nested_result(data)
+        confirmed = code == 0
+    elif confirmed and method_name == "DeleteDocument":
+        # DeleteDocument(string fileName, out string error) (manual 3.81).
+        confirmed = field(data, "error") == "" or field(data, "sError") == ""
+    if not confirmed:
+        raise ExtensionError(
+            errors.TIMEOUT_UNKNOWN,
+            f"Finvalda's answer to {method_name} does not confirm that the change was saved; "
+            "check Finvalda before running the step again",
+            failure_class="provider",
+            retryable=False,
+            definitely_no_external_effect=False,
+            external_effect_status="timeout_unknown",
+            http_status=status,
+        )
+
+
 def nested_result(data: Mapping[str, Any]) -> tuple[int | None, str]:
     """``errorCode``/``errorText`` of a newer method's result object (JSON ``result``,
     or the one ``…Out`` element of the XML form)."""
@@ -672,6 +726,7 @@ __all__ = [
     "DUPLICATE_RESULT_CODES",
     "DeadlineReached",
     "FinvaldaTransport",
+    "confirm_write",
     "dumps_json",
     "nested_result",
     "Reply",

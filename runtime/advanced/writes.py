@@ -71,11 +71,11 @@ def _validate_item_write(spec: Mapping[str, Any], inputs: Mapping[str, Any], _: 
 
 def run_item_write(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
     cls, body, code = item_write_body(spec, context.operation_input, context)
-    reply = context.call(spec["method"], verb="POST", body=body, mutating=True)
+    context.call(spec["method"], verb="POST", body=body, mutating=True)
     return {
         "item_class": cls,
         "code": code or None,
-        "finvalda_result": op_result(reply.data)["finvalda_result"],
+        "saved": True,
     }
 
 
@@ -109,8 +109,8 @@ def _validate_props(spec: Mapping[str, Any], inputs: Mapping[str, Any], _: Any) 
 
 def run_props_write(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
     body = props_body(spec, context.operation_input)
-    reply = context.call("EditItemProps", verb="POST", body=body, mutating=True)
-    return {"finvalda_result": op_result(reply.data)["finvalda_result"]}
+    context.call("EditItemProps", verb="POST", body=body, mutating=True)
+    return {"saved": True}
 
 
 def delete_item_body(
@@ -128,11 +128,11 @@ def _validate_delete_item(spec: Mapping[str, Any], inputs: Mapping[str, Any], _:
 
 def run_delete_item(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
     cls, code, body = delete_item_body(spec, context.operation_input)
-    reply = context.call("DeleteItem", verb="POST", body=body, mutating=True)
+    context.call("DeleteItem", verb="POST", body=body, mutating=True)
     return {
         "item_class": cls,
         "code": code,
-        "finvalda_result": op_result(reply.data)["finvalda_result"],
+        "saved": True,
     }
 
 
@@ -174,10 +174,10 @@ def _validate_append(spec: Mapping[str, Any], inputs: Mapping[str, Any], _: Any)
 
 
 def run_append_group(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
-    reply = context.call(
+    context.call(
         "AppendGroup", verb="POST", body=append_group_body(context.operation_input), mutating=True
     )
-    return {"finvalda_result": op_result(reply.data)["finvalda_result"]}
+    return {"saved": True}
 
 
 def import_parameter(
@@ -291,10 +291,10 @@ def _validate_lock(spec: Mapping[str, Any], inputs: Mapping[str, Any], _: Any) -
 
 
 def run_lock(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
-    reply = context.call(
+    context.call(
         spec["method"], verb="POST", body=lock_body(context.operation_input, context), mutating=True
     )
-    return {"finvalda_result": op_result(reply.data)["finvalda_result"]}
+    return {"saved": True}
 
 
 def run_is_locked(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import sys
+from decimal import Decimal
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -23,7 +24,7 @@ def main() -> int:
         response = _error_response("invalid_payload", "The request exceeds its safe limit")
     else:
         try:
-            payload = json.loads(raw.decode("utf-8")) if raw.strip() else {}
+            payload = _load_payload(raw)
         except (UnicodeDecodeError, json.JSONDecodeError):
             response = _error_response("invalid_payload", "The request is not valid JSON")
         else:
@@ -32,6 +33,20 @@ def main() -> int:
     sys.stdout.buffer.write(serialized)
     sys.stdout.buffer.write(b"\n")
     return 0 if final_response.get("ok") is True else 2
+
+
+def _load_payload(raw: bytes) -> dict[str, Any]:
+    """The request, with every number that has a point read as ``Decimal``.
+
+    1234567890.12345678 reaches the checks as written, not rounded through float.
+    Nothing in the host's envelope is used as a float, so the whole request is
+    read the same way.
+    """
+    text = raw.decode("utf-8")
+    if not text.strip():
+        return {}
+    payload = json.loads(text, parse_float=Decimal)
+    return payload if isinstance(payload, dict) else {}
 
 
 def _bounded_serialized_response(response: Mapping[str, Any]) -> tuple[dict[str, Any], bytes]:

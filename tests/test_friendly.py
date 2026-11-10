@@ -87,7 +87,7 @@ def test_client_created_when_none_matches() -> None:
         },
     )
     assert response["ok"] is True, response
-    assert response["result"]["created"] is True and response["result"]["record"]["code"] == "NEW1"
+    assert response["result"]["created"] is True and response["result"]["client"]["code"] == "NEW1"
     fields = json.loads(fake.writes()[0].body["xmlstring"])["Fvs.Klientas"]
     assert fields == {
         "sFvsImportoParametras": "PARAM_APR",
@@ -112,7 +112,10 @@ def test_client_created_then_reread_fails_is_still_a_success() -> None:
     )
     response = run(fake, "find_or_create_client", {"code": "NEW1", "name": "UAB"})
     assert response["ok"] is True and response["result"]["created"] is True
-    assert response["result"]["record"] is None
+    assert response["result"]["client"] is None
+    assert response["result"]["warnings"] == [
+        "client NEW1 was saved, but reading it back failed: upstream_failure"
+    ]
 
 
 # -- products and services -------------------------------------------------------
@@ -221,11 +224,15 @@ def test_sales_invoice_rerun_returns_the_existing_one() -> None:
         "series": "",
         "order_number": "S-1001",
         "client": "K1",
+        "currency": "EUR",
+        "amount": 100.03,
     }
     fake = FakeFinvalda(GetOperations=items(existing))
     response = run(fake, "create_sales_invoice", INVOICE)
     assert response["ok"] is True and response["result"]["created"] is False
     assert response["result"]["op_number"] == 61 and fake.writes() == []
+    assert response["result"]["amount"] == "100.03" and response["result"]["total_vat"] is None
+    assert response["result"]["invoice"]["document"] == "S-1001"
 
 
 def test_document_number_of_another_client_is_a_conflict() -> None:
@@ -298,8 +305,16 @@ def test_invoice_with_file_is_attached() -> None:
         GetOperations=[items(), items()],
         InsertNewOperation=saved("PARD", 61, "AB", "S-1001"),
         GetAttachedDocument={**OK, "enitityDocs": []},
-        InsertDocument={"AccessResult": "Success", "error": ""},
-        AttachDocument={"AccessResult": "Success", "error": ""},
+        InsertDocument={
+            "AccessResult": "Success",
+            "error": "",
+            "result": {"errorText": "", "errorCode": 0, "accessResult": 2},
+        },
+        AttachDocument={
+            "AccessResult": "Success",
+            "error": "",
+            "result": {"errorText": "", "errorCode": 0, "accessResult": 2},
+        },
     )
     response = run(
         fake, "create_sales_invoice", {**INVOICE, "document_file": "art_1"}, files=Files(b"PDF")
@@ -498,8 +513,9 @@ def test_product_prices_with_client_prices() -> None:
         )
     )
     response = run(fake, "product_prices", {"product_codes": ["P1"], "client_code": "K1"})
-    assert response["result"]["items"][0]["sell_price1"] == "9.99"
+    assert response["result"]["items"][0]["price1"] == "9.99"
     assert response["result"]["client_prices"][0]["price"] == "8.5"
+    assert response["result"]["client_prices"][0]["client_code"] == "K1"
     assert fake.calls[1].read_params()["Prices"] == {"Type": 1, "Client": "K1", "Codes": ["P1"]}
 
 

@@ -61,13 +61,13 @@ from .writes import (
 OP_NEUTRAL = catalog.OP_NEUTRAL
 
 NEUTRAL_OUTPUTS: dict[str, dict[str, Any]] = {
-    "item_write": {"item_class": "", "code": None, "finvalda_result": None},
-    "props_write": {"finvalda_result": None},
-    "delete_item": {"item_class": "", "code": "", "finvalda_result": None},
-    "append_group": {"finvalda_result": None},
+    "item_write": {"item_class": "", "code": None, "saved": False},
+    "props_write": {"saved": False},
+    "delete_item": {"item_class": "", "code": "", "saved": False},
+    "append_group": {"saved": False},
     "operation_write": dict(OP_NEUTRAL),
     "delete_operation": dict(OP_NEUTRAL),
-    "lock": {"finvalda_result": None},
+    "lock": {"saved": False},
     "change_journal": dict(OP_NEUTRAL),
     "copy_operation": dict(OP_NEUTRAL),
     "insert_document": {"file_name": "", "size_bytes": 0},

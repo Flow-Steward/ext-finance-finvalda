@@ -15,7 +15,14 @@ _DIGITS = re.compile(r"-?[0-9]{1,10}")
 
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
-_DATE_TIME_RE = re.compile(r"^\d{4}[-.]\d{2}[-.]\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?)?$")
+#: A moment a workflow gives (since): Finvalda's forms, or ISO 8601 with an offset.
+_DATE_TIME_RE = re.compile(
+    r"^\d{4}[-.]\d{2}[-.]\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?(Z|[+-]\d{2}:\d{2})?)?$"
+)
+#: A date or time sent to Finvalda (fields, filters): its own forms, without an offset.
+_FINVALDA_DATE_TIME_RE = re.compile(
+    r"^\d{4}[-.]\d{2}[-.]\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?)?$"
+)
 
 _COLUMN_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,60}$")
 
@@ -67,12 +74,18 @@ def flag_input(name: str, value: Any, default: bool = False) -> bool:
     return value
 
 
+_ISO_TIME_TAIL = re.compile(r"^T\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?(Z|[+-]\d{2}:\d{2})?$")
+
+
 def date_input(name: str, value: Any, *, required: bool = False) -> str:
-    text = text_input(name, value, limit=10, required=required)
+    """YYYY-MM-DD, also taken from an ISO 8601 time (its date part)."""
+    text = text_input(name, value, limit=35, required=required)
     if not text:
         return ""
+    if len(text) > 10 and _ISO_TIME_TAIL.fullmatch(text[10:]):
+        text = text[:10]
     if not _DATE_RE.fullmatch(text):
-        raise invalid(f"{name} must be a date, YYYY-MM-DD")
+        raise invalid(f"{name} must be a date, YYYY-MM-DD (or an ISO 8601 time)")
     try:
         Date.fromisoformat(text)
     except ValueError as exc:

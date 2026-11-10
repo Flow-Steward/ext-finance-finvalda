@@ -73,7 +73,6 @@ OP_NEUTRAL: dict[str, None] = {
     "op_number": None,
     "series": None,
     "document": None,
-    "finvalda_result": None,
 }
 
 UPLOAD_BINDING = "finvalda_upload"

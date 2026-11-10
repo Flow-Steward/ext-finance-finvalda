@@ -98,7 +98,8 @@ def _representative_read() -> None:
             connection, opener=opener, sleeper=lambda _s: None
         ),
     )
-    record = (response.get("result") or {}).get("record") or {}
+    records = (response.get("result") or {}).get("records") or [{}]
+    record = records[0]
     if not response.get("ok") or record.get("code") != "000005":
         raise RuntimeError(f"representative read failed: {response}")
 

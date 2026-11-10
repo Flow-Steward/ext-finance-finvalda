@@ -13,18 +13,29 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from functools import cache
 from pathlib import Path
 from typing import Any
 
 HERE = Path(__file__).resolve().parent
+BUNDLE = HERE.parents[1]
+if str(BUNDLE) not in sys.path:
+    sys.path.insert(0, str(BUNDLE))
+
+from runtime import shapes  # noqa: E402  (the records' single source)
+
 ADVANCED = "Advanced · "
 
 CONNECTION = {"name": "connection_ref", "value_type": "connection_ref", "required": True}
-DATE: dict[str, Any] = {"pattern": r"^\d{4}-\d{2}-\d{2}$", "maxLength": 10}
+#: A date input: YYYY-MM-DD, or an ISO 8601 time whose date is taken.
+DATE: dict[str, Any] = {
+    "pattern": r"^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?(Z|[+-]\d{2}:\d{2})?)?$",
+    "maxLength": 35,
+}
 DATE_TIME: dict[str, Any] = {
-    "pattern": r"^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?)?$",
-    "maxLength": 27,
+    "pattern": r"^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?(Z|[+-]\d{2}:\d{2})?)?$",
+    "maxLength": 35,
 }
 
 
@@ -183,19 +194,157 @@ NUMBER = whole(
     required=True,
     minimum=1,
 )
-RECORDS = out(
-    "records", "array", "array", "The rows Finvalda returned; numbers as exact decimal text."
+
+
+def out_schema(name: str, value_type: str, schema: dict[str, Any]) -> dict[str, Any]:
+    return {"name": name, "value_type": value_type, "schema": schema}
+
+
+def record_out(name: str, kind: str, description: str) -> dict[str, Any]:
+    """One normalised record (runtime/shapes.py), or null."""
+    body = shapes.schema(kind)
+    return out_schema(
+        name, "object", {**body, "type": ["object", "null"], "description": description}
+    )
+
+
+def records_out(name: str, kind: str, description: str) -> dict[str, Any]:
+    """A list of normalised records (runtime/shapes.py)."""
+    return out_schema(
+        name, "array", {"type": "array", "items": shapes.schema(kind), "description": description}
+    )
+
+
+#: A Finvalda column whose type the documents do not give: what a row may hold.
+ANY_VALUE: dict[str, Any] = {"type": ["string", "number", "integer", "boolean", "null"]}
+NUMBERS_NOTE = (
+    "Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset)."
 )
-RECORD = out("record", "object", ["object", "null"], "The first row, or null.")
+
+
+def rows_schema(columns: dict[str, dict[str, Any]], description: str) -> dict[str, Any]:
+    """The schema of a list of rows with these documented columns (others may follow)."""
+    return {
+        "type": "array",
+        "description": f"{description} {NUMBERS_NOTE}",
+        "items": {"type": "object", "properties": columns},
+    }
+
+
+def column(name: str, kind: str | None = None, description: str = "") -> dict[str, Any]:
+    base = dict(shapes.KIND_SCHEMAS[kind]) if kind else dict(ANY_VALUE)
+    base["description"] = description or f"Finvalda's column {name}."
+    return base
+
+
+RECORDS = out_schema(
+    "records",
+    "array",
+    rows_schema({}, "The rows Finvalda returned."),
+)
 COUNT = out("count", "integer", "integer", "How many rows were returned.")
-RESPONSE = out("response", "object", ["object", "null"], "Finvalda's whole answer.")
+RESPONSE = out(
+    "response",
+    "object",
+    ["object", "null"],
+    "The rest of Finvalda's answer: everything but the rows and the status fields.",
+)
+SAVED = out("saved", "boolean", "boolean", "True when Finvalda confirmed the change.")
+WARNINGS = out_schema(
+    "warnings",
+    "array",
+    {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "What the step could not do after its write, for example read the record back.",
+    },
+)
 OP_RESULT = [
     out("journal", "text", ["string", "null"], "The saved operation's journal."),
     out("op_number", "integer", ["integer", "null"], "Its number in the journal."),
     out("series", "text", ["string", "null"], "Its document series."),
     out("document", "text", ["string", "null"], "Its document number."),
-    out("finvalda_result", "integer", ["integer", "null"], "Finvalda's result code (0 = saved)."),
 ]
+
+#: The header and line columns GetOperations can return (manual 3.77).
+OPERATION_HEADER_COLUMNS = (
+    "date_created date_edited op_number journal op_date payment_date issue_date series "
+    "order_number order_number_a client client_a client_code client_code_a client_vatcode "
+    "client_vatcode_a client_title client_title_a client_adress client_adress_a adress "
+    "adress_title op_type currency contract amount user_name description1 description2 "
+    "description3 description4 description5 op_object1 op_object2 op_object3 op_object4 "
+    "op_object5 op_object6 initial_debt_nc initial_debt paid_amount_nc paid_amount debt_nc debt "
+    "remark carrier receiver adress_text adress_info1 adress_info2 adress_info3 adress_city "
+    "adress_email adress_post_code adress_country adress_phone adress_street adress_building "
+    "adress_apartment warehouse_from warehouse_to"
+).split()
+OPERATION_LINE_COLUMNS = (
+    "date_created date_edited op_number journal type code title quantity code_n warehouse "
+    "amount_nc amount vat_nc vat discount_nc discount neto bruto volume extra_info account_code "
+    "place_no certificate debt debt_nc extra_cost extra_cost_nc debit_amount debit_amount_nc "
+    "credit_amount credit_amount_nc object1 object2 object3 object4 object5 object6 vat_percent "
+    "op_number_det journal_det depreciated positive_impact negative_impact primary_cost"
+).split()
+
+#: Filter fields and the values they take.
+_LIST_FILTER_NAMES = {"Codes", "Products", "BarCodes"}
+_NUMBER_FILTER_NAMES = {"OpNumber", "Number", "Paid", "Type", "OpType"}
+_FLAG_FILTER_NAMES = {"AdvancePaymentSettled", "HasQuantity"}
+_FILTER_DATE = {
+    "type": "string",
+    "pattern": r"^\d{4}[-.]\d{2}[-.]\d{2}([T ]\d{2}:\d{2}(:\d{2})?)?$",
+    "description": "A date, YYYY-MM-DD or YYYY.MM.DD.",
+}
+
+
+def filter_value_schema(name: str) -> dict[str, Any]:
+    if name in _LIST_FILTER_NAMES:
+        return {
+            "type": "array",
+            "maxItems": 1000,
+            "items": {"type": "string", "maxLength": 60},
+            "description": f"{name}: a list of codes.",
+        }
+    if "Date" in name or name.endswith(("From", "Till", "To")) or name == "Date":
+        return {**_FILTER_DATE, "description": f"{name}: a date, YYYY-MM-DD or YYYY.MM.DD."}
+    if name in _NUMBER_FILTER_NAMES:
+        return {"type": ["integer", "string"], "maxLength": 20, "description": f"{name}: a number."}
+    if name in _FLAG_FILTER_NAMES:
+        return {
+            "type": ["boolean", "string"],
+            "maxLength": 5,
+            "description": f"{name}: true or false.",
+        }
+    return {"type": "string", "maxLength": 200, "description": f"{name}."}
+
+
+def filter_schema(groups: dict[str, list[str]] | list[str]) -> dict[str, Any]:
+    """Only the documented filter fields: flat for one group, one object per group otherwise."""
+    if isinstance(groups, list):
+        names = groups
+    elif len(groups) == 1:
+        (names,) = groups.values()
+    else:
+        return {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {group: filter_schema(fields) for group, fields in groups.items()},
+        }
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {name: filter_value_schema(name) for name in names},
+    }
+
+
+def columns_input(name: str, title: str, description: str, columns: list[str]) -> dict[str, Any]:
+    items: dict[str, Any] = (
+        {"type": "string", "enum": columns}
+        if columns
+        else {"type": "string", "pattern": r"^[A-Za-z][A-Za-z0-9_]{0,60}$"}
+    )
+    return json_input(name, title, description, kind="array", maxItems=200, items=items)
+
 
 #: Words shown for coded select values (build_contracts reads ``labels`` from inputs).
 OPTION_LABELS: dict[str, dict[Any, str]] = {}
@@ -568,6 +717,24 @@ def legacy_read_specs() -> list[dict[str, Any]]:
             raise SystemExit(f"{method}: two parameters map to the same input name")
         fields = [f["name"] for f in documented["result_fields"]]
         detail = f" Columns: {', '.join(fields)}." if fields else ""
+        kinds = [[f["name"], shapes.manual_kind(f["type"])] for f in documented["result_fields"]]
+        records = out_schema(
+            "records",
+            "array",
+            rows_schema(
+                {
+                    f["name"]: column(
+                        f["name"],
+                        shapes.manual_kind(f["type"]),
+                        f"{f['description']} (Finvalda's column {f['name']}, {f['type']}; "
+                        "English names when the connection's language is en).",
+                    )
+                    for f in documented["result_fields"]
+                },
+                f"The rows of {method}.",
+            ),
+        )
+        outputs = [records, COUNT] + ([] if fields else [RESPONSE])
         specs.append(
             {
                 "operation_id": snake(method),
@@ -577,9 +744,10 @@ def legacy_read_specs() -> list[dict[str, Any]]:
                 "description": f"{description} Finvalda method {method} (manual section "
                 f"{documented['section']}).{detail}",
                 "inputs": inputs,
-                "outputs": [RECORDS, RECORD, COUNT, RESPONSE],
+                "outputs": outputs,
                 "runtime": {
                     "runner": "method_read",
+                    "columns": kinds,
                     "method": method,
                     "verb": "GET",
                     "params": [
@@ -684,21 +852,16 @@ def description_specs() -> list[dict[str, Any]]:
                     "filter",
                     "Filter",
                     _filter_help(info["filters"])[:400],
+                    **filter_schema(info["filters"]),
                 )
             )
         inputs.append(
-            json_input(
+            columns_input(
                 "columns",
                 "Columns",
                 "The columns to return; default all."
-                + (
-                    f" Documented: {', '.join(columns[:40])}{'…' if len(columns) > 40 else ''}."
-                    if columns
-                    else ""
-                ),
-                kind="array",
-                maxItems=200,
-                items={"type": "string"},
+                + (" Only the columns Finvalda documents for this list." if columns else ""),
+                columns,
             )
         )
         inputs += [
@@ -732,8 +895,14 @@ def description_specs() -> list[dict[str, Any]]:
                 f"(documented in {source}). Pages of rows; columns can be chosen.",
                 "inputs": inputs,
                 "outputs": [
-                    RECORDS,
-                    RECORD,
+                    out_schema(
+                        "records",
+                        "array",
+                        rows_schema(
+                            {name: column(name) for name in columns},
+                            f"The rows of {title.lower()}.",
+                        ),
+                    ),
                     COUNT,
                     out("page", "integer", ["integer", "null"], "The last page read."),
                     out(
@@ -833,26 +1002,23 @@ def operation_read_specs() -> list[dict[str, Any]]:
                 "Filter",
                 f"Conditions as an object with any of: {', '.join(info['filters'])}. Dates are "
                 "YYYY-MM-DD; Description fields accept * as a wildcard.",
+                **filter_schema(info["filters"]),
             ),
-            json_input(
+            columns_input(
                 "columns",
                 "Columns",
                 f"The columns to return; default all (for example {HEADER_COLUMNS_NOTE}).",
-                kind="array",
-                maxItems=200,
-                items={"type": "string"},
+                OPERATION_LINE_COLUMNS if info["detail"] else OPERATION_HEADER_COLUMNS,
             ),
         ]
         if not info["detail"]:
             inputs += [
                 flag("full_op", "With lines", "Return each operation with its lines."),
-                json_input(
+                columns_input(
                     "columns_det",
                     "Line columns",
                     "With lines: the line columns to return, for example code, title, quantity, amount.",
-                    kind="array",
-                    maxItems=200,
-                    items={"type": "string"},
+                    OPERATION_LINE_COLUMNS,
                 ),
             ]
         source = "manual section 3.77" if info["source"] == "manual" else "the Postman collection"
@@ -866,7 +1032,25 @@ def operation_read_specs() -> list[dict[str, Any]]:
                 f"{op_class} (documented in {source}). Give a filter — a date range, a journal, "
                 "a client — to keep the answer small.",
                 "inputs": inputs,
-                "outputs": [RECORDS, RECORD, COUNT],
+                "outputs": [
+                    out_schema(
+                        "records",
+                        "array",
+                        rows_schema(
+                            {
+                                name: column(name)
+                                for name in (
+                                    OPERATION_LINE_COLUMNS
+                                    if info["detail"]
+                                    else OPERATION_HEADER_COLUMNS
+                                )
+                            },
+                            f"The {title.lower()}"
+                            + ("" if info["detail"] else ", with their lines under full_op"),
+                        ),
+                    ),
+                    COUNT,
+                ],
                 "runtime": {
                     "runner": "operations",
                     "method": "GetOperations",
@@ -874,6 +1058,10 @@ def operation_read_specs() -> list[dict[str, Any]]:
                     "op_class": op_class,
                     "filters": info["filters"],
                     "detail": info["detail"],
+                    "columns": OPERATION_LINE_COLUMNS
+                    if info["detail"]
+                    else OPERATION_HEADER_COLUMNS,
+                    "columns_det": [] if info["detail"] else OPERATION_LINE_COLUMNS,
                 },
             }
         )
@@ -1027,7 +1215,7 @@ def write_specs() -> list[dict[str, Any]]:
             "outputs": [
                 out("item_class", "text", "string"),
                 out("code", "text", ["string", "null"], "The new record's code."),
-                out("finvalda_result", "integer", ["integer", "null"]),
+                SAVED,
             ],
             "runtime": {
                 "runner": "item_write",
@@ -1069,7 +1257,7 @@ def write_specs() -> list[dict[str, Any]]:
             "outputs": [
                 out("item_class", "text", "string"),
                 out("code", "text", ["string", "null"]),
-                out("finvalda_result", "integer", ["integer", "null"]),
+                SAVED,
             ],
             "runtime": {
                 "runner": "item_write",
@@ -1095,7 +1283,7 @@ def write_specs() -> list[dict[str, Any]]:
                     required=True,
                 ),
             ],
-            "outputs": [out("finvalda_result", "integer", ["integer", "null"])],
+            "outputs": [SAVED],
             "runtime": {
                 "runner": "props_write",
                 "method": "EditItemProps",
@@ -1124,7 +1312,7 @@ def write_specs() -> list[dict[str, Any]]:
             "outputs": [
                 out("item_class", "text", "string"),
                 out("code", "text", "string"),
-                out("finvalda_result", "integer", ["integer", "null"]),
+                SAVED,
             ],
             "runtime": {
                 "runner": "delete_item",
@@ -1170,7 +1358,7 @@ def write_specs() -> list[dict[str, Any]]:
                     maxLength=20,
                 ),
             ],
-            "outputs": [out("finvalda_result", "integer", ["integer", "null"])],
+            "outputs": [SAVED],
             "runtime": {"runner": "append_group", "method": "AppendGroup", "verb": "POST"},
         },
         {
@@ -1366,7 +1554,7 @@ def lock_spec(operation_id: str, method: str, title: str, description: str) -> d
         "calls": [f"POST {method}"],
         "description": description,
         "inputs": [CONNECTION, JOURNAL, NUMBER, IMPORT_PARAMETER],
-        "outputs": [out("finvalda_result", "integer", ["integer", "null"])],
+        "outputs": [SAVED],
         "runtime": {"runner": "lock", "method": method, "verb": "POST"},
     }
 
@@ -1750,7 +1938,6 @@ def file_and_document_specs() -> list[dict[str, Any]]:
                 ),
                 out("vat", "text", ["string", "null"], "VAT, exact decimal."),
                 out("discount", "text", ["string", "null"], "Discount, exact decimal."),
-                RESPONSE,
             ],
             "runtime": {
                 "runner": "recommended_price",
@@ -1767,9 +1954,32 @@ def file_and_document_specs() -> list[dict[str, Any]]:
             "may use (GetUserPermissions, manual 3.84).",
             "inputs": [CONNECTION, fin_user],
             "outputs": [
-                out("permissions", "array", "array", "One entry per permission class."),
+                out_schema(
+                    "permissions",
+                    "array",
+                    {
+                        "type": "array",
+                        "description": "One entry per permission class (manual 3.84).",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "perrmisionClass": column(
+                                    "perrmisionClass",
+                                    "integer",
+                                    "65 warehouses, 6 clients, 51 operation types, 81 journals.",
+                                ),
+                                "perrmisionCode": column(
+                                    "perrmisionCode", "text", "The permission group's code."
+                                ),
+                                "permittedEntities": {
+                                    "type": ["array", "object", "null"],
+                                    "description": "The permitted codes (id1, id2).",
+                                },
+                            },
+                        },
+                    },
+                ),
                 COUNT,
-                RESPONSE,
             ],
             "runtime": {
                 "runner": "user_permissions",
@@ -1795,7 +2005,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
                     maximum=10,
                 ),
             ],
-            "outputs": [RECORDS, RECORD, COUNT, RESPONSE],
+            "outputs": [RECORDS, COUNT],
             "runtime": {
                 "runner": "related_invoices",
                 "method": "GetInvoicesRelatedToCustomer",
@@ -1956,6 +2166,167 @@ LINE_ITEM = {
 }
 
 
+#: The everyday steps' results: plain English fields, normalised records (runtime/shapes.py).
+_INVOICE_OUTPUTS = [
+    *OP_RESULT,
+    out("created", "boolean", "boolean", "False when the same document was found and returned."),
+    out("client_code", "text", ["string", "null"], "The client's code."),
+    out("currency", "text", ["string", "null"], "The document currency."),
+    out(
+        "amount",
+        "text",
+        ["string", "null"],
+        "The document's amount as Finvalda shows it, exact decimal.",
+    ),
+    out(
+        "total_without_vat",
+        "text",
+        ["string", "null"],
+        "Of a new document: its lines without VAT, exact decimal.",
+    ),
+    out("total_vat", "text", ["string", "null"], "Of a new document: its VAT, exact decimal."),
+    out("attachment_name", "text", ["string", "null"], "The attached file's name in Finvalda."),
+    record_out("invoice", "operation", "The document as Finvalda has it."),
+    WARNINGS,
+]
+_ENTITY_OF_CHANGES = {
+    "anyOf": [shapes.schema(kind) for kind in ("client", "product", "service", "operation")]
+}
+EVERYDAY_OUTPUTS: dict[str, list[dict[str, Any]]] = {
+    "test_connection": [
+        out("connected", "boolean", "boolean", "True when Finvalda answered."),
+        out("company_id", "text", ["string", "null"], "The company the connection reads, if set."),
+        out(
+            "clients_visible", "boolean", "boolean", "Whether the user can see at least one client."
+        ),
+        out("duration_ms", "integer", "integer", "How long the check took, in milliseconds."),
+        out_schema(
+            "warnings",
+            "array",
+            {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "What is missing for some steps (the Finvalda employee, the import parameter).",
+            },
+        ),
+    ],
+    "find_or_create_client": [
+        out("client_code", "text", ["string", "null"], "The client's code."),
+        out("created", "boolean", "boolean", "True when this step created the client."),
+        out("matched_by", "text", ["string", "null"], "code, company_code, vat_code or email."),
+        record_out("client", "client", "The client."),
+        WARNINGS,
+    ],
+    "find_or_create_product": [
+        out("product_code", "text", ["string", "null"], "The product's code."),
+        out("created", "boolean", "boolean", "True when this step created the product."),
+        out("matched_by", "text", ["string", "null"], "code or barcode."),
+        record_out("product", "product", "The product."),
+        WARNINGS,
+    ],
+    "find_or_create_service": [
+        out("service_code", "text", ["string", "null"], "The service's code."),
+        out("created", "boolean", "boolean", "True when this step created the service."),
+        record_out("service", "service", "The service."),
+        WARNINGS,
+    ],
+    "create_sales_invoice": _INVOICE_OUTPUTS,
+    "create_purchase_invoice": _INVOICE_OUTPUTS,
+    "register_payment": [
+        *OP_RESULT,
+        out("client_code", "text", ["string", "null"], "The client's code."),
+        record_out("payment", "operation", "The payment as Finvalda has it."),
+        WARNINGS,
+    ],
+    "attach_file": [
+        out("file_name", "text", "string", "The file's name in Finvalda's register."),
+        out("stored", "boolean", "boolean", "True when this step stored the file."),
+        out("attached", "boolean", "boolean", "True when this step attached it."),
+    ],
+    "stock_levels": [
+        records_out("items", "stock", "One row per product and warehouse."),
+        COUNT,
+        out("has_more", "boolean", "boolean", "True when more rows may follow."),
+        out("next_page", "integer", ["integer", "null"], "The page to read next, or null."),
+    ],
+    "product_prices": [
+        records_out("items", "product_price", "One row per product."),
+        records_out("client_prices", "client_price", "The client's special prices and discounts."),
+        COUNT,
+    ],
+    "client_debt": [
+        out("client_code", "text", "string", "The client's code."),
+        out("client_name", "text", ["string", "null"], "The client's name."),
+        out("debt", "text", ["string", "null"], "The debt on the client card, exact decimal."),
+        out("unpaid_total", "text", "string", "The sum of unpaid documents, exact decimal."),
+        out("overdue_total", "text", "string", "The unpaid sum past its due date, exact decimal."),
+        out_schema(
+            "documents",
+            "array",
+            {
+                "type": "array",
+                "description": "The unpaid documents.",
+                "items": shapes.schema(
+                    "debt_document",
+                    extra={
+                        "overdue": {
+                            "type": ["boolean", "null"],
+                            "description": "Past its due date; null when the due date cannot be read.",
+                        }
+                    },
+                ),
+            },
+        ),
+        COUNT,
+    ],
+    "changes_since": [
+        out_schema(
+            "records",
+            "array",
+            {
+                "type": "array",
+                "description": "The records edited since, as client, product, service or operation records.",
+                "items": _ENTITY_OF_CHANGES,
+            },
+        ),
+        COUNT,
+        out(
+            "latest_edited",
+            "text",
+            ["string", "null"],
+            "The edit time of the last record returned, ISO 8601.",
+        ),
+        out(
+            "next_since",
+            "text",
+            ["string", "null"],
+            "Pass it as since next time: the last edit time, or just after it when a whole large group was returned.",
+        ),
+        out(
+            "has_more",
+            "boolean",
+            "boolean",
+            "True when more records follow; continue with since = next_since.",
+        ),
+        out_schema(
+            "undated",
+            "array",
+            {
+                "type": "array",
+                "description": "Records whose edit time Finvalda gives in no known form (up to 100), with the last page only.",
+                "items": _ENTITY_OF_CHANGES,
+            },
+        ),
+        out(
+            "undated_count",
+            "integer",
+            "integer",
+            "How many records have an edit time in no known form.",
+        ),
+    ],
+}
+
+
 def invoice_spec(operation_id: str, noun: str, header: str, journal_hint: str) -> dict[str, Any]:
     return {
         "operation_id": operation_id,
@@ -2013,25 +2384,7 @@ def invoice_spec(operation_id: str, noun: str, header: str, journal_hint: str) -
             IMPORT_PARAMETER,
             file_input("document_file", required=False),
         ],
-        "outputs": [
-            *OP_RESULT,
-            out("created", "boolean", "boolean", "False when an existing document was returned."),
-            out("client_code", "text", ["string", "null"]),
-            out(
-                "total_without_vat",
-                "text",
-                ["string", "null"],
-                "Sum of the lines without VAT, exact decimal.",
-            ),
-            out("total_vat", "text", ["string", "null"], "Sum of the computed VAT, exact decimal."),
-            out(
-                "attachment_name",
-                "text",
-                ["string", "null"],
-                "The attached file's name in Finvalda.",
-            ),
-            RECORD,
-        ],
+        "outputs": EVERYDAY_OUTPUTS[operation_id],
     }
 
 
@@ -2044,22 +2397,7 @@ def everyday_specs() -> list[dict[str, Any]]:
             "calls": ["GetDescriptions type=Clients (one row)"],
             "description": "Reads one client to check the address, the web service user, the password and the company.",
             "inputs": [CONNECTION],
-            "outputs": [
-                out("connected", "boolean", "boolean"),
-                out(
-                    "company_id",
-                    "text",
-                    ["string", "null"],
-                    "The company the connection reads, if set.",
-                ),
-                out(
-                    "clients_visible",
-                    "boolean",
-                    "boolean",
-                    "Whether the user can see at least one client.",
-                ),
-                out("duration_ms", "integer", "integer"),
-            ],
+            "outputs": EVERYDAY_OUTPUTS["test_connection"],
         },
         {
             "operation_id": "find_or_create_client",
@@ -2114,17 +2452,7 @@ def everyday_specs() -> list[dict[str, Any]]:
                 ),
                 ITEM_PARAMETER,
             ],
-            "outputs": [
-                out("client_code", "text", ["string", "null"], "The client's code in Finvalda."),
-                out("created", "boolean", "boolean", "True when this step created the client."),
-                out(
-                    "matched_by",
-                    "text",
-                    ["string", "null"],
-                    "code, company_code, vat_code or email.",
-                ),
-                RECORD,
-            ],
+            "outputs": EVERYDAY_OUTPUTS["find_or_create_client"],
         },
         {
             "operation_id": "find_or_create_product",
@@ -2171,12 +2499,7 @@ def everyday_specs() -> list[dict[str, Any]]:
                 amount("purchase_price", "Purchase price", "The purchase price of a new product."),
                 ITEM_PARAMETER,
             ],
-            "outputs": [
-                out("product_code", "text", ["string", "null"]),
-                out("created", "boolean", "boolean", "True when this step created the product."),
-                out("matched_by", "text", ["string", "null"], "code or barcode."),
-                RECORD,
-            ],
+            "outputs": EVERYDAY_OUTPUTS["find_or_create_product"],
         },
         {
             "operation_id": "find_or_create_service",
@@ -2207,11 +2530,7 @@ def everyday_specs() -> list[dict[str, Any]]:
                 amount("purchase_price", "Purchase price", "The purchase price of a new service."),
                 ITEM_PARAMETER,
             ],
-            "outputs": [
-                out("service_code", "text", ["string", "null"]),
-                out("created", "boolean", "boolean", "True when this step created the service."),
-                RECORD,
-            ],
+            "outputs": EVERYDAY_OUTPUTS["find_or_create_service"],
         },
         invoice_spec("create_sales_invoice", "sales invoice", "PardDok", "S-1001"),
         invoice_spec(
@@ -2279,14 +2598,7 @@ def everyday_specs() -> list[dict[str, Any]]:
                 ),
                 IMPORT_PARAMETER,
             ],
-            "outputs": [
-                *OP_RESULT,
-                out(
-                    "created", "boolean", "boolean", "False when an existing payment was returned."
-                ),
-                out("client_code", "text", ["string", "null"]),
-                RECORD,
-            ],
+            "outputs": EVERYDAY_OUTPUTS["register_payment"],
         },
         {
             "operation_id": "download_invoice_pdf",
@@ -2358,11 +2670,7 @@ def everyday_specs() -> list[dict[str, Any]]:
                     "file_description", "Description", "A description of the file.", maxLength=200
                 ),
             ],
-            "outputs": [
-                out("file_name", "text", "string"),
-                out("stored", "boolean", "boolean", "True when this step stored the file."),
-                out("attached", "boolean", "boolean", "True when this step attached it."),
-            ],
+            "outputs": EVERYDAY_OUTPUTS["attach_file"],
         },
         {
             "operation_id": "stock_levels",
@@ -2399,17 +2707,7 @@ def everyday_specs() -> list[dict[str, Any]]:
                     maximum=1_000_000,
                 ),
             ],
-            "outputs": [
-                out(
-                    "items",
-                    "array",
-                    "array",
-                    "One row per product and warehouse: code, title, warehouse, quantity, reserved, unit, cost.",
-                ),
-                COUNT,
-                out("has_more", "boolean", "boolean", "True when more rows may follow."),
-                out("next_page", "integer", ["integer", "null"], "The page to read next, or null."),
-            ],
+            "outputs": EVERYDAY_OUTPUTS["stock_levels"],
         },
         {
             "operation_id": "product_prices",
@@ -2433,18 +2731,7 @@ def everyday_specs() -> list[dict[str, Any]]:
                     "client_code", "Client", "Also read this client's special prices.", maxLength=15
                 ),
             ],
-            "outputs": [
-                out(
-                    "items",
-                    "array",
-                    "array",
-                    "One row per product: code, title, prices, currencies.",
-                ),
-                out(
-                    "client_prices", "array", "array", "The client's special prices and discounts."
-                ),
-                COUNT,
-            ],
+            "outputs": EVERYDAY_OUTPUTS["product_prices"],
         },
         {
             "operation_id": "client_debt",
@@ -2465,32 +2752,7 @@ def everyday_specs() -> list[dict[str, Any]]:
                     "as_of", "As of", "The date overdue is counted at, YYYY-MM-DD. Default: today."
                 ),
             ],
-            "outputs": [
-                out("client_code", "text", "string"),
-                out("client_name", "text", ["string", "null"]),
-                out(
-                    "debt",
-                    "text",
-                    ["string", "null"],
-                    "The client's debt from the client card, exact decimal.",
-                ),
-                out(
-                    "unpaid_total", "text", "string", "The sum of unpaid documents, exact decimal."
-                ),
-                out(
-                    "overdue_total",
-                    "text",
-                    "string",
-                    "The unpaid sum past its payment date, exact decimal.",
-                ),
-                out(
-                    "documents",
-                    "array",
-                    "array",
-                    "The unpaid documents: document, date, payment date, amount, remaining, currency, overdue.",
-                ),
-                COUNT,
-            ],
+            "outputs": EVERYDAY_OUTPUTS["client_debt"],
         },
         {
             "operation_id": "changes_since",
@@ -2523,40 +2785,7 @@ def everyday_specs() -> list[dict[str, Any]]:
                     maximum=300,
                 ),
             ],
-            "outputs": [
-                RECORDS,
-                COUNT,
-                out(
-                    "latest_edited",
-                    "text",
-                    ["string", "null"],
-                    "The edit time of the last record returned.",
-                ),
-                out(
-                    "next_since",
-                    "text",
-                    ["string", "null"],
-                    "Pass it as since next time: the last edit time, or just after it when a whole large group was returned.",
-                ),
-                out(
-                    "has_more",
-                    "boolean",
-                    "boolean",
-                    "True when more records follow; continue with since = next_since.",
-                ),
-                out(
-                    "undated",
-                    "array",
-                    "array",
-                    "Records whose edit time Finvalda gives in no known form (up to 100), with the last page only.",
-                ),
-                out(
-                    "undated_count",
-                    "integer",
-                    "integer",
-                    "How many records have an edit time in no known form.",
-                ),
-            ],
+            "outputs": EVERYDAY_OUTPUTS["changes_since"],
         },
     ]
 

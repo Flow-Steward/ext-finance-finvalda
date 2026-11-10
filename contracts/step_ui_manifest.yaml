@@ -583,8 +583,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: client, code, info1, info2, info3, tag1,
-      tag2, tag3, tag4, tag5, city, email, post_code, country, phone, street, house, flat.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -652,8 +651,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: id, subject, location, body, start, end,
-      created, modified, label, allday, meeting, isreminder, deleted, user_name, client, url.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -681,7 +679,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: code, title, info1, info2.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -715,7 +713,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: code, client.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -749,11 +747,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: code, title, debt, address, phone, fax,
-      representative, bank, account_debitor, account_creditor, company_code, vat_payer_code, remarks,
-      type, email, currency, is_subdivision, additional_inf, tag1, tag2, tag3, date_created, date_edited,
-      address2, name2, country, country_name, city, current_debt, object1, object2, object3, object4,
-      object5, object6, ac'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -917,11 +911,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: warehouse, warehouse_title, code, title,
-      quantity, quantity_with_reserved, measure_unit, primary_cost, type, tag1, tag2, tag3, tag4, tag5,
-      tag6, tag7, tag8, tag9, tag10, tag11, tag12, tag13, tag14, tag15, tag16, tag17, tag18, tag19, tag20,
-      sell_price1, sell_price2, sell_price3, sell_price4, sell_price5, sell_price6, sell_currency, purchase_price,
-      pur'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -958,11 +948,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: warehouse, warehouse_title, code, title,
-      quantity, measure_unit, primary_cost, primary_cost_unit, journal, order_number, op_type, op_date,
-      enter_date, location, type, tag1, tag2, tag3, tag4, tag5, tag6, tag7, tag8, tag9, tag10, tag11,
-      tag12, tag13, tag14, tag15, tag16, tag17, tag18, tag19, tag20, object1, object2, object3, object4,
-      object5….'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1028,8 +1014,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: code, title, initial_value, depreciated,
-      salvage_value, residual_value, acquisition_date, commissioning_date, writeoff_date, depreciation_date.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1090,7 +1075,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: code, title, info1, info2.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1118,7 +1103,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: code, title, info1, info2.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1179,8 +1164,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: client, product, partner_product, price1,
-      price2, price3, currency, used_price, partner_type.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1214,11 +1198,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: client, client_title, type, code, title,
-      quantity_1, quantity_2, quantity_3, quantity_4, sum_1, sum_2, sum_3, sum_4, discount_1, discount_2,
-      discount_3, discount_4, term_from_1, term_from_2, term_from_3, term_from_4, term_to_1, term_to_2,
-      term_to_3, term_to_4, price, currency, price_card, price_term, currency_term, price_card_term, term_from,
-      term_to'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1252,11 +1232,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: client_type, client_type_name, type, item_type,
-      item_type_name, quantity_1, quantity_2, quantity_3, quantity_4, sum_1, sum_2, sum_3, sum_4, discount_1,
-      discount_2, discount_3, discount_4, term_from_1, term_from_2, term_from_3, term_from_4, term_to_1,
-      term_to_2, term_to_3, term_to_4, price_card, price_card_term, term_from, term_to, date_created,
-      date_'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1290,10 +1266,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: client_type, client_type_name, type, code,
-      title, quantity_1, quantity_2, quantity_3, quantity_4, sum_1, sum_2, sum_3, sum_4, discount_1, discount_2,
-      discount_3, discount_4, term_from_1, term_from_2, term_from_3, term_from_4, term_to_1, term_to_2,
-      term_to_3, term_to_4, price, currency, price_card, price_term, currency_term, price_card_term, term_from'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1327,11 +1300,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: client, client_title, type, item_type,
-      item_name, quantity_1, quantity_2, quantity_3, quantity_4, sum_1, sum_2, sum_3, sum_4, discount_1,
-      discount_2, discount_3, discount_4, term_from_1, term_from_2, term_from_3, term_from_4, term_to_1,
-      term_to_2, term_to_3, term_to_4, price_card, price_card_term, term_from, term_to, date_created,
-      date_edited.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1401,10 +1370,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: product, title, measure_unit, measure_unit_ratio,
-      barcode, barcodes, remarks, information, type, purchase_price, purchase_currency, sell_price1, sell_price2,
-      sell_price3, sell_price4, sell_price5, sell_price6, sell_currency, neto, bruto, volume, overcharge,
-      num_of_places, vat_percent, date_created, date_edited, info1, info2, info3, info4, info5, pack'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1471,10 +1437,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: code, title, barcode, measure_unit, purchase_price,
-      sell_price, remarks_1, remarks_2, remarks_3, remarks_4, remarks_5, remarks_6, remarks_7, remarks_8,
-      remarks_9, remarks_10, remarks_11, remarks_12, remarks_13, type, tag1, tag2, tag3, date_created,
-      date_edited, vat_percent.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1508,8 +1471,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: warehouse, warehouse_title, product, title,
-      type, supplier, supplier_title, measure_unit, quantity, primary_cost, account.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -1599,7 +1561,7 @@ forms:
     label: Columns
     widget_type: json
     required: false
-    help_text: 'The columns to return; default all. Documented: code, title, info1, info2.'
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number

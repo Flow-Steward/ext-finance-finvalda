@@ -91,37 +91,77 @@ def dump_page(path: Path, header: str, page: dict[str, Any]) -> None:
     path.write_text(header + text, encoding="utf-8")
 
 
-def _names(fields: list[str]) -> str:
-    return ", ".join(f"`{name}`" for name in fields) if fields else "none"
+def _type_word(schema: dict[str, Any], value_type: str) -> str:
+    """A short human type: text, whole number, yes/no, date, list of …, record."""
+    if value_type == "artifact_handle":
+        return "file"
+    kinds = schema.get("type")
+    kinds = [kinds] if isinstance(kinds, str) else list(kinds or [])
+    kinds = [k for k in kinds if k != "null"]
+    pattern = str(schema.get("pattern") or "")
+    if schema.get("enum"):
+        return (
+            "one of "
+            + ", ".join(str(v) for v in schema["enum"][:8])
+            + (", …" if len(schema["enum"]) > 8 else "")
+        )
+    if kinds == ["string"] and pattern.startswith("^-?\\d+(\\.\\d+)?"):
+        return "decimal"
+    if kinds == ["string"] and "T" in pattern and "[+-]" in pattern and "d{2}:" in pattern:
+        return "date and time"
+    if kinds == ["string"] and pattern.startswith("^\\d{4}"):
+        return "date"
+    if set(kinds) == {"string", "number"}:
+        return "decimal"
+    if kinds == ["array"]:
+        items = schema.get("items") or {}
+        if items.get("properties") or items.get("anyOf"):
+            return "list of records"
+        return "list"
+    if kinds == ["object"]:
+        return "record" if schema.get("properties") else "object"
+    return {
+        "string": "text",
+        "integer": "whole number",
+        "number": "number",
+        "boolean": "yes/no",
+    }.get(kinds[0] if len(kinds) == 1 else "", " or ".join(kinds) or value_type)
 
 
-def _inputs(op: dict[str, Any]) -> str:
-    parts = [
-        f"`{i['name']}`" + ("" if i.get("required") else " (optional)")
-        for i in op["inputs"]
-        if i["name"] != "connection_ref"
-    ]
-    return ", ".join(parts) if parts else "none"
+def _describe_item(item: dict[str, Any], *, input_side: bool) -> str:
+    schema = item.get("schema") or {}
+    word = _type_word(schema, item.get("value_type", ""))
+    optional = "" if not input_side or item.get("required") else ", optional"
+    description = str(schema.get("description") or "").strip()
+    if item.get("value_type") == "artifact_handle" and not description:
+        description = "A workflow file."
+    record = schema.get("items") if word == "list of records" else schema
+    fields = list((record or {}).get("properties") or {})
+    if fields and not input_side and word in {"record", "list of records"}:
+        shown = ", ".join(f"`{f}`" for f in fields[:16]) + (", …" if len(fields) > 16 else "")
+        description = f"{description} Fields: {shown}." if description else f"Fields: {shown}."
+    return f"- `{item['name']}` ({word}{optional}){': ' + description if description else ''}"
+
+
+def _inputs(op: dict[str, Any]) -> list[str]:
+    items = [i for i in op["inputs"] if i["name"] != "connection_ref"]
+    return [_describe_item(i, input_side=True) for i in items] or ["- none"]
 
 
 def _results(op: dict[str, Any]) -> list[str]:
-    return [
-        n.removeprefix("result.")
-        for n in op["result_fields"]
-        if n.removeprefix("result.") not in HIDDEN_RESULTS
-    ]
+    items = [o for o in op["outputs"] if o["name"] not in HIDDEN_RESULTS]
+    return [_describe_item(o, input_side=False) for o in items] or ["- none"]
 
 
 def _section(op: dict[str, Any], spec: dict[str, Any], *, title: str | None = None) -> list[str]:
     heading = title or str(op["display_name"]).removeprefix(ADVANCED_PREFIX)
-    kind = "write" if op["operation_kind"] == "action" else "read"
+    kind = "changes data in Finvalda" if op["operation_kind"] == "action" else "reads only"
     lines = [f"### {heading}", "", str(op["description"]), ""]
-    lines.append(f"- Action id: `{op['operation_id']}`")
-    lines.append(f"- Kind: {kind}")
-    lines.append(f"- Finvalda calls: {', '.join(f'`{c}`' for c in spec.get('calls', []))}")
-    lines.append(f"- Inputs: {_inputs(op)}")
-    lines.append(f"- Results: {_names(_results(op))}")
-    lines.append("")
+    lines.append(
+        f"Action id `{op['operation_id']}` · {kind} · Finvalda: "
+        + ", ".join(f"`{c}`" for c in spec.get("calls", []))
+    )
+    lines += ["", "**Inputs**", "", *_inputs(op), "", "**Results**", "", *_results(op), ""]
     return lines
 
 

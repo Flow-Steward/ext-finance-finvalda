@@ -244,7 +244,7 @@ def test_any_payment_with_the_document_stops_without_a_write(inputs: dict[str, A
 def test_a_new_document_number_is_registered() -> None:
     fake = FakeFinvalda(GetOperations=[items(), items()], InsertNewOperation=saved("IPL", 6))
     response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "S-1"})
-    assert response["result"]["created"] is True, response
+    assert response["ok"] is True and response["result"]["op_number"] == 6, response
 
 
 # -- M5: barcodes -----------------------------------------------------------------
@@ -349,10 +349,7 @@ def test_numbers_are_read_and_written_as_decimals() -> None:
         GetDescriptions=items({"code": "P1", "quantity": 0.1, "primary_cost": 12345678.905})
     )
     result = run(fake, "stock_levels", {})["result"]
-    assert (
-        result["items"][0]["quantity"] == "0.1"
-        and result["items"][0]["primary_cost"] == "12345678.905"
-    )
+    assert result["items"][0]["quantity"] == "0.1" and result["items"][0]["cost"] == "12345678.905"
 
 
 # -- smaller findings --------------------------------------------------------------
@@ -676,7 +673,7 @@ def test_changes_since_returns_its_limit_of_many_rows() -> None:
     )
     assert response["ok"] is True, response
     assert response["result"]["count"] == 300 and response["result"]["has_more"] is True
-    assert response["result"]["latest_edited"] == "2026-11-01T10:04:59"
+    assert response["result"]["latest_edited"] == "2026-11-01T10:04:59+02:00"
 
 
 def test_password_digits_inside_numbers_and_dates_are_left_alone() -> None:
@@ -744,7 +741,14 @@ def test_store_refused_and_not_stored_before_reports_the_refusal() -> None:
 
 
 def test_attachment_uses_the_read_back_operation_when_the_answer_names_none() -> None:
-    sale = {"journal": "PARD", "op_number": 77, "order_number": "S-1", "client": "K1"}
+    sale = {
+        "journal": "PARD",
+        "op_number": 77,
+        "order_number": "S-1",
+        "client": "K1",
+        "currency": "EUR",
+        "amount": 1,
+    }
     fake = FakeFinvalda(
         GetOperations=[items(), items(sale)],
         InsertNewOperation={**OK, "nResult": 0},
@@ -836,7 +840,7 @@ def test_dotnet_edit_times_compare_in_local_time() -> None:
         "result"
     ]
     assert [r["code"] for r in result["records"]] == ["A"]
-    assert result["latest_edited"] == "2026-11-10T10:30:00"
+    assert result["latest_edited"] == "2026-11-10T10:30:00+02:00"
 
 
 def test_four_hundred_records_of_one_time_are_returned_whole() -> None:
@@ -851,7 +855,7 @@ def test_four_hundred_records_of_one_time_are_returned_whole() -> None:
         fake, "changes_since", {"entity": "clients", "since": first["next_since"], "limit": 200}
     )["result"]
     # The group at since is larger than limit: it comes alone, and next_since moves past it.
-    assert second["count"] == 400 and second["next_since"] == "2026-11-10T09:00:00.000001"
+    assert second["count"] == 400 and second["next_since"] == "2026-11-10T09:00:00.000001+02:00"
     third = run(
         fake, "changes_since", {"entity": "clients", "since": second["next_since"], "limit": 200}
     )["result"]
@@ -932,7 +936,14 @@ def test_eu_rule_without_time_zone_data(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 def test_invoice_rerun_attaches_its_own_stored_file() -> None:
-    sale = {"journal": "PARD", "op_number": 77, "order_number": "S-1", "client": "K1"}
+    sale = {
+        "journal": "PARD",
+        "op_number": 77,
+        "order_number": "S-1",
+        "client": "K1",
+        "currency": "EUR",
+        "amount": 1,
+    }
     fake = FakeFinvalda(
         GetOperations=items(sale),
         GetAttachedDocument={**OK, "result": {"enitityDocs": [], "errorCode": 0}},
@@ -1008,7 +1019,14 @@ def test_too_long_own_file_name_is_refused() -> None:
 
 
 def test_a_network_failure_on_store_is_not_taken_for_a_refusal() -> None:
-    sale = {"journal": "PARD", "op_number": 77, "order_number": "S-1", "client": "K1"}
+    sale = {
+        "journal": "PARD",
+        "op_number": 77,
+        "order_number": "S-1",
+        "client": "K1",
+        "currency": "EUR",
+        "amount": 1,
+    }
     fake = FakeFinvalda(
         GetOperations=items(sale),
         GetAttachedDocument={**OK, "result": {"enitityDocs": [], "errorCode": 0}},
@@ -1057,7 +1075,7 @@ def test_a_large_group_at_since_comes_alone_and_is_stepped_over() -> None:
     assert page["ok"] is True, page
     result = page["result"]
     assert result["count"] == 450 and result["has_more"] is True
-    assert result["next_since"] == "2026-11-10T09:00:00.000001"
+    assert result["next_since"] == "2026-11-10T09:00:00.000001+02:00"
 
 
 def test_a_group_too_large_for_any_step_says_how_to_step_over() -> None:

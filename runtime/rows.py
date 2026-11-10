@@ -84,11 +84,9 @@ def op_result(data: Mapping[str, Any]) -> dict[str, Any]:
         op_number = int(str(number).strip()) if number not in (None, "") else None
     except ValueError:
         op_number = None
-    code = field(data, "nResult")
     return {
         "journal": errors.safe_text(field(info, "ZURNALAS"), 20) or None,
         "op_number": op_number,
         "series": errors.safe_text(field(info, "SERIJA"), 20) or None,
         "document": errors.safe_text(field(info, "DOKUMENTAS"), 40) or None,
-        "finvalda_result": code if isinstance(code, int) and not isinstance(code, bool) else None,
     }

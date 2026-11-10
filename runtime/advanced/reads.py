@@ -14,7 +14,7 @@ from ..errors import invalid
 from ..fields import field
 from ..inputs import (
     _COLUMN_RE,
-    _DATE_TIME_RE,
+    _FINVALDA_DATE_TIME_RE,
     allowed,
     date_input,
     decimal_input,
@@ -23,7 +23,9 @@ from ..inputs import (
     whole_input,
 )
 from ..limits import DEFAULT_LIMIT, DEFAULT_MAX_PAGES, MAX_LIMIT, MAX_LIST_ITEMS, MAX_PAGES
+from ..reference_data import DESCRIPTION_TYPES
 from ..rows import rest_of, rows_of
+from ..shapes import normalize_row
 from ..transport import DeadlineReached, dumps_json
 
 #: Filter values that are lists in the manual's examples.
@@ -69,15 +71,22 @@ def run_method_read(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]
     query = _method_query(spec, context.operation_input)
     reply = context.call(spec["method"], verb=spec["verb"], query=query, mutating=False)
     rows = rows_of(reply.data, strict=False)
-    return {
-        "records": rows,
-        "record": rows[0] if rows else None,
+    kinds = {name: kind for name, kind in spec.get("columns", [])}
+    result: dict[str, Any] = {
+        "records": [normalize_row(row, kinds) for row in rows],
         "count": len(rows),
-        "response": rest_of(reply.data, rows),
     }
+    if not spec.get("columns"):
+        # Methods the manual documents without columns (one record, a status):
+        # their answer is returned whole.
+        result["response"] = normalize_row(rest_of(reply.data, rows))
+    return result
 
 
-def check_columns(value: Any, name: str = "columns") -> list[str]:
+def check_columns(
+    value: Any, name: str = "columns", documented: list[str] | None = None
+) -> list[str]:
+    """Column names; only the documented ones when the documents list them."""
     if value is None:
         return []
     if not isinstance(value, list) or len(value) > 200:
@@ -86,6 +95,11 @@ def check_columns(value: Any, name: str = "columns") -> list[str]:
     for item in value:
         if not isinstance(item, str) or not _COLUMN_RE.fullmatch(item.strip()):
             raise invalid(f"{name}: {item!r} is not a column name")
+        if documented and item.strip() not in documented:
+            raise invalid(
+                f"{name}: {item.strip()} is not a documented column; use "
+                + ", ".join(documented[:60])
+            )
         columns.append(item.strip())
     return columns
 
@@ -154,7 +168,9 @@ def descriptions_body(
 ) -> dict[str, Any]:
     params: dict[str, Any] = {"type": kind, "page": page, "limit": limit}
     params.update(check_filter(inputs.get("filter"), groups, label=kind))
-    columns = check_columns(inputs.get("columns"))
+    columns = check_columns(
+        inputs.get("columns"), documented=DESCRIPTION_TYPES.get(kind, {}).get("columns") or None
+    )
     if columns:
         params["columns"] = columns
     return {"readParams": params}
@@ -253,8 +269,7 @@ def run_descriptions(context: Context, spec: Mapping[str, Any]) -> dict[str, Any
     # The advanced list step keeps what it read and says where to continue.
     read.pop("timed_out")
     return {
-        "records": records,
-        "record": records[0] if records else None,
+        "records": [normalize_row(row) for row in records],
         "count": len(records),
         **read,
     }
@@ -287,18 +302,20 @@ def operations_body(spec: Mapping[str, Any], inputs: Mapping[str, Any]) -> dict[
             )
         elif "Date" in canonical:
             text = text_input(f"filter.{canonical}", value, limit=27)
-            if not _DATE_TIME_RE.fullmatch(text):
+            if not _FINVALDA_DATE_TIME_RE.fullmatch(text):
                 raise invalid(f"filter.{canonical} must be a date, YYYY-MM-DD")
             checked[canonical] = text
         else:
             checked[canonical] = _filter_value("filter", canonical, value)
     params: dict[str, Any] = {"OpClass": spec["op_class"], "filter": checked}
-    columns = check_columns(inputs.get("columns"))
+    columns = check_columns(inputs.get("columns"), documented=spec.get("columns") or None)
     if columns:
         params["columns"] = {"column": columns}
     if not spec["detail"]:
         params["fullOp"] = flag_input("full_op", inputs.get("full_op"))
-        det = check_columns(inputs.get("columns_det"), "columns_det")
+        det = check_columns(
+            inputs.get("columns_det"), "columns_det", documented=spec.get("columns_det") or None
+        )
         if det:
             params["columnsDet"] = {"column": det}
     return {"opReadParams": params}
@@ -312,7 +329,7 @@ def run_operations(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
     body = operations_body(spec, context.operation_input)
     reply = context.call("GetOperations", verb="POST", body=body, mutating=False)
     rows = rows_of(reply.data)
-    result = {"records": rows, "record": rows[0] if rows else None, "count": len(rows)}
+    result = {"records": [normalize_row(row) for row in rows], "count": len(rows)}
     if not budget.fits(result):
         raise errors.no_effect(
             errors.RESPONSE_TOO_LARGE,
@@ -376,7 +393,6 @@ def run_recommended_price(context: Context, spec: Mapping[str, Any]) -> dict[str
         "price": money("price"),
         "vat": money("vat"),
         "discount": money("discount"),
-        "response": rest_of(data, []),
     }
 
 
@@ -394,7 +410,7 @@ def run_user_permissions(context: Context, spec: Mapping[str, Any]) -> dict[str,
         result = field(reply.data, "result")
         found = field(result, "perrmissions") if isinstance(result, Mapping) else None
         permissions = found if isinstance(found, list) else []
-    return {"permissions": permissions, "count": len(permissions), "response": None}
+    return {"permissions": normalize_row(permissions), "count": len(permissions)}
 
 
 def run_related_invoices(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
@@ -438,13 +454,7 @@ def run_related_invoices(context: Context, spec: Mapping[str, Any]) -> dict[str,
                     f"Finvalda's answer holds invoices that are not shown to belong to client "
                     f"{client}; it is not passed on",
                 )
-    rows = rows_all
-    return {
-        "records": rows,
-        "record": rows[0] if rows else None,
-        "count": len(rows),
-        "response": rest_of(reply.data, rows),
-    }
+    return {"records": [normalize_row(row) for row in rows_all], "count": len(rows_all)}
 
 
 def fin_user_of(context: Context | None, inputs: Mapping[str, Any], *, required: bool) -> str:

@@ -123,7 +123,7 @@ def validate(operation_id: str, inputs: Mapping[str, Any]) -> None:
     elif operation_id == "changes_since":
         if inputs.get("entity") not in CHANGE_ENTITIES:
             raise invalid(f"entity must be one of: {', '.join(CHANGE_ENTITIES)}")
-        text("since", inputs, 27, required=True)
+        text("since", inputs, 35, required=True)
     elif operation_id == "client_debt":
         text("client_code", inputs, 15, required=True)
         date_input("as_of", inputs.get("as_of"))
@@ -138,34 +138,43 @@ EVERYDAY_NEUTRAL: dict[str, dict[str, Any]] = {
         "client_code": None,
         "created": False,
         "matched_by": None,
-        "record": None,
+        "client": None,
+        "warnings": [],
     },
     "find_or_create_product": {
         "product_code": None,
         "created": False,
         "matched_by": None,
-        "record": None,
+        "product": None,
+        "warnings": [],
     },
-    "find_or_create_service": {"service_code": None, "created": False, "record": None},
-    "create_sales_invoice": {
-        **_OP_NEUTRAL,
+    "find_or_create_service": {
+        "service_code": None,
         "created": False,
-        "client_code": None,
-        "total_without_vat": None,
-        "total_vat": None,
-        "attachment_name": None,
-        "record": None,
+        "service": None,
+        "warnings": [],
     },
-    "create_purchase_invoice": {
+    **{
+        operation_id: {
+            **_OP_NEUTRAL,
+            "created": False,
+            "client_code": None,
+            "currency": None,
+            "amount": None,
+            "total_without_vat": None,
+            "total_vat": None,
+            "attachment_name": None,
+            "invoice": None,
+            "warnings": [],
+        }
+        for operation_id in ("create_sales_invoice", "create_purchase_invoice")
+    },
+    "register_payment": {
         **_OP_NEUTRAL,
-        "created": False,
         "client_code": None,
-        "total_without_vat": None,
-        "total_vat": None,
-        "attachment_name": None,
-        "record": None,
+        "payment": None,
+        "warnings": [],
     },
-    "register_payment": {**_OP_NEUTRAL, "created": False, "client_code": None, "record": None},
     "attach_file": {"file_name": "", "stored": False, "attached": False},
 }
 

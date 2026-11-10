@@ -106,6 +106,7 @@ def _dotnet(text: str) -> datetime | None:
 
 _DATE_TIME = re.compile(
     r"^(\d{4})[-.](\d{2})[-.](\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,7}))?)?)?"
+    r"\s*(Z|[+-]\d{2}:?\d{2})?"
 )
 
 
@@ -115,9 +116,9 @@ def finvalda_datetime(value: Any) -> datetime | None:
     match = _DATE_TIME.match(text)
     try:
         if match:
-            year, month, day, hour, minute, second, fraction = match.groups()
+            year, month, day, hour, minute, second, fraction, zone = match.groups()
             micro = int((fraction or "0").ljust(6, "0")[:6])
-            return datetime(
+            moment = datetime(
                 int(year),
                 int(month),
                 int(day),
@@ -126,6 +127,18 @@ def finvalda_datetime(value: Any) -> datetime | None:
                 int(second or 0),
                 micro,
             )
+            if zone:
+                # A time with an explicit offset (one this extension returned, or a
+                # workflow's): the same moment as Lithuanian wall time.
+                if zone == "Z":
+                    shift = timedelta(0)
+                else:
+                    digits = zone.replace(":", "")
+                    sign = 1 if digits[0] == "+" else -1
+                    shift = sign * timedelta(hours=int(digits[1:3]), minutes=int(digits[3:5]))
+                utc = (moment - shift).replace(tzinfo=timezone.utc)
+                return (utc + _vilnius_offset(utc)).replace(tzinfo=None)
+            return moment
         return _dotnet(text)
     except (ValueError, OverflowError, OSError):
         return None
@@ -140,3 +153,20 @@ def finvalda_date(value: Any) -> Date | None:
 
 def _iso(value: Date | None) -> str | None:
     return value.isoformat() if value else None
+
+
+def iso_date(moment: datetime | None) -> str | None:
+    """YYYY-MM-DD of a Lithuanian wall time."""
+    return moment.date().isoformat() if moment is not None else None
+
+
+def iso_moment(moment: datetime | None) -> str | None:
+    """A Lithuanian wall time as ISO 8601 with its offset (+02:00 or +03:00)."""
+    if moment is None:
+        return None
+    # The offset of a wall time: try the winter offset, then check it.
+    guess = (moment - timedelta(hours=2)).replace(tzinfo=timezone.utc)
+    offset = _vilnius_offset(guess)
+    utc = (moment - offset).replace(tzinfo=timezone.utc)
+    offset = _vilnius_offset(utc)
+    return moment.replace(tzinfo=timezone(offset)).isoformat()

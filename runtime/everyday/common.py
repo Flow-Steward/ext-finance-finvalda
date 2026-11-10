@@ -254,12 +254,19 @@ def insert_item(context: Any, cls: str, fields: dict[str, Any], inputs: Mapping[
     context.call("InsertNewItem", verb="POST", body=body, mutating=True)
 
 
-def _best_effort(read: Callable[[], Any]) -> Any:
-    """A read after a saved write: its failure must not turn the write into an error."""
+def _best_effort(read: Callable[[], Any], warnings: list[str], what: str) -> Any:
+    """A read after a saved write: its failure must not turn the write into an error.
+
+    It is never silent: the step's ``warnings`` say that the record was saved and
+    why it could not be read back.
+    """
     try:
         return read()
-    except (ExtensionError, DeadlineReached):
-        return None
+    except ExtensionError as exc:
+        warnings.append(f"{what} was saved, but reading it back failed: {exc.code}")
+    except DeadlineReached:
+        warnings.append(f"{what} was saved, but the step ran out of time reading it back")
+    return None
 
 
 def same_document(
@@ -336,7 +343,6 @@ def operation_identity(record: Mapping[str, Any], document: str) -> dict[str, An
         "op_number": _op_number(record),
         "series": errors.safe_text(field(record, "series"), 20) or None,
         "document": errors.safe_text(field(record, "order_number"), 40) or document,
-        "finvalda_result": None,
     }
 
 

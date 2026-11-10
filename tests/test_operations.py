@@ -366,7 +366,13 @@ def test_attach_document_already_attached_is_not_an_error() -> None:
 
 
 def test_insert_document_sends_hex() -> None:
-    fake = FakeFinvalda(InsertDocument={"AccessResult": "Success", "error": ""})
+    fake = FakeFinvalda(
+        InsertDocument={
+            "AccessResult": "Success",
+            "error": "",
+            "result": {"errorText": "", "errorCode": 0, "accessResult": 2},
+        }
+    )
     files = Files(b"Lorem")
     response = run(
         fake,

@@ -57,7 +57,7 @@ components:
       - path: fin_user
         widget: text
         label: Finvalda employee
-        help: Optional. Documents and prices are recorded for this employee; default the web service user.
+        help: Needed for the file steps (documents, attachments, an invoice with a file). A Finvalda employee, not the web service user.
       - path: language
         widget: select
         label: Answer language
@@ -83,3 +83,5 @@ components:
       - **Authentication failed** — the user name, password or company is wrong, or the user may not use the web service.
       - **Not found** — check the address: it ends with the interface, usually `/FvsServicePure.svc`.
       - **Connection failed or blocked address** — the web service must be reachable from the internet over https.
+
+      Test connection reads one client: it checks the address, the user, the password and the company, not the rights to write. It warns when the Finvalda employee or the operation import parameter is missing.

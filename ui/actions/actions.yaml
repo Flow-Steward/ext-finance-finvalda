@@ -19,6 +19,7 @@ actions:
   - company_id
   - clients_visible
   - duration_ms
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -91,7 +92,8 @@ actions:
   - client_code
   - created
   - matched_by
-  - record
+  - client
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -160,7 +162,8 @@ actions:
   - product_code
   - created
   - matched_by
-  - record
+  - product
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -222,7 +225,8 @@ actions:
   result_fields:
   - service_code
   - created
-  - record
+  - service
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -302,13 +306,15 @@ actions:
   - op_number
   - series
   - document
-  - finvalda_result
   - created
   - client_code
+  - currency
+  - amount
   - total_without_vat
   - total_vat
   - attachment_name
-  - record
+  - invoice
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -389,13 +395,15 @@ actions:
   - op_number
   - series
   - document
-  - finvalda_result
   - created
   - client_code
+  - currency
+  - amount
   - total_without_vat
   - total_vat
   - attachment_name
-  - record
+  - invoice
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -473,10 +481,9 @@ actions:
   - op_number
   - series
   - document
-  - finvalda_result
-  - created
   - client_code
-  - record
+  - payment
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -825,7 +832,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -882,7 +888,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -939,7 +944,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -996,7 +1000,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1050,7 +1053,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1107,7 +1109,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1164,7 +1165,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1218,7 +1218,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1275,7 +1274,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1332,7 +1330,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1389,7 +1386,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1446,7 +1442,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1503,7 +1498,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1560,7 +1554,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1617,7 +1610,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1674,7 +1666,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1728,7 +1719,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1782,7 +1772,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1836,7 +1825,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1893,7 +1881,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -1950,7 +1937,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2007,7 +1993,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2064,7 +2049,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2121,7 +2105,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2178,7 +2161,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2235,7 +2217,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2292,7 +2273,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2349,7 +2329,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2406,7 +2385,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2463,7 +2441,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2517,7 +2494,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2571,7 +2547,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - page
   - next_page
@@ -2622,7 +2597,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -2663,7 +2637,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -2710,7 +2683,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -2751,7 +2723,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -2798,7 +2769,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -2839,7 +2809,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -2886,7 +2855,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -2928,7 +2896,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -2976,7 +2943,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3018,7 +2984,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3066,7 +3031,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3107,7 +3071,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3154,7 +3117,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3195,7 +3157,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3242,7 +3203,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3283,7 +3243,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3331,7 +3290,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3372,7 +3330,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3419,7 +3376,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3460,7 +3416,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3508,7 +3463,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3550,7 +3504,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3597,7 +3550,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3639,7 +3591,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3687,7 +3638,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3729,7 +3679,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3776,7 +3725,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   error_codes:
   - invalid_payload
@@ -3824,9 +3772,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3874,9 +3820,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3928,9 +3872,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3971,9 +3913,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4007,9 +3947,7 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4055,9 +3993,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4091,9 +4027,7 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4131,9 +4065,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4180,9 +4112,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4234,7 +4164,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -4294,7 +4223,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -4333,7 +4261,6 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -4381,9 +4308,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4417,9 +4342,7 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4467,9 +4390,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4568,9 +4489,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4604,9 +4523,7 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4640,9 +4557,7 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4679,9 +4594,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4714,9 +4627,7 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4754,9 +4665,7 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4800,9 +4709,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4846,9 +4753,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4892,9 +4797,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4928,9 +4831,7 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4976,9 +4877,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5023,9 +4922,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5071,9 +4968,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5117,9 +5012,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5165,9 +5058,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5212,9 +5103,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5260,9 +5149,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5306,9 +5193,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5354,9 +5239,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5401,9 +5284,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5449,9 +5330,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5495,9 +5374,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5543,9 +5420,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5590,9 +5465,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5638,9 +5511,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5684,9 +5555,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5722,7 +5591,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -5760,7 +5628,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -5798,7 +5665,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -5836,7 +5702,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -5874,7 +5739,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -5912,7 +5776,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -5950,7 +5813,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -5988,7 +5850,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -6029,7 +5890,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -6067,7 +5927,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -6108,7 +5967,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -6146,7 +6004,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -6187,7 +6044,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -6232,7 +6088,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -6280,7 +6135,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -6319,9 +6173,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6373,9 +6225,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6412,9 +6262,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6451,9 +6299,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6487,9 +6333,7 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6533,9 +6377,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6579,9 +6421,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6624,9 +6464,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6669,9 +6507,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6714,9 +6550,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6759,9 +6593,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6801,7 +6633,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -6854,9 +6685,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6907,9 +6736,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6960,9 +6787,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7025,9 +6850,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7070,7 +6893,6 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
   - response
   error_codes:
@@ -7110,9 +6932,7 @@ actions:
     required: true
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7158,7 +6978,7 @@ actions:
   result_fields:
   - item_class
   - code
-  - finvalda_result
+  - saved
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7209,7 +7029,7 @@ actions:
   result_fields:
   - item_class
   - code
-  - finvalda_result
+  - saved
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7249,7 +7069,7 @@ actions:
     type: object
     required: true
   result_fields:
-  - finvalda_result
+  - saved
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7294,7 +7114,7 @@ actions:
   result_fields:
   - item_class
   - code
-  - finvalda_result
+  - saved
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7343,7 +7163,7 @@ actions:
     type: string
     required: false
   result_fields:
-  - finvalda_result
+  - saved
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7395,7 +7215,6 @@ actions:
   - op_number
   - series
   - document
-  - finvalda_result
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7445,7 +7264,6 @@ actions:
   - op_number
   - series
   - document
-  - finvalda_result
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7499,7 +7317,6 @@ actions:
   - op_number
   - series
   - document
-  - finvalda_result
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7544,7 +7361,7 @@ actions:
     type: string
     required: false
   result_fields:
-  - finvalda_result
+  - saved
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7589,7 +7406,7 @@ actions:
     type: string
     required: false
   result_fields:
-  - finvalda_result
+  - saved
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7678,7 +7495,6 @@ actions:
   - op_number
   - series
   - document
-  - finvalda_result
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7746,7 +7562,6 @@ actions:
   - op_number
   - series
   - document
-  - finvalda_result
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -8227,7 +8042,6 @@ actions:
   - price
   - vat
   - discount
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -8265,7 +8079,6 @@ actions:
   result_fields:
   - permissions
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -8306,9 +8119,7 @@ actions:
     required: false
   result_fields:
   - records
-  - record
   - count
-  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope

@@ -50,7 +50,7 @@ connection_types:
           maxLength: 64
           pattern: "^[\\x21-\\x7e]*$"
           title: Finvalda employee
-          description: The employee documents and prices are recorded for. Default the web service user.
+          description: The Finvalda employee (not the web service user) the file steps act as — documents, attachments, an invoice with a file — and whose prices and permissions are read. Needed for those steps.
         language:
           type: string
           enum: [lt, en]

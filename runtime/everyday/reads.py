@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any
 
+from ..shapes import shape
+from ..values import iso_moment
 from .. import budget, errors
 from ..advanced.reads import read_description_pages
 from ..errors import invalid
@@ -15,7 +17,7 @@ from ..fields import field
 from ..inputs import _DATE_TIME_RE, date_input, whole_input
 from ..reference_data import CHANGE_ENTITIES, DESCRIPTION_TYPES
 from ..rows import rows_of
-from ..values import _iso, as_decimal, cents, finvalda_date, finvalda_datetime
+from ..values import as_decimal, cents, finvalda_date, finvalda_datetime
 from .common import (
     CLIENT_COLUMNS,
     OPERATION_COLUMNS,
@@ -35,11 +37,23 @@ from .common import (
 def test_connection_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     started = context.clock()
     rows, _more = read_list(context, "Clients", {}, ["code"], limit=1, max_pages=1)
+    warnings = []
+    if not context.connection.fin_user:
+        warnings.append(
+            "No Finvalda employee is set: file steps (documents, attachments, an invoice with "
+            "a file) need one; the web service user is not used in its place"
+        )
+    if not context.connection.operation_parameter:
+        warnings.append(
+            "No operation import parameter is set: invoices and payments need one, on the "
+            "connection or in the step"
+        )
     return {
         "connected": True,
         "company_id": context.connection.company_id or None,
         "clients_visible": bool(rows),
         "duration_ms": int((context.clock() - started) * 1000),
+        "warnings": warnings,
     }
 
 
@@ -77,20 +91,7 @@ def stock_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         max_pages=1,
         meter=None,
     )
-    rows = [r for r in read["records"] if isinstance(r, Mapping)]
-    items = [
-        {
-            "code": field(r, "code"),
-            "title": field(r, "title"),
-            "warehouse": field(r, "warehouse"),
-            "warehouse_title": field(r, "warehouse_title"),
-            "quantity": as_decimal(field(r, "quantity")),
-            "quantity_with_reserved": as_decimal(field(r, "quantity_with_reserved")),
-            "unit": field(r, "measure_unit"),
-            "primary_cost": as_decimal(field(r, "primary_cost")),
-        }
-        for r in rows
-    ]
+    items = [shape("stock", r) for r in read["records"] if isinstance(r, Mapping)]
     return {
         "items": items,
         "count": len(items),
@@ -126,16 +127,7 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         "vat_percent",
     ]
     rows = describe(context, "Products", {"Codes": codes}, columns, limit=500)
-    items = []
-    for r in rows:
-        item: dict[str, Any] = {"code": field(r, "product"), "title": field(r, "title")}
-        for n in range(1, 7):
-            item[f"sell_price{n}"] = as_decimal(field(r, f"sell_price{n}"))
-        item["sell_currency"] = field(r, "sell_currency")
-        item["purchase_price"] = as_decimal(field(r, "purchase_price"))
-        item["purchase_currency"] = field(r, "purchase_currency")
-        item["vat_percent"] = as_decimal(field(r, "vat_percent"))
-        items.append(item)
+    items = [shape("product_price", r) for r in rows]
     client_prices: list[Any] = []
     client = text("client_code", inputs, 15)
     if client:
@@ -151,7 +143,11 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         raise errors.no_effect(
             errors.RESPONSE_TOO_LARGE, "Finvalda returned more products than were asked for"
         )
-    return {"items": items, "client_prices": client_prices, "count": len(items)}
+    return {
+        "items": items,
+        "client_prices": [shape("client_price", r) for r in client_prices],
+        "count": len(items),
+    }
 
 
 def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
@@ -180,7 +176,6 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             continue
         remaining = as_decimal(field(row, "likusi_skola"))
         due_date = finvalda_date(field(row, "apmokejimo_data"))
-        due = due_date.isoformat() if due_date else None
         late: bool | None = None
         if due_date is not None and remaining is not None:
             late = due_date < Date.fromisoformat(as_of) and Decimal(remaining) > 0
@@ -188,22 +183,9 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             unpaid += Decimal(remaining)
             if late:
                 overdue += Decimal(remaining)
-        documents.append(
-            {
-                "document": field(row, "dokumentas"),
-                "series": field(row, "serija"),
-                "journal": field(row, "zurnalas"),
-                "op_number": field(row, "op_numeris"),
-                "date": _iso(finvalda_date(field(row, "dokumento_data"))),
-                "payment_date": due,
-                "amount": as_decimal(field(row, "pradine_suma")),
-                "remaining": remaining,
-                "amount_currency": as_decimal(field(row, "pradine_suma_val")),
-                "remaining_currency": as_decimal(field(row, "likusi_skola_val")),
-                "currency": field(row, "valiuta"),
-                "overdue": late,
-            }
-        )
+        document = shape("debt_document", row) or {}
+        document["overdue"] = late
+        documents.append(document)
     record = rows[0]
     return {
         "client_code": client,
@@ -221,6 +203,16 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
 
 
 CHANGES_MAX_ROWS = 20_000
+#: The record each entity of Changes since is returned as.
+CHANGE_SHAPES = {
+    "Clients": "client",
+    "Products": "product",
+    "Services": "service",
+    "Sales": "operation",
+    "Purchases": "operation",
+    "Inflows": "operation",
+    "Disbursement": "operation",
+}
 
 
 def _edited(row: Mapping[str, Any]) -> datetime | None:
@@ -248,7 +240,7 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     entity = inputs.get("entity")
     if entity not in CHANGE_ENTITIES:
         raise invalid(f"entity must be one of: {', '.join(CHANGE_ENTITIES)}")
-    raw_since = text("since", inputs, 27, required=True)
+    raw_since = text("since", inputs, 35, required=True)
     since = finvalda_datetime(raw_since)
     if since is None or not _DATE_TIME_RE.fullmatch(raw_since.replace(" ", "T")):
         raise invalid("since must be YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS")
@@ -310,10 +302,10 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             groups.append((moment, [row]))
     for moment, members in groups:
         if len(members) > MAX_GROUP or not budget.fits({"records": members}):
-            skip = (moment + timedelta(microseconds=1)).isoformat()
+            skip = iso_moment(moment + timedelta(microseconds=1))
             raise errors.no_effect(
                 errors.RESPONSE_TOO_LARGE,
-                f"{len(members)} records share the edit time {moment.isoformat()}, more than one "
+                f"{len(members)} records share the edit time {iso_moment(moment)}, more than one "
                 f"step can return; read them with Export a list to a file, then continue with "
                 f"since = {skip}",
             )
@@ -346,19 +338,20 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     has_more = bool(rest)
     last = page[-1][0] if page else None
     if last is None:
-        next_since = since.isoformat()
+        next_moment = since
     elif not moved_on or (len(page) == 1 and last == since):
-        next_since = (last + timedelta(microseconds=1)).isoformat()
+        next_moment = last + timedelta(microseconds=1)
     else:
-        next_since = last.isoformat()
-    records = [row for _, members in page for row in members]
+        next_moment = last
+    kind = CHANGE_SHAPES[name]
+    records = [shape(kind, row) for _, members in page for row in members]
     result: dict[str, Any] = {
         "records": records,
         "count": len(records),
-        "latest_edited": last.isoformat() if last else None,
-        "next_since": next_since,
+        "latest_edited": iso_moment(last),
+        "next_since": iso_moment(next_moment),
         "has_more": has_more,
-        "undated": [] if has_more else undated[:MAX_UNDATED],
+        "undated": [] if has_more else [shape(kind, row) for row in undated[:MAX_UNDATED]],
         "undated_count": len(undated),
     }
     if not budget.fits(result):

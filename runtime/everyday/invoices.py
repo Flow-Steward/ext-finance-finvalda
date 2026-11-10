@@ -10,7 +10,10 @@ from .. import errors
 from ..advanced.files import read_input_file
 from ..advanced.reads import fin_user_of
 from ..advanced.writes import import_parameter
+from ..shapes import shape
+from ..values import decimal_of
 from ..errors import invalid
+from ..fields import field
 from ..inputs import date_input, decimal_input, text_input
 from ..records import check_fields
 from ..rows import op_result
@@ -205,6 +208,9 @@ def invoice_op(
     per_client = head == "PirkDok"
     existing = find_operation(context, op_class, client, document, series, per_client=per_client)
     created = existing is None
+    warnings: list[str] = []
+    if existing is not None:
+        same_as_request(existing, client, document, currency, total, vat_total)
     if existing is None:
         operation = {**header, **lines}
         body = {
@@ -221,7 +227,9 @@ def invoice_op(
         record = _best_effort(
             lambda: find_operation(
                 context, op_class, client, document, series, per_client=per_client
-            )
+            ),
+            warnings,
+            f"{head} document {document}",
         )
         if record is not None:
             # An answer without OP_DUOMENYS: the operation read back names it.
@@ -258,12 +266,48 @@ def invoice_op(
             content=content,
             own_name=True,
         )["file_name"]
+    invoice = shape("operation", record)
     return {
-        **saved,
+        "journal": saved["journal"],
+        "op_number": saved["op_number"],
+        "series": saved["series"],
+        "document": saved["document"],
         "created": created,
         "client_code": client,
-        "total_without_vat": str(cents(total)),
-        "total_vat": str(cents(vat_total)),
+        "currency": currency,
+        "amount": invoice["amount"] if invoice else None,
+        # The totals of this request; an existing document's are Finvalda's amount.
+        "total_without_vat": str(cents(total)) if created else None,
+        "total_vat": str(cents(vat_total)) if created else None,
         "attachment_name": attachment,
-        "record": record,
+        "invoice": invoice,
+        "warnings": warnings,
     }
+
+
+def same_as_request(
+    existing: Mapping[str, Any],
+    client: str,
+    document: str,
+    currency: str,
+    total: Decimal,
+    vat_total: Decimal,
+) -> None:
+    """A document found by number is this one only when its currency and amount match.
+
+    Finvalda's operation amount is compared with this request's total with and
+    without VAT (which one it shows is not documented); anything else — another
+    currency, another amount, an amount that cannot be read — is another document.
+    """
+    found_currency = str(field(existing, "currency") or "").strip().upper()
+    amount = decimal_of(field(existing, "amount"))
+    totals = {cents(total), cents(total + vat_total)}
+    if found_currency == currency and amount is not None and cents(amount) in totals:
+        return
+    shown = f"{amount if amount is not None else '?'} {found_currency or '?'}"
+    raise errors.no_effect(
+        errors.CONFLICT,
+        f"Document {document} of client {client} is already in Finvalda with {shown}, which "
+        f"does not match this request ({cents(total + vat_total)} {currency}); check Finvalda, "
+        "or give this document a number of its own",
+    )
