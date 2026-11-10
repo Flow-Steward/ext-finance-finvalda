@@ -531,6 +531,12 @@ forms:
     widget_type: text
     required: true
     help_text: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS; records edited at or after it.
+  - name: after_key
+    label: After key
+    widget_type: text
+    required: false
+    help_text: 'With since = latest_edited: the next_after_key of the previous step, to continue after
+      it.'
   - name: limit
     label: Rows
     widget_type: number

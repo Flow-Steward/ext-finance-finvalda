@@ -72,7 +72,7 @@ components:
 
     ### Register payment
 
-    Registers money received from a client (inflow) or paid to a supplier (disbursement), against one document or as a prepayment. Safe to run again: a payment of the client with the same document number and amount is returned instead of a second one — with an invoice, when its lines show they settle that invoice's operation; anything that cannot be told apart stops the step. Two real payments of the same client and amount on one statement, without an invoice, count as one: give the invoice, or a document number of its own for each payment.
+    Registers money received from a client (inflow) or paid to a supplier (disbursement), against one document or as a prepayment. Safe to run again: a payment of the client with the same document number and amount is returned instead of a second one — with an invoice, only when its lines point at that invoice's operation. Any other payment of the client with that number and amount stops the step without a write: two payments of one client and amount on one statement need document numbers of their own, and without an invoice they would count as one.
 
     - Action id: `register_payment`
     - Kind: write
@@ -132,13 +132,13 @@ components:
 
     ### Changes since
 
-    Records or operations created or edited since a moment: clients, products, services, sales, purchases, inflows, disbursements. Pass latest_edited as since next time.
+    Records or operations created or edited since a moment: clients, products, services, sales, purchases, inflows, disbursements. To continue, pass latest_edited as since and next_after_key as after_key: records of one edit time are read on, never repeated.
 
     - Action id: `changes_since`
     - Kind: read
     - Finvalda calls: `GetDescriptions (EditedFrom)`, `GetOperations (DateEditedFrom)`
-    - Inputs: `entity`, `since`, `limit` (optional)
-    - Results: `records`, `count`, `latest_edited`, `has_more`
+    - Inputs: `entity`, `since`, `after_key` (optional), `limit` (optional)
+    - Results: `records`, `count`, `latest_edited`, `next_after_key`, `has_more`, `undated`
 - component_id: operations_behaviour
   type: markdown
   title: How steps behave

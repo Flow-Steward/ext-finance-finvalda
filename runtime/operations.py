@@ -462,7 +462,8 @@ def rows_of(data: Mapping[str, Any], *, strict: bool = True) -> list[Any]:
         for k, v in data.items()
         if str(k).lower() not in {"accessresult", "error", "serror", "nresult"}
     }
-    if not rest:
+    if all(value in (None, "", []) for value in rest.values()):
+        # No data key, or data keys that are null or empty: no rows.
         return []
     items = field(rest, "items")
     if isinstance(items, list):

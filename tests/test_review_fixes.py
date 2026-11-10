@@ -251,14 +251,32 @@ def finvalda(inflows: list[dict[str, Any]], lines: list[dict[str, Any]] | None =
     return answer
 
 
-def test_two_invoices_paid_on_one_statement_are_both_registered() -> None:
-    # Invoice A's payment (IPL #5) exists; B is paid on the same statement, same amount.
+def test_second_invoice_on_one_statement_with_the_same_amount_stops() -> None:
+    # Invoice A's payment (IPL #5) exists; B on the same statement and amount cannot be
+    # told apart while the line columns' meaning is unconfirmed: no write, a conflict.
     fake = FakeFinvalda(
-        GetOperations=finvalda([STATEMENT_ROW], [{"journal_det": "PARD", "op_number_det": 11}]),
-        InsertNewOperation=saved("IPL", 6),
+        GetOperations=finvalda([STATEMENT_ROW], [{"journal_det": "PARD", "op_number_det": 11}])
     )
     response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "B"})
-    assert response["ok"] is True and response["result"]["created"] is True, response
+    assert response["error_code"] == "conflict" and fake.writes() == []
+    assert "another document number" in response["error"]
+
+
+def test_each_same_amount_payment_is_checked() -> None:
+    rows = [STATEMENT_ROW, {**STATEMENT_ROW, "op_number": 6}]
+
+    def answer(call):
+        params = call.op_params()
+        if params["OpClass"] == "Inflows":
+            return items(*rows)
+        if params["OpClass"] == "Sales":
+            return items({"order_number": "A", "client": "K1", "journal": "PARD", "op_number": 11})
+        number = params["filter"]["OpNumber"]
+        return items({"journal_det": "PARD", "op_number_det": 11 if number == 6 else 99})
+
+    fake = FakeFinvalda(GetOperations=answer)
+    response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "A"})
+    assert response["result"]["created"] is False and response["result"]["op_number"] == 6
 
 
 def test_rerun_of_an_invoice_payment_returns_the_earlier_one() -> None:
@@ -749,11 +767,10 @@ def test_an_answer_of_unknown_form_is_not_taken_for_no_rows() -> None:
     assert response["error_code"] == "invalid_response" and fake.writes() == []
 
 
-def test_rerun_after_store_finds_the_stored_document() -> None:
+def test_a_refused_store_is_never_taken_for_a_stored_file() -> None:
     fake = FakeFinvalda(
         GetAttachedDocument={**OK, "result": {"enitityDocs": [], "errorCode": 0}},
         InsertDocument=nested(4, "exists"),
-        AttachDocument=NESTED_OK,
     )
     response = run(
         fake,
@@ -766,8 +783,8 @@ def test_rerun_after_store_finds_the_stored_document() -> None:
             "file_name": "S.pdf",
         },
     )
-    assert response["ok"] is True, response
-    assert response["result"] == {**response["result"], "stored": False, "attached": True}
+    assert response["errors"][0]["finvalda_code"] == 4
+    assert [c.method for c in fake.calls if c.method == "AttachDocument"] == []
 
 
 def test_store_refused_and_not_stored_before_reports_the_refusal() -> None:
@@ -846,5 +863,81 @@ def test_changes_since_reads_every_time_form(edited: str) -> None:
         )
     )
     response = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-10T10:00:00"})
-    assert [r["code"] for r in response["result"]["records"]] == ["A", "B"]
+    assert [r["code"] for r in response["result"]["records"]] == ["A"]
+    assert [r["code"] for r in response["result"]["undated"]] == ["B"]
     assert response["result"]["latest_edited"].startswith("2026-11-10T10:30")
+
+
+# -- second code review (1611add) -------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "due, overdue",
+    [
+        # 2026-11-10 00:30 at +0200 is 2026-11-09 22:30 UTC: due today, not yesterday.
+        ("/Date(1794263400000+0200)/", False),
+        # 2026-11-10 00:30 at +0300 is 2026-11-09 21:30 UTC.
+        ("/Date(1794259800000+0300)/", False),
+        ("/Date(1794263400000)/", True),
+    ],
+)
+def test_dotnet_dates_keep_their_offset(due: str, overdue: bool) -> None:
+    fake = FakeFinvalda(
+        GetDescriptions=items({"code": "K1", "title": "K", "debt": 5}),
+        GetNeapmoketiKliDok=items({"dokumentas": "A", "apmokejimo_data": due, "likusi_skola": 5}),
+    )
+    result = run(fake, "client_debt", {"client_code": "K1", "as_of": "2026-11-10"})["result"]
+    assert result["documents"][0]["overdue"] is overdue
+
+
+def test_dotnet_edit_times_compare_in_local_time() -> None:
+    # 10:30 local at +0300 is 07:30 UTC; since 09:00 local must still see it.
+    fake = FakeFinvalda(
+        GetDescriptions=items({"code": "A", "date_edited": "/Date(1794295800000+0300)/"})
+    )
+    result = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-10T09:00:00"})[
+        "result"
+    ]
+    assert [r["code"] for r in result["records"]] == ["A"]
+    assert result["latest_edited"] == "2026-11-10T10:30:00"
+
+
+def test_four_hundred_records_of_one_time_are_read_on() -> None:
+    rows = [{"code": f"K{n:03d}", "date_edited": "2026-11-10T09:00:00"} for n in range(400)]
+    fake = FakeFinvalda(GetDescriptions=lambda call: items(*rows))
+    seen: list[str] = []
+    since, after = "2026-11-10", ""
+    for _ in range(3):
+        inputs = {"entity": "clients", "since": since, "limit": 200}
+        if after:
+            inputs["after_key"] = after
+        result = run(fake, "changes_since", inputs)["result"]
+        seen += [r["code"] for r in result["records"]]
+        since, after = result["latest_edited"], result["next_after_key"]
+        if not result["has_more"]:
+            break
+    assert len(seen) == 400 and len(set(seen)) == 400
+
+
+@pytest.mark.parametrize(
+    "answer", [{**OK, "Operations": None}, {**OK, "Operations": []}, {**OK, "items": []}]
+)
+def test_empty_data_keys_mean_no_rows(answer: dict[str, Any]) -> None:
+    fake = FakeFinvalda(GetOperations=[answer, items()], InsertNewOperation=saved())
+    inputs = {
+        "client_code": "K1",
+        "document": "S-1",
+        "warehouse": "W",
+        "lines": [{"code": "P1", "quantity": 1, "price": 1}],
+    }
+    assert run(fake, "create_sales_invoice", inputs)["result"]["created"] is True
+
+
+def test_test_mode_checks_the_same_code_limit_as_the_step() -> None:
+    codes = [f"P{n}" for n in range(300)]
+    response = run(FakeFinvalda(), "product_prices", {"product_codes": codes})
+    assert response["error_code"] == "invalid_payload"
+    from runtime import friendly
+
+    with pytest.raises(ExtensionError):
+        friendly.validate("product_prices", {"product_codes": codes})

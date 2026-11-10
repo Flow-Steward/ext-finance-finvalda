@@ -110,6 +110,7 @@ class FinvaldaTransport:
         #: Monotonic time after which no request may start (set by the operation).
         self.deadline: float | None = None
         self._call_timeout = timeout_seconds
+        self._forms: list[str] | None = None
 
     @property
     def connection(self) -> Connection:
@@ -267,6 +268,11 @@ class FinvaldaTransport:
         return status, raw
 
     def _secret_forms(self) -> list[str]:
+        if self._forms is None:
+            self._forms = self._build_secret_forms()
+        return self._forms
+
+    def _build_secret_forms(self) -> list[str]:
         forms: set[str] = set()
         for secret in self._connection.secret_fragments():
             escaped = json.dumps(secret, ensure_ascii=False)[1:-1]
@@ -288,9 +294,10 @@ class FinvaldaTransport:
         numbers and dates that happen to contain the same digits ("2024").
         """
         if isinstance(value, str):
-            for form in self._secret_forms():
-                if form in value:
-                    value = value.replace(form, "[redacted]")
+            if value:
+                for form in self._secret_forms():
+                    if form in value:
+                        value = value.replace(form, "[redacted]")
             return value
         if isinstance(value, Mapping):
             return {self.scrub(k): self.scrub(v) for k, v in value.items()}

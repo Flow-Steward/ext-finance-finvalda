@@ -499,7 +499,7 @@ def test_product_prices_with_client_prices() -> None:
     assert fake.calls[1].read_params()["Prices"] == {"Type": 1, "Client": "K1", "Codes": ["P1"]}
 
 
-def test_changes_since_keeps_the_last_edit_time_whole() -> None:
+def test_changes_since_continues_with_a_cursor() -> None:
     rows = [
         {"code": "A", "date_edited": "2026-11-01T10:00:00"},
         {"code": "B", "date_edited": "2026-11-01T11:00:00"},
@@ -507,11 +507,18 @@ def test_changes_since_keeps_the_last_edit_time_whole() -> None:
         {"code": "D", "date_edited": "2026-11-01T12:00:00"},
     ]
     fake = FakeFinvalda(GetDescriptions=items(*reversed(rows)))
-    response = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-01", "limit": 2})
-    result = response["result"]
-    assert [r["code"] for r in result["records"]] == ["A", "B", "C"]
-    assert result["latest_edited"] == "2026-11-01T11:00:00" and result["has_more"] is True
+    first = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-01", "limit": 2})[
+        "result"
+    ]
+    assert [r["code"] for r in first["records"]] == ["A", "B"] and first["has_more"] is True
+    assert first["latest_edited"] == "2026-11-01T11:00:00" and first["next_after_key"] == "B"
     assert fake.calls[0].read_params()["Clients"] == {"EditedFrom": "2026-11-01"}
+    second = run(
+        fake,
+        "changes_since",
+        {"entity": "clients", "since": first["latest_edited"], "after_key": "B", "limit": 2},
+    )["result"]
+    assert [r["code"] for r in second["records"]] == ["C", "D"] and second["has_more"] is False
 
 
 def test_changes_since_for_operations() -> None:
