@@ -59,12 +59,41 @@ def rows_of(data: Mapping[str, Any], *, strict: bool = True) -> list[Any]:
     return []
 
 
+_STATUS = {"accessresult", "error", "serror"}
+_RESULT_STATUS = {"errorcode", "errortext", "accessresult"}
+
+
 def rest_of(data: Mapping[str, Any], rows: list[Any]) -> dict[str, Any] | None:
-    rest = {
-        k: v
-        for k, v in data.items()
-        if str(k).lower() not in {"accessresult", "error", "serror"} and v is not rows
-    }
+    """Everything in an answer but its rows and status fields, or None.
+
+    The rows are removed wherever they are, with the objects that only wrapped
+    them (``{"Klientai": {"Fvs.Klientas": [...]}}``), so nothing is returned twice.
+    """
+    found = {id(rows), *(id(r) for r in rows if isinstance(r, (Mapping, list)))}
+
+    def strip(value: Any) -> Any:
+        if isinstance(value, Mapping):
+            out = {}
+            for key, item in value.items():
+                if id(item) in found:
+                    continue
+                kept = strip(item)
+                if isinstance(item, (Mapping, list)) and item and not kept:
+                    continue
+                out[key] = kept
+            return out
+        if isinstance(value, list):
+            return [strip(item) for item in value if id(item) not in found]
+        return value
+
+    rest = strip({k: v for k, v in data.items() if str(k).lower() not in _STATUS})
+    result = rest.get("result")
+    if isinstance(result, Mapping):
+        inner = {k: v for k, v in result.items() if str(k).lower() not in _RESULT_STATUS}
+        if inner:
+            rest["result"] = inner
+        else:
+            del rest["result"]
     return rest or None
 
 

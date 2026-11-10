@@ -242,7 +242,7 @@ def column(name: str, kind: str | None = None, description: str = "") -> dict[st
 RECORDS = out_schema(
     "records",
     "array",
-    rows_schema({}, "The rows Finvalda returned."),
+    rows_schema({}, "The rows Finvalda returned. Columns not documented by Finvalda."),
 )
 COUNT = out("count", "integer", "integer", "How many rows were returned.")
 RESPONSE = out(
@@ -2424,7 +2424,7 @@ EVERYDAY_OUTPUTS: dict[str, list[dict[str, Any]]] = {
             "next_since",
             "text",
             ["string", "null"],
-            "Pass it as since next time: the last edit time, or just after it when a whole large group was returned.",
+            "Pass it as since next time: the last edit time returned (its records come again), or since when nothing later was found.",
         ),
         out(
             "has_more",
@@ -2884,7 +2884,7 @@ def everyday_specs() -> list[dict[str, Any]]:
             "display_name": "Changes since",
             "kind": "source",
             "calls": ["GetDescriptions (EditedFrom)", "GetOperations (DateEditedFrom)"],
-            "description": "Records or operations created or edited since a moment: clients, products, services, sales, purchases, inflows, disbursements. Pass next_since as since next time. Since is inclusive and records of one edit time are never split, so the records at the boundary may come again: repeated, never lost — skip them by code.",
+            "description": "Records or operations created or edited since a moment: clients, products, services, sales, purchases, inflows, disbursements. Pass next_since as since next time. Since is inclusive and records of one edit time are never split; next_since is the last edit time returned, so the records of that time come again next time: repeated, never lost — skip them by code.",
             "inputs": [
                 CONNECTION,
                 choice(
@@ -2905,9 +2905,17 @@ def everyday_specs() -> list[dict[str, Any]]:
                 whole(
                     "limit",
                     "Rows",
-                    "At most this many rows, 1 to 300. Default 200.",
+                    "About this many rows, 1 to 300 (default 200), the records at since "
+                    "included. Records of one edit time are never split, so a page may hold "
+                    "more: the next edit time is always included, up to 600 records.",
                     minimum=1,
                     maximum=300,
+                ),
+                flag(
+                    "skip_group",
+                    "Skip the records at since",
+                    "Leave out the records edited exactly at since. Only when they were already "
+                    "read: a record edited later with the same coarse time would be missed.",
                 ),
             ],
             "outputs": EVERYDAY_OUTPUTS["changes_since"],

@@ -14,7 +14,7 @@ from ..inputs import date_input
 from ..records import check_fields
 from ..rows import op_result
 from ..transport import dumps_json
-from ..values import CENT, cents
+from ..values import CENT
 from .common import (
     Progress,
     _best_effort,
@@ -56,7 +56,7 @@ def payment_body(inputs: Mapping[str, Any], client: str) -> tuple[str, str, dict
         if direction == "incoming"
         else ("IsmDok", "IsmDokDetEil", "Disbursement")
     )
-    amount = cents(money("amount", inputs.get("amount"), minimum=CENT))
+    amount = money("amount", inputs.get("amount"), minimum=CENT, places=2)
     invoice = text("invoice_document", inputs, 20)
     invoice_series = text("invoice_series", inputs, 10)
     if invoice_series and not invoice:

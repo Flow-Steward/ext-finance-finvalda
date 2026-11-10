@@ -288,6 +288,19 @@ class FinvaldaTransport:
         # Longest first, so a form that contains another is removed whole.
         return sorted((f for f in forms if f), key=len, reverse=True)
 
+    def scrub_answer(self, raw: bytes) -> dict[str, Any]:
+        """``raw`` parsed, with the password removed from its texts.
+
+        The parsed answer is walked and copied only when the password could be in
+        it: one of its forms is in the text, or the text has escapes (``\\u…``,
+        ``&#…``) that could spell it.
+        """
+        data = parse_body(raw)
+        text = raw.decode("utf-8", "replace")
+        if "\\u" in text or "&#" in text or any(f in text for f in self._secret_forms()):
+            return dict(self.scrub(data))
+        return data
+
     def scrub(self, value: Any) -> Any:
         """The password removed from every text of an already parsed answer.
 
@@ -310,7 +323,7 @@ class FinvaldaTransport:
         self, raw: bytes, status: int, method_name: str, *, mutating: bool
     ) -> dict[str, Any]:
         try:
-            data = self.scrub(parse_body(raw))
+            data = self.scrub_answer(raw)
         except ValueError as exc:
             if mutating:
                 raise ExtensionError(
@@ -393,7 +406,7 @@ class FinvaldaTransport:
     ) -> ExtensionError:
         detail = ""
         try:
-            data = self.scrub(parse_body(raw))
+            data = self.scrub_answer(raw)
         except ValueError:
             text = re.sub(rb"<[^>]+>", b" ", raw).decode("utf-8", "replace")
             detail = errors.safe_text(self.scrub(text), 300)
@@ -622,6 +635,12 @@ def parse_body(raw: bytes) -> dict[str, Any]:
         except ElementTree.ParseError as exc:
             raise ValueError("bad XML") from exc
         value = _xml_value(root)
+        tag = root.tag.split("}", 1)[-1]
+        if tag.endswith("Out"):
+            # The newer methods' XML answer is their result element itself
+            # (<InsertDocumentOut><errorCode>0</errorCode>…): kept under its name, so
+            # its errorCode is read as the method's own (manual 3.80, 3.82).
+            return {tag: value}
         return value if isinstance(value, dict) else {"value": value}
     try:
         data = json.loads(stripped, parse_float=Decimal)

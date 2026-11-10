@@ -755,8 +755,8 @@ actions:
   title: Changes since
   description: 'Records or operations created or edited since a moment: clients, products, services, sales,
     purchases, inflows, disbursements. Pass next_since as since next time. Since is inclusive and records
-    of one edit time are never split, so the records at the boundary may come again: repeated, never lost
-    — skip them by code.'
+    of one edit time are never split; next_since is the last edit time returned, so the records of that
+    time come again next time: repeated, never lost — skip them by code.'
   required_scopes:
   - extension:invoke
   handler:
@@ -775,6 +775,9 @@ actions:
     required: true
   - name: limit
     type: integer
+    required: false
+  - name: skip_group
+    type: boolean
     required: false
   result_fields:
   - records

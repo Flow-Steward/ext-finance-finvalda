@@ -145,6 +145,16 @@ def finvalda_datetime(value: Any) -> datetime | None:
     return None
 
 
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def lithuanian_today() -> Date:
+    """Today's date in Lithuania, whatever the time zone of the process."""
+    now = _utc_now()
+    return (now + _vilnius_offset(now)).date()
+
+
 def finvalda_date(value: Any) -> Date | None:
     """A date in one of Finvalda's forms: 2026-11-10T00:00:00, 2026.11.10, /Date(ms+0300)/."""
     moment = finvalda_datetime(value)

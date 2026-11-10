@@ -80,10 +80,10 @@ def run_method_read(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]
         mutating=False,
         language="lt" if kinds else None,
     )
-    data: Mapping[str, Any] = reply.data
+    data = reply.data
     rows = rows_of(data, strict=False)
     if not rows and spec.get("record_path"):
-        rows, data = _records_at(data, spec["record_path"])
+        rows = _records_at(data, spec["record_path"])
     return {
         "records": [normalize_row(row, kinds) for row in rows],
         "count": len(rows),
@@ -92,18 +92,15 @@ def run_method_read(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]
     }
 
 
-def _records_at(data: Mapping[str, Any], path: list[str]) -> tuple[list[Any], Mapping[str, Any]]:
+def _records_at(data: Mapping[str, Any], path: list[str]) -> list[Any]:
     """The records under the element the manual's example names (``Fvs.Klientas``, or
-    ``Klientai`` → ``Fvs.Klientas``), and the answer without them; ``[]`` and the
-    whole answer when they are not there as objects (for example, XML text)."""
+    ``Klientai`` → ``Fvs.Klientas``); ``[]`` when they are not there as objects (for
+    example, as XML text)."""
     found: Any = data
     for name in path:
         found = field(found, name) if isinstance(found, Mapping) else None
     rows = [found] if isinstance(found, Mapping) else found if isinstance(found, list) else []
-    if not rows or not all(isinstance(r, Mapping) for r in rows):
-        return [], data
-    head = path[0].lower()
-    return list(rows), {k: v for k, v in data.items() if str(k).lower() != head}
+    return rows if rows and all(isinstance(r, Mapping) for r in rows) else []
 
 
 def check_columns(
@@ -437,17 +434,11 @@ def run_user_permissions(context: Context, spec: Mapping[str, Any]) -> dict[str,
         result = field(reply.data, "result")
         found = field(result, "perrmissions") if isinstance(result, Mapping) else None
         permissions = found if isinstance(found, list) else []
-    rest = rest_of(reply.data, permissions)
-    if rest and isinstance(rest.get("result"), Mapping):
-        inner = {
-            k: v
-            for k, v in rest["result"].items()
-            if v is not permissions and str(k).lower() not in {"errorcode", "errortext"}
-        }
-        rest = {k: v for k, v in rest.items() if k != "result"} | (
-            {"result": inner} if inner else {}
-        )
-    return {"permissions": permissions, "count": len(permissions), "response": rest or None}
+    return {
+        "permissions": permissions,
+        "count": len(permissions),
+        "response": rest_of(reply.data, permissions),
+    }
 
 
 def run_related_invoices(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:

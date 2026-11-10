@@ -5,7 +5,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from .. import errors
 from ..advanced.files import (
     attach_document,
     attached_files,
@@ -35,16 +34,14 @@ def store_and_attach(
     progress: Progress,
     *,
     content: bytes | None = None,
-    own_name: bool = False,
 ) -> dict[str, Any]:
     """Store a workflow file in the register and attach it, unless it is already attached.
 
     Every call is guarded, so a failure after an earlier write names what was saved.
     InsertDocument documents no "already stored" code (manual 3.80: 1 no name,
-    2 unknown employee, 3 no content) and the register cannot be listed, so a stored
-    file of the same name is assumed only for ``own_name``: a name this extension
-    builds from the kind, the client and the document, which no other file has.
-    Otherwise a refused store is reported with a hint to attach by hand.
+    2 unknown employee, 3 no content) and the register cannot be listed, so a
+    refused store is never taken for a stored file: it is reported as it is, with a
+    hint for the case of a file stored by an earlier run.
     """
     query = entity_query(inputs)
     name = file_name_input("file_name", inputs.get("file_name"))
@@ -68,41 +65,21 @@ def store_and_attach(
             lambda: context.call("InsertDocument", verb="POST", body=body, mutating=True),
         )
     except ExtensionError as refused:
-        # Only Finvalda's own refusal (nothing saved) can mean "already stored";
-        # a network failure or a timeout is passed on as it is.
-        if refused.definitely_no_external_effect is not True or refused.code not in {
-            errors.UPSTREAM_VALIDATION_FAILED,
-            errors.CONFLICT,
-        }:
+        # Finvalda's own refusal (nothing saved): passed on with a hint. A network
+        # failure or a timeout is passed on as it is.
+        if refused.definitely_no_external_effect is not True:
             raise
-        if not own_name:
-            raise ExtensionError(
-                refused.code,
-                f"{refused.message}. If an earlier run stored {name}, attach it with "
-                "Advanced · Attach a document",
-                failure_class=refused.failure_class,
-                retryable=refused.retryable,
-                definitely_no_external_effect=refused.definitely_no_external_effect,
-                external_effect_status=refused.external_effect_status,
-                http_status=refused.http_status,
-                finvalda_code=refused.finvalda_code,
-            ) from refused
-        # Our own name: an earlier run of this step stored it. Attach that one; an
-        # unknown outcome of the attach is passed on as it is.
-        try:
-            attached = progress.guard(
-                "Attaching the stored document",
-                lambda: attach_document(context, attach_query),
-            )
-        except ExtensionError as failed:
-            if failed.definitely_no_external_effect is not True:
-                raise
-            raise errors.no_effect(
-                errors.CONFLICT,
-                f"Finvalda refused to store {name} ({refused.message}) and to attach a stored "
-                f"one ({failed.message}); attach the file by hand in Finvalda",
-            ) from failed
-        return {"file_name": name, "stored": False, "attached": attached}
+        raise ExtensionError(
+            refused.code,
+            f"{refused.message}. If an earlier run already stored {name} in the register, "
+            "attach it with Advanced · Attach a document",
+            failure_class=refused.failure_class,
+            retryable=refused.retryable,
+            definitely_no_external_effect=refused.definitely_no_external_effect,
+            external_effect_status=refused.external_effect_status,
+            http_status=refused.http_status,
+            finvalda_code=refused.finvalda_code,
+        ) from refused
     progress.add(f"document {name} in the register")
     attached = progress.guard(
         "Attaching the document", lambda: attach_document(context, attach_query)

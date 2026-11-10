@@ -32,7 +32,7 @@ from ..limits import (
 from ..reference_data import DESCRIPTION_TYPES
 from ..rows import rest_of, rows_of
 from ..transport import MIN_CALL_WINDOW_SECONDS, DeadlineReached, dumps_json
-from ..values import safe_name
+from ..values import lithuanian_today, safe_name
 from .reads import _filter_value, descriptions_body, fin_user_of
 
 
@@ -233,7 +233,7 @@ def read_input_file(context: Context, handle: Any) -> bytes:
 
 
 def _composition_date(value: str) -> dict[str, int]:
-    day = Date.fromisoformat(value) if value else Date.today()
+    day = Date.fromisoformat(value) if value else lithuanian_today()
     return {"year": day.year, "month": day.month, "day": day.day}
 
 

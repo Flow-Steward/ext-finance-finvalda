@@ -851,15 +851,18 @@ def test_four_hundred_records_of_one_time_are_returned_whole() -> None:
         "result"
     ]
     assert first["count"] == 400 and first["has_more"] is True
+    assert first["next_since"] == "2026-11-10T09:00:00+02:00"
     second = run(
         fake, "changes_since", {"entity": "clients", "since": first["next_since"], "limit": 200}
     )["result"]
-    # The group at since is larger than limit: it comes alone, and next_since moves past it.
-    assert second["count"] == 400 and second["next_since"] == "2026-11-10T09:00:00.000001+02:00"
+    # The group at since comes again, whole, with the next edit time: never past it.
+    assert second["count"] == 401 and second["has_more"] is False
+    assert second["next_since"] == "2026-11-10T10:00:00+02:00"
     third = run(
         fake, "changes_since", {"entity": "clients", "since": second["next_since"], "limit": 200}
     )["result"]
     assert [r["code"] for r in third["records"]] == ["Z"] and third["has_more"] is False
+    assert third["next_since"] == "2026-11-10T10:00:00+02:00"
 
 
 def test_undated_records_come_with_the_last_page_only() -> None:
@@ -935,7 +938,7 @@ def test_eu_rule_without_time_zone_data(monkeypatch: pytest.MonkeyPatch) -> None
     )
 
 
-def test_invoice_rerun_attaches_its_own_stored_file() -> None:
+def test_invoice_rerun_does_not_take_a_refused_store_for_its_file() -> None:
     sale = {
         "journal": "PARD",
         "op_number": 77,
@@ -947,7 +950,7 @@ def test_invoice_rerun_attaches_its_own_stored_file() -> None:
     fake = FakeFinvalda(
         GetOperations=items(sale),
         GetAttachedDocument={**OK, "result": {"enitityDocs": [], "errorCode": 0}},
-        InsertDocument=nested(4, "already there"),
+        InsertDocument=nested(2, "unknown employee"),
         AttachDocument=NESTED_OK,
     )
     inputs = {
@@ -958,14 +961,9 @@ def test_invoice_rerun_attaches_its_own_stored_file() -> None:
         "document_file": "a",
     }
     response = run(fake, "create_sales_invoice", inputs, files=Files(b"%PDF"))
-    assert response["ok"] is True, response
-    assert response["result"]["created"] is False
-    from runtime.everyday.common import own_file_name
-
-    name = own_file_name("sale", "K1", "", "S-1")
-    assert response["result"]["attachment_name"] == name
-    attach = [c for c in fake.calls if c.method == "AttachDocument"][0]
-    assert attach.query["documentId"] == name
+    assert response["ok"] is False
+    assert "Advanced · Attach a document" in response["error"]
+    assert not [c for c in fake.calls if c.method == "AttachDocument"]
 
 
 def test_attach_file_refused_store_says_how_to_finish() -> None:
@@ -1065,7 +1063,7 @@ def test_attach_file_keeps_the_refusals_facts() -> None:
     assert not [c for c in fake.calls if c.method == "AttachDocument"]
 
 
-def test_a_large_group_at_since_comes_alone_and_is_stepped_over() -> None:
+def test_a_large_group_at_since_comes_whole_with_the_next_time() -> None:
     rows = [{"code": f"K{n:03d}", "date_edited": "2026-11-10T09:00:00"} for n in range(450)]
     rows += [{"code": "Z", "date_edited": "2026-11-10T10:00:00"}]
     fake = FakeFinvalda(GetDescriptions=lambda call: items(*rows))
@@ -1074,8 +1072,8 @@ def test_a_large_group_at_since_comes_alone_and_is_stepped_over() -> None:
     )
     assert page["ok"] is True, page
     result = page["result"]
-    assert result["count"] == 450 and result["has_more"] is True
-    assert result["next_since"] == "2026-11-10T09:00:00.000001+02:00"
+    assert result["count"] == 451 and result["has_more"] is False
+    assert result["next_since"] == "2026-11-10T10:00:00+02:00"
 
 
 def test_a_group_too_large_for_any_step_says_how_to_step_over() -> None:
@@ -1083,7 +1081,7 @@ def test_a_group_too_large_for_any_step_says_how_to_step_over() -> None:
     fake = FakeFinvalda(GetDescriptions=lambda call: items(*rows))
     response = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-10"})
     assert response["error_code"] == "response_too_large"
-    assert "2026-11-10T09:00:00.000001" in response["error"]
+    assert "since = 2026-11-10T09:00:00+02:00 and skip_group true" in response["error"]
 
 
 def test_payment_conflict_text_without_numbers() -> None:

@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 import re
 from collections.abc import Callable, Mapping
-from datetime import date as Date
 from decimal import Decimal
 from typing import Any
 
@@ -18,7 +17,7 @@ from ..inputs import decimal_input, text_input
 from ..reference_data import DESCRIPTION_TYPES
 from ..rows import rows_of
 from ..transport import DeadlineReached
-from ..values import safe_name
+from ..values import lithuanian_today, safe_name
 
 MAX_AMOUNT = Decimal("9999999999.99")
 
@@ -145,15 +144,17 @@ def currency_input(inputs: Mapping[str, Any]) -> str:
     return value
 
 
-def money(name: str, value: Any, *, minimum: Decimal = Decimal(0)) -> Decimal:
-    number = decimal_input(name, value, minimum=minimum, places=4)
+def money(name: str, value: Any, *, minimum: Decimal = Decimal(0), places: int = 4) -> Decimal:
+    """An amount; ``places=2`` for a sum of money, which is never rounded silently."""
+    number = decimal_input(name, value, minimum=minimum, places=places)
     if number > MAX_AMOUNT:
         raise invalid(f"{name} is too large")
     return number
 
 
 def today() -> str:
-    return Date.today().isoformat()
+    """Today in Lithuania (Finvalda's dates are Lithuanian), not in the process's zone."""
+    return lithuanian_today().isoformat()
 
 
 def read_list(

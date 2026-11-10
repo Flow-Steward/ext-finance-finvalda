@@ -52,10 +52,18 @@ def test_client_found_by_code() -> None:
 
 
 def test_client_found_by_company_code_after_code_misses() -> None:
+    # No client has code K2; K1 has the company code: another client, not this one.
     fake = FakeFinvalda(GetDescriptions=[items(), items(CLIENT)])
     response = run(fake, "find_or_create_client", {"code": "K2", "company_code": "300000001"})
-    assert response["result"]["matched_by"] == "company_code"
+    assert response["error_code"] == "conflict" and fake.writes() == []
+    assert "K1" in response["error"] and "K2" in response["error"]
     assert fake.calls[1].read_params()["Clients"] == {"CompanyCode": "300000001"}
+
+
+def test_client_found_by_company_code_without_a_code() -> None:
+    fake = FakeFinvalda(GetDescriptions=items(CLIENT))
+    response = run(fake, "find_or_create_client", {"company_code": "300000001"})
+    assert response["result"]["matched_by"] == "company_code"
 
 
 def test_client_with_conflicting_company_code_is_an_error() -> None:

@@ -12,7 +12,7 @@ from typing import Any
 from .. import catalog, errors
 from ..advanced.files import entity_query, invoice_param
 from ..errors import invalid
-from ..inputs import allowed, date_input, file_name_input, text_input
+from ..inputs import allowed, date_input, file_name_input, flag_input, text_input
 from ..reference_data import CHANGE_ENTITIES
 from .common import Progress, _codes, code_input, currency_input, money, text
 from .files import ATTACH_INPUTS, attach_op, download_op
@@ -42,7 +42,7 @@ ALLOWED_INPUTS: dict[str, set[str]] = {
     "stock_levels": {"product_codes", "warehouse", "warehouse_group", "limit", "page"},
     "product_prices": {"product_codes", "client_code"},
     "client_debt": {"client_code", "as_of"},
-    "changes_since": {"entity", "since", "limit"},
+    "changes_since": {"entity", "since", "limit", "skip_group"},
 }
 
 
@@ -124,6 +124,7 @@ def validate(operation_id: str, inputs: Mapping[str, Any]) -> None:
         if inputs.get("entity") not in CHANGE_ENTITIES:
             raise invalid(f"entity must be one of: {', '.join(CHANGE_ENTITIES)}")
         text("since", inputs, 35, required=True)
+        flag_input("skip_group", inputs.get("skip_group"))
     elif operation_id == "client_debt":
         text("client_code", inputs, 15, required=True)
         date_input("as_of", inputs.get("as_of"))

@@ -84,6 +84,16 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
             )
         if rows:
             record = rows[0]
+            if values["code"] and not _same(field(record, "code"), values["code"]):
+                # No client has the code given (that lookup came first): a client
+                # found by another value is another client, not this one.
+                raise errors.no_effect(
+                    errors.CONFLICT,
+                    f"No Finvalda client has code {values['code']}, but client "
+                    f"{field(record, 'code')} has {matched_by} {wanted}; nothing was written. "
+                    "Check the client in Finvalda and give its code, or another "
+                    f"{matched_by}",
+                )
             for other, column_name in (
                 ("company_code", "company_code"),
                 ("vat_code", "vat_payer_code"),

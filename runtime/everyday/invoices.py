@@ -118,7 +118,7 @@ def invoice_lines(
         else:
             if line.get("amount_eur") is None:
                 raise invalid(f"{where}.amount_eur is needed when the currency is not EUR")
-            gross_eur = cents(money(f"{where}.amount_eur", line["amount_eur"]))
+            gross_eur = money(f"{where}.amount_eur", line["amount_eur"], places=2)
         discount_eur = cents(gross_eur * discount / 100)
         fields: dict[str, Any] = {
             "sKodas": code,
@@ -310,7 +310,6 @@ def invoice_op(
             },
             progress,
             content=content,
-            own_name=True,
         )["file_name"]
     invoice = shape("operation", record)
     return {

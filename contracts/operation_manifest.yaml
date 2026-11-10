@@ -2072,8 +2072,8 @@ operations:
   display_name: Changes since
   description: 'Records or operations created or edited since a moment: clients, products, services, sales,
     purchases, inflows, disbursements. Pass next_since as since next time. Since is inclusive and records
-    of one edit time are never split, so the records at the boundary may come again: repeated, never lost
-    — skip them by code.'
+    of one edit time are never split; next_since is the last edit time returned, so the records of that
+    time come again next time: repeated, never lost — skip them by code.'
   operation_kind: source
   category: finance
   connection_type_ids:
@@ -2115,7 +2115,17 @@ operations:
       minimum: 1
       maximum: 300
       title: Rows
-      description: At most this many rows, 1 to 300. Default 200.
+      description: 'About this many rows, 1 to 300 (default 200), the records at since included. Records
+        of one edit time are never split, so a page may hold more: the next edit time is always included,
+        up to 600 records.'
+  - name: skip_group
+    value_type: boolean
+    required: false
+    schema:
+      type: boolean
+      title: Skip the records at since
+      description: 'Leave out the records edited exactly at since. Only when they were already read: a
+        record edited later with the same coarse time would be missed.'
   outputs:
   - name: records
     value_type: array
@@ -2322,8 +2332,8 @@ operations:
       type:
       - string
       - 'null'
-      description: 'Pass it as since next time: the last edit time, or just after it when a whole large
-        group was returned.'
+      description: 'Pass it as since next time: the last edit time returned (its records come again),
+        or since when nothing later was found.'
   - name: has_more
     value_type: boolean
     schema:
@@ -30156,9 +30166,9 @@ operations:
     value_type: array
     schema:
       type: array
-      description: The rows Finvalda returned. Numbers are exact decimal text. Columns the manual documents
-        with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other
-        columns are as Finvalda sends them.
+      description: The rows Finvalda returned. Columns not documented by Finvalda. Numbers are exact decimal
+        text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601
+        with Lithuania's offset); other columns are as Finvalda sends them.
       items:
         type: object
         properties: {}

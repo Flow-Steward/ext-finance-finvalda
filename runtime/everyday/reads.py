@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from datetime import date as Date
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
@@ -13,7 +13,7 @@ from .. import budget, errors
 from ..advanced.reads import read_description_pages
 from ..errors import invalid
 from ..fields import field
-from ..inputs import _DATE_TIME_RE, date_input, whole_input
+from ..inputs import _DATE_TIME_RE, date_input, flag_input, whole_input
 from ..reference_data import CHANGE_ENTITIES, DESCRIPTION_TYPES
 from ..rows import rows_of
 from ..values import as_decimal, cents, finvalda_date, finvalda_datetime, iso_moment
@@ -125,23 +125,35 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         "purchase_currency",
         "vat_percent",
     ]
-    rows = describe(context, "Products", {"Codes": codes}, columns, limit=500)
+    wanted = {c.upper() for c in codes}
+    rows = [
+        r
+        for r in describe(context, "Products", {"Codes": codes}, columns, limit=500)
+        if str(field(r, "product") or "").strip().upper() in wanted
+    ]
+    if len(rows) > len(codes):
+        raise errors.no_effect(
+            errors.INVALID_RESPONSE,
+            "Finvalda returned more products than were asked for; nothing is passed on",
+        )
     items = [shape("product_price", r) for r in rows]
     client_prices: list[Any] = []
     client = text("client_code", inputs, 15)
     if client:
-        client_prices = describe(
-            context,
-            "Prices",
-            {"Type": 1, "Client": client, "Codes": codes},
-            CLIENT_PRICE_COLUMNS,
-            limit=200,
-            max_pages=5,
-        )
-    if len(rows) > len(codes):
-        raise errors.no_effect(
-            errors.RESPONSE_TOO_LARGE, "Finvalda returned more products than were asked for"
-        )
+        client_prices = [
+            r
+            for r in describe(
+                context,
+                "Prices",
+                {"Type": 1, "Client": client, "Codes": codes},
+                CLIENT_PRICE_COLUMNS,
+                limit=200,
+                max_pages=5,
+            )
+            # Only the prices of the codes asked for, of this client.
+            if str(field(r, "code") or "").strip().upper() in wanted
+            and _same(field(r, "client") or client, client)
+        ]
     return {
         "items": items,
         "client_prices": [shape("client_price", r) for r in client_prices],
@@ -231,10 +243,13 @@ MAX_UNDATED = 100
 def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     """Records edited at or after ``since``, in whole groups of one edit time.
 
-    Finvalda's edit times are coarse (seconds, sometimes minutes or a date), so
-    since is inclusive and a group of one time is never split: the records at the
-    boundary come again on the next call — repeated, never lost. Each step also
-    moves past the time it started at, so a long run of one time cannot stall.
+    Finvalda's edit times are coarse (seconds, sometimes minutes or a date), and
+    a record edited later can keep the same stamp, so since is inclusive and a
+    group of one time is never split: next_since is the last group's time, never
+    past it, and that group comes again on the next call — repeated, never lost.
+    The group at since counts toward limit; one later group is always taken, so
+    the reading moves on. Only ``skip_group`` (the workflow's explicit choice)
+    leaves out the records at exactly since.
     """
     entity = inputs.get("entity")
     if entity not in CHANGE_ENTITIES:
@@ -250,6 +265,7 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         whole_input("limit", inputs.get("limit"), default=200, minimum=1, maximum=CHANGES_MAX_LIMIT)
         or 200
     )
+    skip_group = flag_input("skip_group", inputs.get("skip_group"))
     kind, name, _label = CHANGE_ENTITIES[entity]
     if kind == "descriptions":
         columns = {
@@ -282,7 +298,7 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         moment = _edited(row)
         if moment is None:
             undated.append(dict(row))
-        elif moment >= since:
+        elif moment > since or (moment == since and not skip_group):
             dated.append((moment, dict(row)))
     # By time, then by code (or journal and number), so a page reads in a fixed order.
     dated.sort(
@@ -301,47 +317,49 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             groups.append((moment, [row]))
     for moment, members in groups:
         if len(members) > MAX_GROUP or not budget.fits({"records": members}):
-            skip = iso_moment(moment + timedelta(microseconds=1))
             raise errors.no_effect(
                 errors.RESPONSE_TOO_LARGE,
                 f"{len(members)} records share the edit time {iso_moment(moment)}, more than one "
-                f"step can return; read them with Export a list to a file, then continue with "
-                f"since = {skip}",
+                "step can return; read them with Export a list to a file"
+                + (
+                    ", then continue with this since and skip_group true"
+                    if moment == since
+                    else f", then continue with since = {iso_moment(moment)} and skip_group true"
+                ),
             )
+
+    def fits(chosen: list[tuple[datetime, list[dict[str, Any]]]]) -> bool:
+        return budget.fits({"records": [r for _, g in chosen for r in g]})
+
     page: list[tuple[datetime, list[dict[str, Any]]]] = []
     rest = list(groups)
-    moved_on = True
+    taken = 0
     if rest and rest[0][0] == since:
-        # The group at since itself, repeated from the last call ("better again than
-        # lost"). When it is larger than limit it comes alone, and the next call starts
-        # just after it — every record of it is in this page.
-        if len(rest[0][1]) > limit:
-            page, rest, moved_on = [rest[0]], rest[1:], False
-        else:
-            page.append(rest.pop(0))
-    if moved_on:
-        taken = 0
-        while rest:
-            size = len(rest[0][1])
-            if taken and taken + size > limit:
-                break
-            candidate = [*page, rest[0]]
-            if taken and not budget.fits({"records": [r for _, g in candidate for r in g]}):
-                break
-            page.append(rest.pop(0))
-            taken += size
-            if taken >= limit:
-                break
-    while len(page) > 1 and not budget.fits({"records": [r for _, g in page for r in g]}):
-        rest.insert(0, page.pop())
+        # The group at since itself: repeated from the last call, counted in limit.
+        taken = len(rest[0][1])
+        page.append(rest.pop(0))
+    first = True
+    while rest:
+        size = len(rest[0][1])
+        # One later group is always taken, so the reading moves on; more while they
+        # stay within limit and the step's output.
+        if not first and taken + size > limit:
+            break
+        if not fits([*page, rest[0]]):
+            if first and page:
+                raise errors.no_effect(
+                    errors.RESPONSE_TOO_LARGE,
+                    f"The records at {iso_moment(since)} and the next edit time do not fit one "
+                    "step's output together; continue with this since and skip_group true if "
+                    "the records at since were already read",
+                )
+            break
+        page.append(rest.pop(0))
+        taken += size
+        first = False
     has_more = bool(rest)
     last = page[-1][0] if page else None
-    if last is None:
-        next_moment = since
-    elif not moved_on or (len(page) == 1 and last == since):
-        next_moment = last + timedelta(microseconds=1)
-    else:
-        next_moment = last
+    next_moment = last if last is not None else since
     kind = CHANGE_SHAPES[name]
     records = [shape(kind, row) for _, members in page for row in members]
     result: dict[str, Any] = {
