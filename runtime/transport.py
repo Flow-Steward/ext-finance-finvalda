@@ -266,28 +266,43 @@ class FinvaldaTransport:
             )
         return status, raw
 
-    def _redact(self, raw: bytes) -> bytes:
+    def _secret_forms(self) -> list[str]:
+        forms: set[str] = set()
         for secret in self._connection.secret_fragments():
-            forms = {
+            escaped = json.dumps(secret, ensure_ascii=False)[1:-1]
+            forms |= {
                 secret,
-                json.dumps(secret, ensure_ascii=False)[1:-1],
-                json.dumps(secret, ensure_ascii=False)[1:-1].replace("/", "\\/"),
+                escaped,
+                escaped.replace("/", "\\/"),
                 html.escape(secret, quote=True),
                 html.escape(secret, quote=True).replace("&#x27;", "&apos;"),
                 html.escape(secret, quote=False),
             }
-            for form in forms:
-                encoded = form.encode("utf-8")
-                if encoded and encoded in raw:
-                    raw = raw.replace(encoded, b"[redacted]")
-        return raw
+        # Longest first, so a form that contains another is removed whole.
+        return sorted((f for f in forms if f), key=len, reverse=True)
+
+    def scrub(self, value: Any) -> Any:
+        """The password removed from every text of an already parsed answer.
+
+        Text values and keys only: replacing in the raw bytes would also change
+        numbers and dates that happen to contain the same digits ("2024").
+        """
+        if isinstance(value, str):
+            for form in self._secret_forms():
+                if form in value:
+                    value = value.replace(form, "[redacted]")
+            return value
+        if isinstance(value, Mapping):
+            return {self.scrub(k): self.scrub(v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [self.scrub(v) for v in value]
+        return value
 
     def _decode(
         self, raw: bytes, status: int, method_name: str, *, mutating: bool
     ) -> dict[str, Any]:
-        raw = self._redact(raw)
         try:
-            data = parse_body(raw)
+            data = self.scrub(parse_body(raw))
         except ValueError as exc:
             if mutating:
                 raise ExtensionError(
@@ -368,14 +383,12 @@ class FinvaldaTransport:
     def _status_error(
         self, status: int, raw: bytes, method_name: str, *, mutating: bool
     ) -> ExtensionError:
-        raw = self._redact(raw)
         detail = ""
         try:
-            data = parse_body(raw)
+            data = self.scrub(parse_body(raw))
         except ValueError:
-            detail = errors.safe_text(
-                re.sub(rb"<[^>]+>", b" ", raw).decode("utf-8", "replace"), 300
-            )
+            text = re.sub(rb"<[^>]+>", b" ", raw).decode("utf-8", "replace")
+            detail = errors.safe_text(self.scrub(text), 300)
         else:
             detail = error_text(data)
         suffix = f": {detail}" if detail else ""

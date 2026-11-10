@@ -471,7 +471,12 @@ forms:
     label: Rows
     widget_type: number
     required: false
-    help_text: At most this many rows, 1 to 5000. Default 1000.
+    help_text: Rows per step, 1 to 500. Default 200.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1; pass next_page to continue.
 - operation_id: product_prices
   title: Product prices
   fields:
@@ -479,7 +484,7 @@ forms:
     label: Products
     widget_type: json
     required: true
-    help_text: The product codes, 1 to 500.
+    help_text: The product codes, 1 to 200.
   - name: client_code
     label: Client
     widget_type: text
@@ -530,7 +535,7 @@ forms:
     label: Rows
     widget_type: number
     required: false
-    help_text: At most this many rows, 1 to 5000. Default 1000.
+    help_text: At most this many rows, 1 to 300. Default 200.
 - operation_id: descriptions_accounts
   title: Advanced · List · Chart of accounts
   fields:

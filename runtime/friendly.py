@@ -10,7 +10,8 @@ from __future__ import annotations
 import re
 from collections.abc import Callable, Mapping
 from datetime import date as Date
-from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
+from datetime import datetime, timezone
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 from . import errors
@@ -18,7 +19,7 @@ from . import operations as ops
 from .errors import ExtensionError, invalid
 from .fields import field
 from .reference_data import CHANGE_ENTITIES, DESCRIPTION_TYPES
-from . import budget
+from . import budget, catalog
 from .transport import dumps_json, DeadlineReached
 
 CENT = Decimal("0.01")
@@ -152,12 +153,8 @@ def money(name: str, value: Any, *, minimum: Decimal = Decimal(0)) -> Decimal:
 
 def as_decimal(value: Any) -> str | None:
     """An amount from Finvalda (a JSON number or text) as an exact decimal string."""
-    if value is None or isinstance(value, bool) or value == "":
-        return None
-    try:
-        return str(Decimal(str(value)))
-    except InvalidOperation:
-        return None
+    number = ops.decimal_of(value)
+    return None if number is None else format(number, "f")
 
 
 def cents(value: Decimal) -> Decimal:
@@ -196,6 +193,9 @@ def read_list(
     read = ops.read_description_pages(
         context, kind, groups, inputs, first_page=1, limit=limit, max_pages=max_pages, meter=meter
     )
+    if read["timed_out"]:
+        # Rows cut short by the clock are no answer: report the timeout, not "more".
+        raise DeadlineReached
     rows = [dict(row) for row in read["records"] if isinstance(row, Mapping)]
     return rows, bool(read["has_more"])
 
@@ -737,6 +737,17 @@ def find_operation(
     return dict(mine[0])
 
 
+def operation_identity(record: Mapping[str, Any], document: str) -> dict[str, Any]:
+    """Journal, number, series and document of an operation read from Finvalda."""
+    return {
+        "journal": errors.safe_text(field(record, "journal"), 20) or None,
+        "op_number": _op_number(record),
+        "series": errors.safe_text(field(record, "series"), 20) or None,
+        "document": errors.safe_text(field(record, "order_number"), 40) or document,
+        "finvalda_result": None,
+    }
+
+
 def _op_number(record: Mapping[str, Any]) -> int | None:
     value = field(record, "op_number")
     try:
@@ -783,15 +794,14 @@ def invoice_op(
                 context, op_class, client, document, series, per_client=per_client
             )
         )
+        if record is not None:
+            # An answer without OP_DUOMENYS: the operation read back names it.
+            for key, value in operation_identity(record, document).items():
+                if saved.get(key) in (None, "") and value not in (None, ""):
+                    saved[key] = value
     else:
         record = existing
-        saved = {
-            "journal": errors.safe_text(field(existing, "journal"), 20) or None,
-            "op_number": _op_number(existing),
-            "series": errors.safe_text(field(existing, "series"), 20) or None,
-            "document": errors.safe_text(field(existing, "order_number"), 40) or document,
-            "finvalda_result": None,
-        }
+        saved = operation_identity(existing, document)
     attachment = None
     if has_file:
         if not saved["journal"] or saved["op_number"] is None:
@@ -807,7 +817,7 @@ def invoice_op(
         # The register's file names are global: the kind and the client keep a sale's
         # and a purchase's (or two suppliers') equal document numbers apart.
         stem = f"{'sale' if head == 'PardDok' else 'purchase'}-{client}-{series}{document}"
-        name = f"{re.sub(r'[^A-Za-z0-9._-]+', '_', stem).strip('_')[:190]}.pdf"
+        name = f"{ops.safe_name(stem)[:190]}.pdf"
         attachment = store_and_attach(
             context,
             {
@@ -896,15 +906,18 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     amount = Decimal(operation[next(k for k in operation if k.endswith("DetEil"))][0]["dSumaV"])
     invoice = text("invoice_document", inputs, 20)
     existing = find_payment(
-        context, op_class, client, document, amount, invoice, operation["sValiuta"]
+        context,
+        op_class,
+        client,
+        document,
+        amount,
+        operation["sValiuta"],
+        invoice=invoice,
+        invoice_series=text("invoice_series", inputs, 10),
     )
     if existing is not None:
         return {
-            "journal": errors.safe_text(field(existing, "journal"), 20) or None,
-            "op_number": _op_number(existing),
-            "series": errors.safe_text(field(existing, "series"), 20) or None,
-            "document": document,
-            "finvalda_result": None,
+            **operation_identity(existing, document),
             "created": False,
             "client_code": client,
             "record": existing,
@@ -930,13 +943,16 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
 
 
 def _amount_of(row: Mapping[str, Any]) -> Decimal | None:
-    value = field(row, "amount")
-    if value is None or isinstance(value, bool):
+    return ops.decimal_of(field(row, "amount"))
+
+
+def _reference(journal: Any, number: Any) -> tuple[str, int] | None:
+    """(journal, number) of an operation, or None when either is missing."""
+    journal_text = str(journal or "").strip().upper()
+    value = ops.decimal_of(number)
+    if not journal_text or value is None or value != value.to_integral_value():
         return None
-    try:
-        return Decimal(str(value))
-    except InvalidOperation:
-        return None
+    return journal_text, int(value)
 
 
 def find_payment(
@@ -945,18 +961,25 @@ def find_payment(
     client: str,
     document: str,
     amount: Decimal,
-    invoice: str,
     currency: str,
+    *,
+    invoice: str,
+    invoice_series: str,
 ) -> dict[str, Any] | None:
-    """The same payment made before, if this step already made it.
+    """The same payment made before, if this step already made it; None for a new one.
 
     One bank statement usually holds several payments of a client, so its number
-    alone is no key. A payment is taken as made before only when it is the one
-    payment of this client with this statement number and amount and — when it pays
-    an invoice — a line of it names that invoice. Any other match stops the step:
-    the manual's line columns (3.77) name no paid document, and the header amount may
-    be in EUR while the payment is in another currency, so a missing confirmation is
-    no proof of a different payment.
+    alone is no key. Same client, statement number and amount:
+
+    * without an invoice, that one payment is this one;
+    * with an invoice, the payment's lines decide: the manual's line columns
+      (3.77) carry ``journal_det`` and ``op_number_det``, the operation a line
+      settles. A line pointing at this invoice's operation means the same payment;
+      lines that all point elsewhere mean another payment.
+
+    Anything that cannot be told — several matches, an amount that cannot be read
+    or compared (another currency: the header amount may be in EUR), lines without
+    those references, an invoice not found — stops the step without a write.
     """
     rows = same_document(context, op_class, document, client=client)
     if not rows:
@@ -982,6 +1005,13 @@ def find_payment(
     row = same_amount[0]
     if not invoice:
         return row
+    invoice_class = "Sales" if op_class == "Inflows" else "Purchases"
+    invoices = same_document(context, invoice_class, invoice, invoice_series, client)
+    target = (
+        _reference(field(invoices[0], "journal"), field(invoices[0], "op_number"))
+        if len(invoices) == 1
+        else None
+    )
     number = _op_number(row)
     lines = (
         operations_of(
@@ -992,11 +1022,17 @@ def find_payment(
         if number is not None
         else []
     )
-    if any(
-        _same(value, invoice) for line in lines for value in line.values() if isinstance(value, str)
-    ):
+    references = [
+        _reference(field(line, "journal_det"), field(line, "op_number_det")) for line in lines
+    ]
+    if target is None or not lines or any(ref is None for ref in references):
+        raise stop(
+            f"has the same amount; Finvalda's answer does not show which document it pays, so it "
+            f"cannot be told whether it is this payment of {invoice}"
+        )
+    if target in references:
         return row
-    raise stop(f"has the same amount, but Finvalda's answer does not show that it pays {invoice}")
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -1018,32 +1054,45 @@ def store_and_attach(
     """Store a workflow file in the register and attach it, unless it is already attached.
 
     Every call is guarded, so a failure after an earlier write names what was saved.
+    A rerun after "stored, but attaching failed" finds the file in the register: when
+    Finvalda refuses to store it again, attaching the stored one finishes the step.
     """
     query = ops.entity_query(inputs)
     name = ops.file_name_input("file_name", inputs.get("file_name"))
     user = ops.fin_user_of(context, {}, required=True)
-    if content is None:
-        content = ops.read_input_file(context, inputs.get("document_file"))
     reply = progress.guard(
         "Reading the attached files",
         lambda: context.call("GetAttachedDocument", verb="GET", query=query, mutating=False),
     )
     if any(f["name"] == name for f in ops.attached_files(reply.data)):
         return {"file_name": name, "stored": False, "attached": False}
+    if content is None:
+        content = ops.read_input_file(context, inputs.get("document_file"))
     document_inputs = {"file_name": name}
     if inputs.get("file_description"):
         document_inputs["file_description"] = inputs["file_description"]
     body = ops.insert_document_params(document_inputs, context, content)
-    progress.guard(
-        "Storing the file",
-        lambda: context.call("InsertDocument", verb="POST", body=body, mutating=True),
-    )
-    progress.add(f"document {name} in the register")
     attach_query = [*query, ("documentId", name), ("finUser", user)]
+    stored = True
+    try:
+        progress.guard(
+            "Storing the file",
+            lambda: context.call("InsertDocument", verb="POST", body=body, mutating=True),
+        )
+    except ExtensionError as refused:
+        if refused.definitely_no_external_effect is not True:
+            raise
+        # Refused with nothing saved: perhaps an earlier run stored it already.
+        try:
+            attached = ops.attach_document(context, attach_query)
+        except ExtensionError:
+            raise refused from None
+        return {"file_name": name, "stored": False, "attached": attached}
+    progress.add(f"document {name} in the register")
     attached = progress.guard(
         "Attaching the document", lambda: ops.attach_document(context, attach_query)
     )
-    return {"file_name": name, "stored": True, "attached": attached}
+    return {"file_name": name, "stored": stored, "attached": attached}
 
 
 def attach_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> dict[str, Any]:
@@ -1065,14 +1114,14 @@ def test_connection_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any
     }
 
 
-def _codes(inputs: Mapping[str, Any], name: str, *, required: bool) -> list[str]:
+def _codes(inputs: Mapping[str, Any], name: str, *, required: bool, most: int = 500) -> list[str]:
     raw = inputs.get(name)
     if raw is None:
         if required:
             raise invalid(f"Required input missing: {name}")
         return []
-    if not isinstance(raw, list) or len(raw) > 500 or (required and not raw):
-        raise invalid(f"{name} must be a list of 1 to 500 codes")
+    if not isinstance(raw, list) or len(raw) > most or (required and not raw):
+        raise invalid(f"{name} must be a list of 1 to {most} codes")
     return [ops.text_input(name, v, limit=20, required=True) for v in raw]
 
 
@@ -1085,9 +1134,12 @@ def stock_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         value = text(key, inputs, 10)
         if value:
             conditions[wire] = value
+    # One Finvalda page per step: 500 rows of these 8 columns stay well inside the
+    # step output's limits (about 9 000 of its 12 000 strings).
     limit = (
-        ops.whole_input("limit", inputs.get("limit"), default=1000, minimum=1, maximum=5000) or 1000
+        ops.whole_input("limit", inputs.get("limit"), default=200, minimum=1, maximum=500) or 200
     )
+    page = ops.whole_input("page", inputs.get("page"), default=1, minimum=1, maximum=1_000_000) or 1
     columns = [
         "warehouse",
         "warehouse_title",
@@ -1098,17 +1150,18 @@ def stock_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         "measure_unit",
         "primary_cost",
     ]
-    rows, more = read_list(
+    groups = DESCRIPTION_TYPES["CurrentStock"]["filters"]
+    read = ops.read_description_pages(
         context,
         "CurrentStock",
-        conditions,
-        columns,
-        limit=1000,
-        max_pages=limit // 1000 + 1,
-        meter=budget.Meter(),
+        groups,
+        {"filter": conditions, "columns": columns},
+        first_page=page,
+        limit=limit,
+        max_pages=1,
+        meter=None,
     )
-    has_more = more or len(rows) > limit
-    rows = rows[:limit]
+    rows = [r for r in read["records"] if isinstance(r, Mapping)]
     items = [
         {
             "code": field(r, "code"),
@@ -1122,11 +1175,31 @@ def stock_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         }
         for r in rows
     ]
-    return {"items": items, "count": len(items), "has_more": has_more}
+    return {
+        "items": items,
+        "count": len(items),
+        "has_more": read["has_more"],
+        "next_page": read["next_page"],
+    }
+
+
+CLIENT_PRICE_COLUMNS = [
+    "client",
+    "code",
+    "title",
+    "type",
+    "price",
+    "currency",
+    "discount_1",
+    "quantity_1",
+    "sum_1",
+    "term_from",
+    "term_to",
+]
 
 
 def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
-    codes = _codes(inputs, "product_codes", required=True)
+    codes = _codes(inputs, "product_codes", required=True, most=200)
     columns = [
         "product",
         "title",
@@ -1151,7 +1224,12 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     client = text("client_code", inputs, 15)
     if client:
         client_prices = describe(
-            context, "Prices", {"Type": 1, "Client": client, "Codes": codes}, None, limit=1000
+            context,
+            "Prices",
+            {"Type": 1, "Client": client, "Codes": codes},
+            CLIENT_PRICE_COLUMNS,
+            limit=200,
+            max_pages=5,
         )
     if len(rows) > len(codes):
         raise errors.no_effect(
@@ -1240,8 +1318,6 @@ def finvalda_date(value: Any) -> Date | None:
             return Date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
         dotnet = _DOTNET_DATE.match(text)
         if dotnet:
-            from datetime import datetime, timezone
-
             return datetime.fromtimestamp(int(dotnet.group(1)) / 1000, tz=timezone.utc).date()
     except (ValueError, OverflowError, OSError):
         return None
@@ -1252,34 +1328,72 @@ def _iso(value: Date | None) -> str | None:
     return value.isoformat() if value else None
 
 
-def _edited(row: Mapping[str, Any]) -> str:
-    return str(field(row, "date_edited") or "")
+_DATE_TIME = re.compile(
+    r"^(\d{4})[-.](\d{2})[-.](\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,7}))?)?)?"
+)
 
 
-def _change_order(row: Mapping[str, Any]) -> tuple[str, str, str, str]:
-    """Edit time first; then a stable identity, so equal times come in a fixed order."""
-    number = field(row, "op_number")
+def finvalda_datetime(value: Any) -> datetime | None:
+    """A moment in one of Finvalda's forms (T or space, dashes or dots, /Date(ms)/)."""
+    text = str(value or "").strip()
+    match = _DATE_TIME.match(text)
+    try:
+        if match:
+            year, month, day, hour, minute, second, fraction = match.groups()
+            micro = int((fraction or "0").ljust(6, "0")[:6])
+            return datetime(
+                int(year),
+                int(month),
+                int(day),
+                int(hour or 0),
+                int(minute or 0),
+                int(second or 0),
+                micro,
+            )
+        dotnet = _DOTNET_DATE.match(text)
+        if dotnet:
+            moment = datetime.fromtimestamp(int(dotnet.group(1)) / 1000, tz=timezone.utc)
+            return moment.replace(tzinfo=None)
+    except (ValueError, OverflowError, OSError):
+        return None
+    return None
+
+
+def _edited(row: Mapping[str, Any]) -> datetime | None:
+    return finvalda_datetime(field(row, "date_edited"))
+
+
+def _change_order(row: Mapping[str, Any]) -> tuple[datetime, str, str, int]:
+    """Edit time first (unreadable ones last); then a stable identity."""
+    number = _op_number(row)
     return (
-        _edited(row),
+        _edited(row) or datetime.max,
         str(field(row, "code") or field(row, "product") or ""),
         str(field(row, "journal") or ""),
-        f"{number:>12}" if isinstance(number, int) else str(number or ""),
+        number if number is not None else -1,
     )
+
+
+#: Rows per step: 300 rows of up to 13 columns stay inside the step output's limits.
+CHANGES_MAX_LIMIT = 300
 
 
 def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     entity = inputs.get("entity")
     if entity not in CHANGE_ENTITIES:
         raise invalid(f"entity must be one of: {', '.join(CHANGE_ENTITIES)}")
-    since = text("since", inputs, 27, required=True).replace(" ", "T")
-    if not ops._DATE_TIME_RE.fullmatch(since):
+    raw_since = text("since", inputs, 27, required=True)
+    since = finvalda_datetime(raw_since)
+    if since is None or not ops._DATE_TIME_RE.fullmatch(raw_since.replace(" ", "T")):
         raise invalid("since must be YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS")
-    since = since[:10].replace(".", "-") + since[10:]
     # Finvalda's filters take a date only (manual: yyyy.MM.dd or yyyy-MM-dd); the time
     # part of since is applied here, on the rows of that day.
-    day = since[:10]
+    day = since.date().isoformat()
     limit = (
-        ops.whole_input("limit", inputs.get("limit"), default=1000, minimum=1, maximum=5000) or 1000
+        ops.whole_input(
+            "limit", inputs.get("limit"), default=200, minimum=1, maximum=CHANGES_MAX_LIMIT
+        )
+        or 200
     )
     kind, name, _label = CHANGE_ENTITIES[entity]
     if kind == "descriptions":
@@ -1288,28 +1402,25 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             "Products": PRODUCT_COLUMNS,
             "Services": SERVICE_COLUMNS,
         }[name]
-        read = ops.read_description_pages(
+        rows, more = read_list(
             context,
             name,
-            DESCRIPTION_TYPES[name]["filters"],
-            {"filter": {"EditedFrom": day}, "columns": columns},
-            first_page=1,
+            {"EditedFrom": day},
+            columns,
             limit=1000,
             max_pages=CHANGES_MAX_ROWS // 1000,
-            meter=None,
         )
-        if read["has_more"]:
+        if more:
             raise errors.no_effect(
                 errors.RESPONSE_TOO_LARGE,
-                f"More than {CHANGES_MAX_ROWS} records changed since {since}; use a later since, or "
-                "Export a list to a file with the EditedFrom filter",
+                f"More than {CHANGES_MAX_ROWS} records changed since {raw_since}; use a later "
+                "since, or Export a list to a file with the EditedFrom filter",
             )
-        rows = read["records"]
     else:
         rows = operations_of(context, name, {"DateEditedFrom": day}, OPERATION_COLUMNS)
     rows = [r for r in rows if isinstance(r, Mapping)]
-    if len(since) > 10:
-        rows = [r for r in rows if not _ISO_DATE.match(_edited(r)) or _edited(r) >= since]
+    # A row whose edit time cannot be read is kept: better repeated than skipped.
+    rows = [r for r in rows if (_edited(r) is None or _edited(r) >= since)]  # type: ignore[operator]
     rows.sort(key=_change_order)
     has_more = False
     if len(rows) > limit:
@@ -1321,12 +1432,18 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             cut += 1
         has_more = cut < len(rows)
         rows = rows[:cut]
+    times = [t for t in (_edited(r) for r in rows) if t is not None]
     result = {
         "records": rows,
         "count": len(rows),
-        "latest_edited": _edited(rows[-1]) or None if rows else None,
+        "latest_edited": max(times).isoformat() if times else None,
         "has_more": has_more,
     }
+    if not budget.fits(result):
+        raise errors.no_effect(
+            errors.RESPONSE_TOO_LARGE,
+            "Too many records share one edit time to fit one step output; use a later since",
+        )
     return result
 
 
@@ -1347,7 +1464,7 @@ ALLOWED_INPUTS: dict[str, set[str]] = {
     "register_payment": PAYMENT_INPUTS,
     "attach_file": ATTACH_INPUTS,
     "download_invoice_pdf": {"invoice_form", "journal", "op_number", "series", "document"},
-    "stock_levels": {"product_codes", "warehouse", "warehouse_group", "limit"},
+    "stock_levels": {"product_codes", "warehouse", "warehouse_group", "limit", "page"},
     "product_prices": {"product_codes", "client_code"},
     "client_debt": {"client_code", "as_of"},
     "changes_since": {"entity", "since", "limit"},
@@ -1439,13 +1556,7 @@ def validate(operation_id: str, inputs: Mapping[str, Any]) -> None:
         _codes(inputs, "product_codes", required=True)
 
 
-_OP_NEUTRAL: dict[str, Any] = {
-    "journal": None,
-    "op_number": None,
-    "series": None,
-    "document": None,
-    "finvalda_result": None,
-}
+_OP_NEUTRAL: dict[str, Any] = dict(catalog.OP_NEUTRAL)
 NEUTRAL_OUTPUTS: dict[str, dict[str, Any]] = {
     "find_or_create_client": {
         "client_code": None,

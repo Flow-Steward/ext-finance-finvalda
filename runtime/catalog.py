@@ -67,6 +67,15 @@ FILE_OUTPUT_IDS: frozenset[str] = frozenset(
     }
 )
 
+#: The outputs of a saved operation, empty: what a test run returns for them.
+OP_NEUTRAL: dict[str, None] = {
+    "journal": None,
+    "op_number": None,
+    "series": None,
+    "document": None,
+    "finvalda_result": None,
+}
+
 UPLOAD_BINDING = "finvalda_upload"
 DOWNLOAD_BINDING = "finvalda_file"
 EXPORT_BINDING = "finvalda_export"
@@ -79,6 +88,7 @@ __all__ = [
     "FRIENDLY_IDS",
     "FRIENDLY_READ_IDS",
     "FRIENDLY_WRITE_IDS",
+    "OP_NEUTRAL",
     "OPERATION_IDS",
     "TEST_CONNECTION",
     "UPLOAD_BINDING",

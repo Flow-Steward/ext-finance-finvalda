@@ -451,16 +451,24 @@ def check_fields(
 # Results
 
 
-def rows_of(data: Mapping[str, Any]) -> list[Any]:
-    """The list of rows in a Finvalda answer (``items``, or the one list it holds)."""
+def rows_of(data: Mapping[str, Any], *, strict: bool = True) -> list[Any]:
+    """The list of rows in a Finvalda answer (``items``, or the one list it holds).
+
+    An answer of no known form is an error (``strict``), never "no rows": a lookup
+    before a create would otherwise create a record that already exists.
+    """
     rest = {
         k: v
         for k, v in data.items()
         if str(k).lower() not in {"accessresult", "error", "serror", "nresult"}
     }
+    if not rest:
+        return []
     items = field(rest, "items")
     if isinstance(items, list):
         return items
+    if "items" in {str(k).lower() for k in rest} and items in (None, ""):
+        return []
     lists = [v for v in rest.values() if isinstance(v, list)]
     if len(lists) == 1:
         return lists[0]
@@ -474,6 +482,14 @@ def rows_of(data: Mapping[str, Any]) -> list[Any]:
                 (inner,) = only.values()
                 if isinstance(inner, Mapping):
                     return [inner]
+            if not only:
+                return []
+    if strict:
+        raise errors.no_effect(
+            errors.INVALID_RESPONSE,
+            "Finvalda's answer is not a list of rows in any known form: "
+            + ", ".join(sorted(str(k) for k in rest))[:200],
+        )
     return []
 
 
@@ -533,6 +549,17 @@ def fit_write_result(result: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def decimal_of(value: Any) -> Decimal | None:
+    """A number from Finvalda (JSON number, Decimal or text) as a Decimal, or None."""
+    if value is None or isinstance(value, bool) or value == "":
+        return None
+    try:
+        number = Decimal(str(value).strip())
+    except InvalidOperation:
+        return None
+    return number if number.is_finite() else None
+
+
 def exact(value: Any) -> Any:
     """Finvalda's numbers are read as Decimal; a result carries them as exact text."""
     if isinstance(value, Decimal):
@@ -571,23 +598,17 @@ def neutral_result(operation_id: str) -> dict[str, Any]:
     return result
 
 
-_OP_NEUTRAL = {
-    "journal": None,
-    "op_number": None,
-    "series": None,
-    "document": None,
-    "finvalda_result": None,
-}
+OP_NEUTRAL = catalog.OP_NEUTRAL
 NEUTRAL_OUTPUTS: dict[str, dict[str, Any]] = {
     "item_write": {"item_class": "", "code": None, "finvalda_result": None},
     "props_write": {"finvalda_result": None},
     "delete_item": {"item_class": "", "code": "", "finvalda_result": None},
     "append_group": {"finvalda_result": None},
-    "operation_write": dict(_OP_NEUTRAL),
-    "delete_operation": dict(_OP_NEUTRAL),
+    "operation_write": dict(OP_NEUTRAL),
+    "delete_operation": dict(OP_NEUTRAL),
     "lock": {"finvalda_result": None},
-    "change_journal": dict(_OP_NEUTRAL),
-    "copy_operation": dict(_OP_NEUTRAL),
+    "change_journal": dict(OP_NEUTRAL),
+    "copy_operation": dict(OP_NEUTRAL),
     "insert_document": {"file_name": "", "size_bytes": 0},
     "delete_document": {"file_name": ""},
     "attach_document": {"attached": False, "already_attached": False},
@@ -646,7 +667,7 @@ def _validate_method_read(spec: Mapping[str, Any], inputs: Mapping[str, Any], _:
 def run_method_read(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
     query = _method_query(spec, context.operation_input)
     reply = context.call(spec["method"], verb=spec["verb"], query=query, mutating=False)
-    rows = rows_of(reply.data)
+    rows = rows_of(reply.data, strict=False)
     return {
         "records": rows,
         "record": rows[0] if rows else None,
@@ -766,6 +787,7 @@ def read_description_pages(
     page = first_page
     fetched = 0
     has_more = False
+    timed_out = False
     last_page: int | None = None
     while fetched < max_pages:
         body = descriptions_body(kind, groups, inputs, page=page, limit=limit)
@@ -774,7 +796,7 @@ def read_description_pages(
         except DeadlineReached:
             if fetched == 0:
                 raise
-            has_more = True
+            has_more = timed_out = True
             break
         rows = rows_of(reply.data)
         chunk = [rows, rows[0]] if fetched == 0 and rows else rows
@@ -796,6 +818,8 @@ def read_description_pages(
         "next_page": ((last_page or first_page - 1) + 1) if has_more else None,
         "has_more": has_more,
         "pages_fetched": fetched,
+        #: True when the step's time ran out between pages (the rows read are kept).
+        "timed_out": timed_out,
     }
 
 
@@ -825,6 +849,8 @@ def run_descriptions(context: Context, spec: Mapping[str, Any]) -> dict[str, Any
         meter=budget.Meter(),
     )
     records = read.pop("records")
+    # The advanced list step keeps what it read and says where to continue.
+    read.pop("timed_out")
     return {
         "records": records,
         "record": records[0] if records else None,
@@ -1377,10 +1403,10 @@ def make_invoice_pdf(context: Context, inputs: Mapping[str, Any]) -> dict[str, A
     name = (
         f"{param['sSerija']}{param['sDokumentas']}" or f"{param['sZurnalas']}-{param['nNumeris']}"
     )
-    return save_file(context, raw, _safe_name(name) + ".pdf", what="The invoice PDF")
+    return save_file(context, raw, safe_name(name) + ".pdf", what="The invoice PDF")
 
 
-def _safe_name(text: str) -> str:
+def safe_name(text: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "_", text).strip("_") or "finvalda"
 
 
@@ -1417,7 +1443,7 @@ def run_make_report(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]
         mutating=False,
     )
     raw = file_contents(reply.data, "MakeReport")
-    return save_file(context, raw, _safe_name(code) + ".pdf", what="The report PDF")
+    return save_file(context, raw, safe_name(code) + ".pdf", what="The report PDF")
 
 
 def run_auto_reports_list(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
@@ -1448,7 +1474,7 @@ def run_product_image(context: Context, spec: Mapping[str, Any]) -> dict[str, An
     return save_file(
         context,
         file_contents(reply.data, "GetPrekesImage"),
-        _safe_name(code) + ".jpg",
+        safe_name(code) + ".jpg",
         what="The picture",
     )
 
@@ -1763,7 +1789,7 @@ def run_user_permissions(context: Context, spec: Mapping[str, Any]) -> dict[str,
         query=[("finUser", fin_user_of(context, inputs, required=True))],
         mutating=False,
     )
-    permissions = rows_of(reply.data)
+    permissions = rows_of(reply.data, strict=False)
     if not permissions:
         result = field(reply.data, "result")
         found = field(result, "perrmissions") if isinstance(result, Mapping) else None

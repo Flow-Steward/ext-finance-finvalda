@@ -2228,11 +2228,11 @@ def everyday_specs() -> list[dict[str, Any]]:
             "description": (
                 "Registers money received from a client (inflow) or paid to a supplier (disbursement), "
                 "against one document or as a prepayment. Safe to run again: a payment of the client "
-                "with the same document number, amount and paid invoice is returned instead of a "
-                "second one; one bank statement may hold several payments, and a payment that cannot "
-                "be told apart from an earlier one stops the step. Two real payments of the same "
-                "client and amount on one statement, without an invoice, count as one: give the "
-                "invoice, or a document number of its own for each payment."
+                "with the same document number and amount is returned instead of a second one — "
+                "with an invoice, when its lines show they settle that invoice's operation; "
+                "anything that cannot be told apart stops the step. Two real payments of the "
+                "same client and amount on one statement, without an invoice, count as one: give "
+                "the invoice, or a document number of its own for each payment."
             ),
             "inputs": [
                 CONNECTION,
@@ -2388,9 +2388,16 @@ def everyday_specs() -> list[dict[str, Any]]:
                 whole(
                     "limit",
                     "Rows",
-                    "At most this many rows, 1 to 5000. Default 1000.",
+                    "Rows per step, 1 to 500. Default 200.",
                     minimum=1,
-                    maximum=5000,
+                    maximum=500,
+                ),
+                whole(
+                    "page",
+                    "Page",
+                    "The page to read, from 1; pass next_page to continue.",
+                    minimum=1,
+                    maximum=1_000_000,
                 ),
             ],
             "outputs": [
@@ -2401,7 +2408,8 @@ def everyday_specs() -> list[dict[str, Any]]:
                     "One row per product and warehouse: code, title, warehouse, quantity, reserved, unit, cost.",
                 ),
                 COUNT,
-                out("has_more", "boolean", "boolean"),
+                out("has_more", "boolean", "boolean", "True when more rows may follow."),
+                out("next_page", "integer", ["integer", "null"], "The page to read next, or null."),
             ],
         },
         {
@@ -2415,11 +2423,11 @@ def everyday_specs() -> list[dict[str, Any]]:
                 json_input(
                     "product_codes",
                     "Products",
-                    "The product codes, 1 to 500.",
+                    "The product codes, 1 to 200.",
                     kind="array",
                     required=True,
                     minItems=1,
-                    maxItems=500,
+                    maxItems=200,
                     items={"type": "string", "maxLength": 20},
                 ),
                 text(
@@ -2511,9 +2519,9 @@ def everyday_specs() -> list[dict[str, Any]]:
                 whole(
                     "limit",
                     "Rows",
-                    "At most this many rows, 1 to 5000. Default 1000.",
+                    "At most this many rows, 1 to 300. Default 200.",
                     minimum=1,
-                    maximum=5000,
+                    maximum=300,
                 ),
             ],
             "outputs": [

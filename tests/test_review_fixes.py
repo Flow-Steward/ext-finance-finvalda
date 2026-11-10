@@ -215,77 +215,87 @@ def test_sales_number_of_another_client_is_still_a_conflict() -> None:
 
 # -- B4: several payments on one bank statement ------------------------------------
 
-PAYMENT = {"direction": "incoming", "client_code": "K1", "document": "BANK-7", "amount": "99.00"}
+PAYMENT = {"direction": "incoming", "client_code": "K1", "document": "BANK-55", "amount": "100.00"}
+STATEMENT_ROW = {
+    "order_number": "BANK-55",
+    "client": "K1",
+    "journal": "IPL",
+    "op_number": 5,
+    "amount": 100,
+}
+SALES = {"A": ("PARD", 11), "B": ("PARD", 12)}
 
 
-def test_other_payment_on_the_same_statement_is_registered() -> None:
-    fake = FakeFinvalda(
-        GetOperations=[
-            items(
+def finvalda(inflows: list[dict[str, Any]], lines: list[dict[str, Any]] | None = None):
+    """GetOperations answering by class: the statement's inflows, the sales, the lines."""
+
+    def answer(call):
+        params = call.op_params()
+        op_class, flt = params["OpClass"], params["filter"]
+        if op_class == "Inflows":
+            return items(*inflows)
+        if op_class == "Sales":
+            journal, number = SALES[flt["OrderNumber"]]
+            return items(
                 {
-                    "order_number": "BANK-7",
+                    "order_number": flt["OrderNumber"],
                     "client": "K1",
-                    "journal": "IPL",
-                    "op_number": 5,
-                    "amount": 10,
+                    "journal": journal,
+                    "op_number": number,
                 }
-            ),
-            items(),
-        ],
+            )
+        if op_class == "InflowsDet":
+            return items(*(lines or []))
+        raise AssertionError(op_class)
+
+    return answer
+
+
+def test_two_invoices_paid_on_one_statement_are_both_registered() -> None:
+    # Invoice A's payment (IPL #5) exists; B is paid on the same statement, same amount.
+    fake = FakeFinvalda(
+        GetOperations=finvalda([STATEMENT_ROW], [{"journal_det": "PARD", "op_number_det": 11}]),
         InsertNewOperation=saved("IPL", 6),
     )
-    response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "S-2"})
+    response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "B"})
     assert response["ok"] is True and response["result"]["created"] is True, response
 
 
-def test_same_payment_again_is_a_rerun() -> None:
-    row = {"order_number": "BANK-7", "client": "K1", "journal": "IPL", "op_number": 5, "amount": 99}
+def test_rerun_of_an_invoice_payment_returns_the_earlier_one() -> None:
     fake = FakeFinvalda(
-        GetOperations=[
-            items(row),
-            items({"journal": "IPL", "op_number": 5, "order_number": "S-2", "amount": 99}),
-        ]
+        GetOperations=finvalda([STATEMENT_ROW], [{"journal_det": "PARD", "op_number_det": "11"}])
     )
-    response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "S-2"})
+    response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "A"})
     assert response["ok"] is True and response["result"]["created"] is False, response
-    assert fake.calls[1].op_params() == {
-        "OpClass": "InflowsDet",
-        "fullOp": False,
-        "filter": {"Journal": "IPL", "OpNumber": 5},
-    }
-    assert fake.writes() == []
+    assert response["result"]["op_number"] == 5 and fake.writes() == []
 
 
-def test_same_amount_without_a_line_naming_the_invoice_stops() -> None:
-    # The line columns name no paid document (manual 3.77): an unconfirmed match is
-    # no proof of a different payment, so the step stops instead of paying twice.
-    row = {"order_number": "BANK-7", "client": "K1", "journal": "IPL", "op_number": 5, "amount": 99}
+def test_payment_lines_without_references_stop_the_step() -> None:
+    fake = FakeFinvalda(GetOperations=finvalda([STATEMENT_ROW], [{"code": "X", "amount": 100}]))
+    response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "A"})
+    assert response["error_code"] == "conflict" and fake.writes() == []
+
+
+def test_other_amount_on_the_same_statement_is_registered() -> None:
     fake = FakeFinvalda(
-        GetOperations=[
-            items(row),
-            items({"journal": "IPL", "op_number": 5, "code": "X", "amount": 99}),
-        ]
+        GetOperations=finvalda([{**STATEMENT_ROW, "amount": 10}]),
+        InsertNewOperation=saved("IPL", 6),
     )
-    response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "S-2"})
-    assert response["error_code"] == "conflict" and fake.writes() == []
+    response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "B"})
+    assert response["result"]["created"] is True, response
 
 
-def test_foreign_currency_payment_with_an_existing_document_stops() -> None:
-    row = {"order_number": "BANK-7", "client": "K1", "journal": "IPL", "op_number": 5, "amount": 90}
-    fake = FakeFinvalda(GetOperations=items(row))
-    response = run(fake, "register_payment", {**PAYMENT, "currency": "USD"})
-    assert response["error_code"] == "conflict" and fake.writes() == []
-
-
-def test_undecidable_payment_stops_the_step() -> None:
-    row = {"order_number": "BANK-7", "client": "K1", "journal": "IPL", "op_number": 5, "amount": 99}
-    fake = FakeFinvalda(GetOperations=[items(row), items()])
-    response = run(fake, "register_payment", {**PAYMENT, "invoice_document": "S-2"})
-    assert response["error_code"] == "conflict" and fake.writes() == []
-    fake = FakeFinvalda(GetOperations=items(row, {**row, "op_number": 6}))
-    assert run(fake, "register_payment", PAYMENT)["error_code"] == "conflict"
-    fake = FakeFinvalda(GetOperations=items({k: v for k, v in row.items() if k != "amount"}))
-    assert run(fake, "register_payment", PAYMENT)["error_code"] == "conflict"
+def test_prepayment_rerun_and_undecidable_cases() -> None:
+    fake = FakeFinvalda(GetOperations=finvalda([STATEMENT_ROW]))
+    assert run(fake, "register_payment", PAYMENT)["result"]["created"] is False
+    for inflows in (
+        [STATEMENT_ROW, {**STATEMENT_ROW, "op_number": 6}],
+        [{k: v for k, v in STATEMENT_ROW.items() if k != "amount"}],
+    ):
+        fake = FakeFinvalda(GetOperations=finvalda(inflows))
+        assert run(fake, "register_payment", PAYMENT)["error_code"] == "conflict"
+    fake = FakeFinvalda(GetOperations=finvalda([STATEMENT_ROW]))
+    assert run(fake, "register_payment", {**PAYMENT, "currency": "USD"})["error_code"] == "conflict"
 
 
 # -- M5: barcodes -----------------------------------------------------------------
@@ -654,3 +664,187 @@ def test_a_server_that_stalls_in_its_headers_is_cut_at_the_deadline() -> None:
         if mutating:
             assert isinstance(exc.value, ExtensionError)
             assert exc.value.code == errors.TIMEOUT_UNKNOWN
+
+
+# -- code review (1c859a1) --------------------------------------------------------
+
+
+def test_a_thousand_stock_rows_are_read_page_by_page() -> None:
+    def stock(call):
+        params = call.read_params()
+        start = (params["page"] - 1) * params["limit"]
+        rows = [
+            {
+                "code": f"P{n}",
+                "title": f"Prekė {n}",
+                "warehouse": "W",
+                "warehouse_title": "Sandėlis",
+                "quantity": 1,
+                "quantity_with_reserved": 1,
+                "measure_unit": "VNT",
+                "primary_cost": 1.5,
+            }
+            for n in range(start, min(start + params["limit"], 1200))
+        ]
+        return items(*rows)
+
+    fake = FakeFinvalda(GetDescriptions=stock)
+    first = run(fake, "stock_levels", {"limit": 500})
+    assert first["ok"] is True, first
+    assert first["result"]["count"] == 500 and first["result"]["next_page"] == 2
+    last = run(fake, "stock_levels", {"limit": 500, "page": 3})
+    assert last["result"]["count"] == 200 and last["result"]["has_more"] is False
+
+
+def test_changes_since_returns_its_limit_of_many_rows() -> None:
+    rows = [
+        {
+            "code": f"K{n}",
+            "title": f"Klientas {n}",
+            "date_edited": f"2026-11-01T10:{n // 60:02d}:{n % 60:02d}",
+            "email": "k@k.lt",
+            "address": "Gatvė 1",
+            "city": "Vilnius",
+            "company_code": "300000000",
+            "vat_payer_code": "LT100",
+            "country": "LT",
+            "phone": "+370",
+            "type": "T",
+            "currency": "EUR",
+            "debt": 1,
+        }
+        for n in range(1500)
+    ]
+    pages = [items(*rows[i : i + 1000]) for i in range(0, 1500, 1000)]
+    fake = FakeFinvalda(GetDescriptions=pages)
+    response = run(
+        fake, "changes_since", {"entity": "clients", "since": "2026-11-01", "limit": 300}
+    )
+    assert response["ok"] is True, response
+    assert response["result"]["count"] == 300 and response["result"]["has_more"] is True
+    assert response["result"]["latest_edited"] == "2026-11-01T10:04:59"
+
+
+def test_password_digits_inside_numbers_and_dates_are_left_alone() -> None:
+    from runtime.connection import Connection
+    from runtime.transport import FinvaldaTransport
+
+    fake = FakeFinvalda(
+        GetSandelius=items({"amount": 12024.50, "date": "2024-11-10", "note": "pw 2024"})
+    )
+    connection = Connection(
+        "c1", "https://fvs.example.lt/FvsServicePure.svc", "W", "", "", "", "", "lt", "2024"
+    )
+    reply = FinvaldaTransport(connection, opener=fake).request(
+        "GetSandelius", verb="GET", mutating=False
+    )
+    row = reply.data["items"][0]
+    assert row["amount"] == Decimal("12024.50")
+    assert row["date"] == "[redacted]-11-10" and row["note"] == "pw [redacted]"
+
+
+def test_an_answer_of_unknown_form_is_not_taken_for_no_rows() -> None:
+    fake = FakeFinvalda(GetDescriptions={**OK, "Klientai": {"a": 1}, "Kita": {"b": 2}})
+    response = run(fake, "find_or_create_client", {"code": "K1", "name": "X"})
+    assert response["error_code"] == "invalid_response" and fake.writes() == []
+
+
+def test_rerun_after_store_finds_the_stored_document() -> None:
+    fake = FakeFinvalda(
+        GetAttachedDocument={**OK, "result": {"enitityDocs": [], "errorCode": 0}},
+        InsertDocument=nested(4, "exists"),
+        AttachDocument=NESTED_OK,
+    )
+    response = run(
+        fake,
+        "attach_file",
+        {
+            "entity_type": 3,
+            "entity_id1": "PARD",
+            "entity_id2": "1",
+            "document_file": "a",
+            "file_name": "S.pdf",
+        },
+    )
+    assert response["ok"] is True, response
+    assert response["result"] == {**response["result"], "stored": False, "attached": True}
+
+
+def test_store_refused_and_not_stored_before_reports_the_refusal() -> None:
+    fake = FakeFinvalda(
+        GetAttachedDocument={**OK, "result": {"enitityDocs": [], "errorCode": 0}},
+        InsertDocument=nested(3, "no content"),
+        AttachDocument=nested(5, "no such document"),
+    )
+    response = run(
+        fake,
+        "attach_file",
+        {
+            "entity_type": 3,
+            "entity_id1": "PARD",
+            "entity_id2": "1",
+            "document_file": "a",
+            "file_name": "S.pdf",
+        },
+    )
+    assert response["errors"][0]["finvalda_code"] == 3
+
+
+def test_attachment_uses_the_read_back_operation_when_the_answer_names_none() -> None:
+    sale = {"journal": "PARD", "op_number": 77, "order_number": "S-1", "client": "K1"}
+    fake = FakeFinvalda(
+        GetOperations=[items(), items(sale)],
+        InsertNewOperation={**OK, "nResult": 0},
+        GetAttachedDocument={**OK, "result": {"enitityDocs": [], "errorCode": 0}},
+        InsertDocument=NESTED_OK,
+        AttachDocument=NESTED_OK,
+    )
+    inputs = {
+        "client_code": "K1",
+        "document": "S-1",
+        "warehouse": "W",
+        "lines": [{"code": "P1", "quantity": 1, "price": 1}],
+        "document_file": "a",
+    }
+    response = run(fake, "create_sales_invoice", inputs, files=Files(b"%PDF"))
+    assert response["ok"] is True, response
+    assert response["result"]["journal"] == "PARD" and response["result"]["op_number"] == 77
+    attach = [c for c in fake.calls if c.method == "AttachDocument"][0]
+    assert attach.query["id1"] == "PARD" and attach.query["id2"] == "77"
+
+
+def test_a_lookup_cut_by_the_clock_is_a_timeout() -> None:
+    from runtime import friendly
+    from runtime.connection import Connection
+    from runtime.operations import Context
+    from runtime.transport import FinvaldaTransport
+
+    connection = Connection(
+        "c1", "https://fvs.example.lt/FvsServicePure.svc", "W", "", "", "", "", "lt", "secret-pw"
+    )
+    page = items({"code": "A"}, {"code": "B"})
+    fake = FakeFinvalda(GetDescriptions=[page, DeadlineReached()])
+    transport = FinvaldaTransport(connection, opener=fake)
+    context = Context(
+        payload={},
+        operation_input={},
+        transport=transport,
+        artifact_reader=Files().reader,
+        artifact_writer=Files().writer,
+    )
+    with pytest.raises(DeadlineReached):
+        friendly.describe(context, "Clients", {"Email": "x"}, ["code"], limit=2, max_pages=3)
+
+
+@pytest.mark.parametrize(
+    "edited", ["2026-11-10 10:30:00", "2026.11.10 10:30", "2026-11-10T10:30:00.123"]
+)
+def test_changes_since_reads_every_time_form(edited: str) -> None:
+    fake = FakeFinvalda(
+        GetDescriptions=items(
+            {"code": "A", "date_edited": edited}, {"code": "B", "date_edited": "garbled"}
+        )
+    )
+    response = run(fake, "changes_since", {"entity": "clients", "since": "2026-11-10T10:00:00"})
+    assert [r["code"] for r in response["result"]["records"]] == ["A", "B"]
+    assert response["result"]["latest_edited"].startswith("2026-11-10T10:30")

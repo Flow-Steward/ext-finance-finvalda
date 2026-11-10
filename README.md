@@ -84,7 +84,9 @@ name that differs from the manual (`sSandKod` for `sSanKod`; `tDataNuo`/`tDataIk
 `tNuo`/`tIki`), the step sends both names.
 
 Register payment treats a payment as made before when the client, the statement number and
-the amount match (and, when an invoice is given, a line names it). Two real payments of the same
+the amount match (and, when an invoice is given, its lines' `journal_det` and `op_number_det`
+point at that invoice's operation; lines pointing elsewhere mean another payment, and an answer
+without them stops the step). Two real payments of the same
 client and amount on one statement without an invoice therefore count as one: give the invoice,
 or a document number of its own for each payment.
 
@@ -93,6 +95,8 @@ What to check first on a live server:
 - the operation lists' `client` column is the client's code (the Postman example of Sales shows
   it so, with `client_code` holding the company code); the everyday purchase and payment steps
   find earlier documents by it, so if it were otherwise they could register one twice;
+- the payment lines' `journal_det`/`op_number_det` name the operation a line settles (Register
+  payment with an invoice relies on it to tell payments of one statement apart);
 - Invoices related to a client sends the client as `sKlientoKodas` (a name from a published
   client, not from Finvalda) and passes on only rows that show they belong to that client.
 
