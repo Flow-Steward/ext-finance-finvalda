@@ -55,7 +55,7 @@ components:
     - `created` (yes/no): True when this step created the client.
     - `matched_by` (text): code, company_code, vat_code or email.
     - `client` (record): The client. Fields: `code`, `name`, `company_code`, `vat_code`, `email`, `address`, `city`, `country`, `phone`, `type`, `currency`, `debt`, `edited_at`.
-    - `warnings` (list): What the step could not do after its write, for example read the record back.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find or create product
 
@@ -82,7 +82,7 @@ components:
     - `created` (yes/no): True when this step created the product.
     - `matched_by` (text): code or barcode.
     - `product` (record): The product. Fields: `code`, `name`, `unit`, `barcode`, `type`, `price`, `currency`, `purchase_price`, `vat_percent`, `edited_at`.
-    - `warnings` (list): What the step could not do after its write, for example read the record back.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find or create service
 
@@ -106,7 +106,7 @@ components:
     - `service_code` (text): The service's code.
     - `created` (yes/no): True when this step created the service.
     - `service` (record): The service. Fields: `code`, `name`, `unit`, `price`, `purchase_price`, `vat_percent`, `edited_at`.
-    - `warnings` (list): What the step could not do after its write, for example read the record back.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Create sales invoice
 
@@ -143,7 +143,7 @@ components:
     - `total_vat` (text): Of a new document: its VAT, exact decimal.
     - `attachment_name` (text): The attached file's name in Finvalda.
     - `invoice` (record): The document as Finvalda has it. Fields: `journal`, `op_number`, `series`, `document`, `client_code`, `client_name`, `date`, `payment_date`, `currency`, `amount`, `created_at`, `edited_at`.
-    - `warnings` (list): What the step could not do after its write, for example read the record back.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Create purchase invoice
 
@@ -180,7 +180,7 @@ components:
     - `total_vat` (text): Of a new document: its VAT, exact decimal.
     - `attachment_name` (text): The attached file's name in Finvalda.
     - `invoice` (record): The document as Finvalda has it. Fields: `journal`, `op_number`, `series`, `document`, `client_code`, `client_name`, `date`, `payment_date`, `currency`, `amount`, `created_at`, `edited_at`.
-    - `warnings` (list): What the step could not do after its write, for example read the record back.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Register payment
 
@@ -210,7 +210,7 @@ components:
     - `document` (text): Its document number.
     - `client_code` (text): The client's code.
     - `payment` (record): The payment as Finvalda has it. Fields: `journal`, `op_number`, `series`, `document`, `client_code`, `client_name`, `date`, `payment_date`, `currency`, `amount`, `created_at`, `edited_at`.
-    - `warnings` (list): What the step could not do after its write, for example read the record back.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Download invoice PDF
 
@@ -273,6 +273,7 @@ components:
     - `count` (whole number): How many rows were returned.
     - `has_more` (yes/no): True when more rows may follow.
     - `next_page` (whole number): The page to read next, or null.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Product prices
 
@@ -290,6 +291,7 @@ components:
     - `items` (list of records): One row per product. Fields: `code`, `name`, `price1`, `price2`, `price3`, `price4`, `price5`, `price6`, `currency`, `purchase_price`, `purchase_currency`, `vat_percent`.
     - `client_prices` (list of records): The client's special prices and discounts. Fields: `client_code`, `code`, `name`, `price`, `currency`, `discount_percent`, `from_quantity`, `valid_from`, `valid_to`.
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client debt
 
@@ -311,6 +313,7 @@ components:
     - `overdue_total` (text): The unpaid sum past its due date, exact decimal.
     - `documents` (list of records): The unpaid documents. Fields: `document`, `series`, `journal`, `op_number`, `date`, `due_date`, `amount`, `remaining`, `amount_currency`, `remaining_currency`, `currency`, `overdue`.
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Changes since
 
@@ -333,6 +336,7 @@ components:
     - `has_more` (yes/no): True when more records follow; continue with since = next_since.
     - `undated` (list of records): Records whose edit time Finvalda gives in no known form (up to 100), with the last page only.
     - `undated_count` (whole number): How many records have an edit time in no known form.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 - component_id: operations_behaviour
   type: markdown
   title: How steps behave
@@ -385,7 +389,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of chart of accounts. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of chart of accounts. Columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -409,7 +413,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of client addresses. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `client`, `code`, `info1`, `info2`, `info3`, `tag1`, `tag2`, `tag3`, `tag4`, `tag5`, `city`, `email`, `post_code`, `country`, `phone`, `street`, ….
+    - `records` (list of records): The rows of client addresses. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `client`, `code`, `info1`, `info2`, `info3`, `tag1`, `tag2`, `tag3`, `tag4`, `tag5`, `city`, `email`, `post_code`, `country`, `phone`, `street`, ….
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -433,7 +437,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of product barcodes. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The rows of product barcodes. Its columns as Postman's saved answer shows them. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `barcode`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -457,7 +461,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of calendar events. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `id`, `subject`, `location`, `body`, `start`, `end`, `created`, `modified`, `label`, `allday`, `meeting`, `isreminder`, `deleted`, `user_name`, `client`, `url`.
+    - `records` (list of records): The rows of calendar events. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `id`, `subject`, `location`, `body`, `start`, `end`, `created`, `modified`, `label`, `allday`, `meeting`, `isreminder`, `deleted`, `user_name`, `client`, `url`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -480,7 +484,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of client groups. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `code`, `title`, `info1`, `info2`.
+    - `records` (list of records): The rows of client groups. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `title`, `info1`, `info2`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -504,7 +508,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of client individual cards. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `code`, `client`.
+    - `records` (list of records): The rows of client individual cards. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `client`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -528,7 +532,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of clients. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `code`, `title`, `debt`, `address`, `phone`, `fax`, `representative`, `bank`, `account_debitor`, `account_creditor`, `company_code`, `vat_payer_code`, `remarks`, `type`, `email`, `currency`, ….
+    - `records` (list of records): The rows of clients. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `title`, `debt`, `address`, `phone`, `fax`, `representative`, `bank`, `account_debitor`, `account_creditor`, `company_code`, `vat_payer_code`, `remarks`, `type`, `email`, `currency`, ….
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -551,7 +555,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of company start date. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of company start date. Columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -575,7 +579,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of number of clients. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The rows of number of clients. Its columns as Postman's saved answer shows them. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `quantity`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -599,7 +603,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of sales totals. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The rows of sales totals. Its columns as the manual names them. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `quantity`, `sales_sum`, `settled_sum`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -623,7 +627,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of currency rates. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The rows of currency rates. Its columns as Postman's saved answer shows them. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `date`, `rate`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -647,7 +651,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of current stock. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `warehouse`, `warehouse_title`, `code`, `title`, `quantity`, `quantity_with_reserved`, `measure_unit`, `primary_cost`, `type`, `tag1`, `tag2`, `tag3`, `tag4`, `tag5`, `tag6`, `tag7`, ….
+    - `records` (list of records): The rows of current stock. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `warehouse`, `warehouse_title`, `code`, `title`, `quantity`, `quantity_with_reserved`, `measure_unit`, `primary_cost`, `type`, `tag1`, `tag2`, `tag3`, `tag4`, `tag5`, `tag6`, `tag7`, ….
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -671,7 +675,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of current stock by receipt. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `warehouse`, `warehouse_title`, `code`, `title`, `quantity`, `measure_unit`, `primary_cost`, `primary_cost_unit`, `journal`, `order_number`, `op_type`, `op_date`, `enter_date`, `location`, `type`, `tag1`, ….
+    - `records` (list of records): The rows of current stock by receipt. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `warehouse`, `warehouse_title`, `code`, `title`, `quantity`, `measure_unit`, `primary_cost`, `primary_cost_unit`, `journal`, `order_number`, `op_type`, `op_date`, `enter_date`, `location`, `type`, `tag1`, ….
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -695,7 +699,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of document series. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The rows of document series. Its columns as the manual names them. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `title`, `number`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -719,7 +723,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of fixed assets. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `code`, `title`, `initial_value`, `depreciated`, `salvage_value`, `residual_value`, `acquisition_date`, `commissioning_date`, `writeoff_date`, `depreciation_date`.
+    - `records` (list of records): The rows of fixed assets. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `title`, `initial_value`, `depreciated`, `salvage_value`, `residual_value`, `acquisition_date`, `commissioning_date`, `writeoff_date`, `depreciation_date`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -743,7 +747,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of invoice forms. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The rows of invoice forms. Its columns as Postman's saved answer shows them. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `OpClass`, `Code`, `Title`, `Description`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -766,7 +770,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of journal groups. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `code`, `title`, `info1`, `info2`.
+    - `records` (list of records): The rows of journal groups. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `title`, `info1`, `info2`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -789,7 +793,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of operation type groups. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `code`, `title`, `info1`, `info2`.
+    - `records` (list of records): The rows of operation type groups. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `title`, `info1`, `info2`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -812,7 +816,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of operation statuses. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of operation statuses. Columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -836,7 +840,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of partner product catalogues. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `client`, `product`, `partner_product`, `price1`, `price2`, `price3`, `currency`, `used_price`, `partner_type`.
+    - `records` (list of records): The rows of partner product catalogues. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `client`, `product`, `partner_product`, `price1`, `price2`, `price3`, `currency`, `used_price`, `partner_type`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -860,7 +864,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of client prices. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `client`, `client_title`, `type`, `code`, `title`, `quantity_1`, `quantity_2`, `quantity_3`, `quantity_4`, `sum_1`, `sum_2`, `sum_3`, `sum_4`, `discount_1`, `discount_2`, `discount_3`, ….
+    - `records` (list of records): The rows of client prices. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `client`, `client_title`, `type`, `code`, `title`, `quantity_1`, `quantity_2`, `quantity_3`, `quantity_4`, `sum_1`, `sum_2`, `sum_3`, `sum_4`, `discount_1`, `discount_2`, `discount_3`, ….
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -884,7 +888,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of prices by client type and item type. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `client_type`, `client_type_name`, `type`, `item_type`, `item_type_name`, `quantity_1`, `quantity_2`, `quantity_3`, `quantity_4`, `sum_1`, `sum_2`, `sum_3`, `sum_4`, `discount_1`, `discount_2`, `discount_3`, ….
+    - `records` (list of records): The rows of prices by client type and item type. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `client_type`, `client_type_name`, `type`, `item_type`, `item_type_name`, `quantity_1`, `quantity_2`, `quantity_3`, `quantity_4`, `sum_1`, `sum_2`, `sum_3`, `sum_4`, `discount_1`, `discount_2`, `discount_3`, ….
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -908,7 +912,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of prices by client type. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `client_type`, `client_type_name`, `type`, `code`, `title`, `quantity_1`, `quantity_2`, `quantity_3`, `quantity_4`, `sum_1`, `sum_2`, `sum_3`, `sum_4`, `discount_1`, `discount_2`, `discount_3`, ….
+    - `records` (list of records): The rows of prices by client type. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `client_type`, `client_type_name`, `type`, `code`, `title`, `quantity_1`, `quantity_2`, `quantity_3`, `quantity_4`, `sum_1`, `sum_2`, `sum_3`, `sum_4`, `discount_1`, `discount_2`, `discount_3`, ….
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -932,7 +936,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of prices by item type. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `client`, `client_title`, `type`, `item_type`, `item_name`, `quantity_1`, `quantity_2`, `quantity_3`, `quantity_4`, `sum_1`, `sum_2`, `sum_3`, `sum_4`, `discount_1`, `discount_2`, `discount_3`, ….
+    - `records` (list of records): The rows of prices by item type. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `client`, `client_title`, `type`, `item_type`, `item_name`, `quantity_1`, `quantity_2`, `quantity_3`, `quantity_4`, `sum_1`, `sum_2`, `sum_3`, `sum_4`, `discount_1`, `discount_2`, `discount_3`, ….
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -956,7 +960,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of production items. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The rows of production items. Its columns as Postman's saved answer shows them. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `title`, `quantity`, `description1`, `active`, `planned_quantity`, `description2`, `date_edited`, `outputs`, `materials`, `extra_costs`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -980,7 +984,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of products. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `product`, `title`, `measure_unit`, `measure_unit_ratio`, `barcode`, `barcodes`, `remarks`, `information`, `type`, `purchase_price`, `purchase_currency`, `sell_price1`, `sell_price2`, `sell_price3`, `sell_price4`, `sell_price5`, ….
+    - `records` (list of records): The rows of products. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `product`, `title`, `measure_unit`, `measure_unit_ratio`, `barcode`, `barcodes`, `remarks`, `information`, `type`, `purchase_price`, `purchase_currency`, `sell_price1`, `sell_price2`, `sell_price3`, `sell_price4`, `sell_price5`, ….
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -1004,7 +1008,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of reports. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of reports. Columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -1028,7 +1032,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of services. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `code`, `title`, `barcode`, `measure_unit`, `purchase_price`, `sell_price`, `remarks_1`, `remarks_2`, `remarks_3`, `remarks_4`, `remarks_5`, `remarks_6`, `remarks_7`, `remarks_8`, `remarks_9`, `remarks_10`, ….
+    - `records` (list of records): The rows of services. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `title`, `barcode`, `measure_unit`, `purchase_price`, `sell_price`, `remarks_1`, `remarks_2`, `remarks_3`, `remarks_4`, `remarks_5`, `remarks_6`, `remarks_7`, `remarks_8`, `remarks_9`, `remarks_10`, ….
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -1052,7 +1056,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of stock on a date. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `warehouse`, `warehouse_title`, `product`, `title`, `type`, `supplier`, `supplier_title`, `measure_unit`, `quantity`, `primary_cost`, `account`.
+    - `records` (list of records): The rows of stock on a date. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `warehouse`, `warehouse_title`, `product`, `title`, `type`, `supplier`, `supplier_title`, `measure_unit`, `quantity`, `primary_cost`, `account`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -1076,7 +1080,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of types and tags. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of types and tags. Columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -1099,7 +1103,7 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of vehicles. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The rows of vehicles. Its columns as Postman's saved answer shows them. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `info1`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -1122,7 +1126,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of warehouse groups. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `code`, `title`, `info1`, `info2`.
+    - `records` (list of records): The rows of warehouse groups. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `code`, `title`, `info1`, `info2`.
     - `count` (whole number): How many rows were returned.
     - `page` (whole number): The last page read.
     - `next_page` (whole number): The page to read next, or null.
@@ -1149,7 +1153,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The sales, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The sales, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Sales lines
@@ -1165,7 +1169,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The sales lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The sales lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Sales returns
@@ -1183,7 +1187,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The sales returns, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The sales returns, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Sales return lines
@@ -1199,7 +1203,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The sales return lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The sales return lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Purchases
@@ -1217,7 +1221,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The purchases, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The purchases, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Purchase lines
@@ -1233,7 +1237,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The purchase lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The purchase lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Purchase returns
@@ -1251,7 +1255,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The purchase returns, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The purchase returns, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Purchase return lines
@@ -1267,7 +1271,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The purchase return lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The purchase return lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Other non-analytical operations
@@ -1285,7 +1289,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The other non-analytical operations, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The other non-analytical operations, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Other non-analytical operation lines
@@ -1301,7 +1305,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The other non-analytical operation lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The other non-analytical operation lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Receipts (capitalization)
@@ -1319,7 +1323,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The receipts (capitalization), with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The receipts (capitalization), with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Receipt lines
@@ -1335,7 +1339,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The receipt lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The receipt lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Write-offs
@@ -1353,7 +1357,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The write-offs, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The write-offs, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Write-off lines
@@ -1369,7 +1373,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The write-off lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The write-off lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Inflows (incoming payments)
@@ -1387,7 +1391,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The inflows (incoming payments), with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The inflows (incoming payments), with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Inflow lines
@@ -1403,7 +1407,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The inflow lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The inflow lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Disbursements (outgoing payments)
@@ -1421,7 +1425,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The disbursements (outgoing payments), with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The disbursements (outgoing payments), with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Disbursement lines
@@ -1437,7 +1441,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The disbursement lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The disbursement lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Offsets
@@ -1455,7 +1459,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The offsets, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The offsets, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Offset lines
@@ -1471,7 +1475,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The offset lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The offset lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Sales reservations
@@ -1489,7 +1493,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The sales reservations, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The sales reservations, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Sales reservation lines
@@ -1505,7 +1509,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The sales reservation lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The sales reservation lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Purchase orders
@@ -1523,7 +1527,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The purchase orders, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The purchase orders, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Purchase order lines
@@ -1539,7 +1543,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The purchase order lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The purchase order lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Internal transfers
@@ -1557,7 +1561,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The internal transfers, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The internal transfers, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Internal transfer lines
@@ -1573,7 +1577,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The internal transfer lines Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
+    - `records` (list of records): The internal transfer lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
 
     ### Operations · Production
@@ -1591,7 +1595,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The production, with their lines under full_op Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
+    - `records` (list of records): The production, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
 - component_id: operations_writes_and_files
   type: markdown
@@ -1990,7 +1994,7 @@ components:
 
     **Results**
 
-    - `files` (list): Each attached file's name and size.
+    - `files` (list of records): The attached files. Fields: `name`, `size_bytes`.
     - `count` (whole number): How many rows were returned.
     - `document_file` (file): A workflow file.
     - `file_name` (text): The file's name.
@@ -2016,9 +2020,11 @@ components:
 
     **Results**
 
-    - `price` (text): Price without discount and VAT, exact decimal.
-    - `vat` (text): VAT, exact decimal.
-    - `discount` (text): Discount, exact decimal.
+    - `price` (decimal): Price without discount and VAT.
+    - `vat` (decimal): VAT.
+    - `discount` (decimal): Discount.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Employee permissions
 
@@ -2034,6 +2040,7 @@ components:
 
     - `permissions` (list of records): One entry per permission class (manual 3.84). Fields: `perrmisionClass`, `perrmisionCode`, `permittedEntities`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
 
     ### Invoices related to a client
 
@@ -2048,8 +2055,9 @@ components:
 
     **Results**
 
-    - `records` (list): The rows Finvalda returned. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows Finvalda returned. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
 
     ### Export a list to a file
 
@@ -2092,7 +2100,7 @@ components:
     **Results**
 
     - `method` (text)
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
 - component_id: operations_older
   type: markdown
   title: Older read methods
@@ -2114,8 +2122,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetEinamiejiLikuciai. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `sandelis`, `sandelio_pav`, `preke`, `prekes_pav`, `kiekis`, `kiekis_su_rezervuotom`, `mato_vnt_pav`, `pirm_antr_mat_sant`, `savikaina`.
+    - `records` (list of records): The rows of GetEinamiejiLikuciai, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `sandelis`, `sandelio_pav`, `preke`, `prekes_pav`, `kiekis`, `kiekis_su_rezervuotom`, `mato_vnt_pav`, `pirm_antr_mat_sant`, `savikaina`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Current stock, extended
 
@@ -2132,8 +2142,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetEinamiejiLikuciaiExt. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `sandelis`, `sandelio_pav`, `preke`, `prekes_pav`, `kiekis`, `kiekis_su_rezervuotom`, `mato_vnt_pav`, `pirm_antr_mat_sant`, `savikaina`, `rusis`, `pozymis1`, `pozymis2`, `pozymis3`, `pozymis4`, `pozymis5`, `pozymis6`, ….
+    - `records` (list of records): The rows of GetEinamiejiLikuciaiExt, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `sandelis`, `sandelio_pav`, `preke`, `prekes_pav`, `kiekis`, `kiekis_su_rezervuotom`, `mato_vnt_pav`, `pirm_antr_mat_sant`, `savikaina`, `rusis`, `pozymis1`, `pozymis2`, `pozymis3`, `pozymis4`, `pozymis5`, `pozymis6`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Current stock with prices
 
@@ -2151,8 +2163,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetEinamiejiLikuciaiExtSuKainom. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `sandelis`, `sandelio_pav`, `preke`, `prekes_pav`, `kiekis`, `kiekis_su_rezervuotom`, `kaina1_san`, `kaina2_san`, `kaina3_san`, `kaina4_san`, `kaina5_san`, `kaina6_san`, `valiuta_san`, `kaina1_kort`, `kaina2_kort`, `kaina3_kort`, ….
+    - `records` (list of records): The rows of GetEinamiejiLikuciaiExtSuKainom, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `sandelis`, `sandelio_pav`, `preke`, `prekes_pav`, `kiekis`, `kiekis_su_rezervuotom`, `kaina1_san`, `kaina2_san`, `kaina3_san`, `kaina4_san`, `kaina5_san`, `kaina6_san`, `valiuta_san`, `kaina1_kort`, `kaina2_kort`, `kaina3_kort`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Current stock by warehouse group
 
@@ -2167,8 +2181,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetEinamiejiLikuciaiGrp. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `preke`, `prekes_pav`, `kiekis`, `kiekis_su_rezervuotom`, `mato_vnt_pav`, `pirm_antr_mat_sant`, `savikaina`.
+    - `records` (list of records): The rows of GetEinamiejiLikuciaiGrp, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `preke`, `prekes_pav`, `kiekis`, `kiekis_su_rezervuotom`, `mato_vnt_pav`, `pirm_antr_mat_sant`, `savikaina`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client types and tags
 
@@ -2182,8 +2198,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuRusisPozymius. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `tipas`, `kodas`, `pavadinimas`.
+    - `records` (list of records): The rows of GetKlientuRusisPozymius, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `tipas`, `kodas`, `pavadinimas`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Clients
 
@@ -2199,8 +2217,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientusSet. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `skola`, `ardesas`, `telefonas`, `faksas`, `atskaitingas_asmuo`, `atsiskaityti_per`, `mokestis`, `bankas`, `banko_sask`, `korsp_sask_bank`, `im_kodas`, `pvm_moketojo_kodas`, `pastabos`, `rusis`, ….
+    - `records` (list of records): The rows of GetKlientusSet, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `skola`, `ardesas`, `telefonas`, `faksas`, `atskaitingas_asmuo`, `atsiskaityti_per`, `mokestis`, `bankas`, `banko_sask`, `korsp_sask_bank`, `im_kodas`, `pvm_moketojo_kodas`, `pastabos`, `rusis`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Units of measure
 
@@ -2214,8 +2234,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetMatavimoVienetus. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `pirm_mat_pav`, `antr_mat_pav`, `tre_mat_pav`, `pirm_antr_sant`, `pirm_trec_sant`.
+    - `records` (list of records): The rows of GetMatavimoVienetus, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `pirm_mat_pav`, `antr_mat_pav`, `tre_mat_pav`, `pirm_antr_sant`, `pirm_trec_sant`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Unpaid sales documents
 
@@ -2229,8 +2251,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetNeapmoketiKliDok. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `dokumentas`, `serija`, `dok_numeris`, `zurnalas`, `padalinys`, `op_numeris`, `dokumento_data`, `apmokejimo_data`, `pradine_suma`, `likusi_skola`, `pradine_suma_val`, `likusi_skola_val`, `valiuta`.
+    - `records` (list of records): The rows of GetNeapmoketiKliDok, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `dokumentas`, `serija`, `dok_numeris`, `zurnalas`, `padalinys`, `op_numeris`, `dokumento_data`, `apmokejimo_data`, `pradine_suma`, `likusi_skola`, `pradine_suma_val`, `likusi_skola_val`, `valiuta`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Settlements for a document
 
@@ -2247,8 +2271,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetAtsiskaitymaiUzDok. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `operacija`, `zurnalas`, `numeris`, `serija`, `dokumentas`, `opsuma_EUR`, `opsuma_valiuta`, `ats_EUR`, `ats_valiuta`, `valiuta`, `atsisk_dat`.
+    - `records` (list of records): The rows of GetAtsiskaitymaiUzDok, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `operacija`, `zurnalas`, `numeris`, `serija`, `dokumentas`, `opsuma_EUR`, `opsuma_valiuta`, `ats_EUR`, `ats_valiuta`, `valiuta`, `atsisk_dat`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Settlements for a document, detailed
 
@@ -2267,9 +2293,9 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetAtsiskaitymaiUzDokDet. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of GetAtsiskaitymaiUzDokDet: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
 
     ### Settlements for a document since a date
 
@@ -2290,9 +2316,9 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetAtsiskaitymaiUzDokDataNuoDet. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of GetAtsiskaitymaiUzDokDataNuoDet: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
 
     ### Settlements with parameters
 
@@ -2306,9 +2332,9 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetAtsiskaitymaiUzDokDataNuoDetParam. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of GetAtsiskaitymaiUzDokDataNuoDetParam: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
 
     ### Services
 
@@ -2324,8 +2350,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetPaslaugosSet. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `bar_kodas`, `matavimo_vienetas`, `pirkimo_kaina`, `pardavimo_kaina`, `pastabos_1`, `pastabos_2`, `pastabos_3`, `pastabos_4`, `pastabos_5`, `pastabos_6`, `pastabos_7`, `pastabos_8`, `pastabos_9`, `pastabos_10`, ….
+    - `records` (list of records): The rows of GetPaslaugosSet, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `bar_kodas`, `matavimo_vienetas`, `pirkimo_kaina`, `pardavimo_kaina`, `pastabos_1`, `pastabos_2`, `pastabos_3`, `pastabos_4`, `pastabos_5`, `pastabos_6`, `pastabos_7`, `pastabos_8`, `pastabos_9`, `pastabos_10`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Service types and tags
 
@@ -2339,8 +2367,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetPaslauguRusisPozymius. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `tipas`, `kodas`, `pavadinimas`.
+    - `records` (list of records): The rows of GetPaslauguRusisPozymius, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `tipas`, `kodas`, `pavadinimas`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Products
 
@@ -2356,8 +2386,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetPrekesSet. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `mat_vieneto_pav`, `mat_santykis`, `bar_kodas`, `pastabos`, `informacija`, `rusis`, `pozymis_1`, `pozymis_2`, `pozymis_3`, `pozymis_4`, `pozymis_5`, `pozymis_6`, `pirk_kaina`, `pirk_valiuta`, ….
+    - `records` (list of records): The rows of GetPrekesSet, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `mat_vieneto_pav`, `mat_santykis`, `bar_kodas`, `pastabos`, `informacija`, `rusis`, `pozymis_1`, `pozymis_2`, `pozymis_3`, `pozymis_4`, `pozymis_5`, `pozymis_6`, `pirk_kaina`, `pirk_valiuta`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Products by type and tags
 
@@ -2390,8 +2422,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetPrekesSetExt. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `mat_vieneto_pav`, `mat_santykis`, `bar_kodas`, `pastabos`, `informacija`, `rusis`, `pozymis_1`, `pozymis_2`, `pozymis_3`, `pozymis_4`, `pozymis_5`, `pozymis_6`, `pirk_kaina`, `pirk_valiuta`, ….
+    - `records` (list of records): The rows of GetPrekesSetExt, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `mat_vieneto_pav`, `mat_santykis`, `bar_kodas`, `pastabos`, `informacija`, `rusis`, `pozymis_1`, `pozymis_2`, `pozymis_3`, `pozymis_4`, `pozymis_5`, `pozymis_6`, `pirk_kaina`, `pirk_valiuta`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Product types and tags
 
@@ -2405,8 +2439,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetPrekiuRusisPozymius. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `tipas`, `kodas`, `pavadinimas`, `Info1`, `Info2`.
+    - `records` (list of records): The rows of GetPrekiuRusisPozymius, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `tipas`, `kodas`, `pavadinimas`, `Info1`, `Info2`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Product type groups
 
@@ -2420,8 +2456,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetPrekiuRusiuGrupes. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`.
+    - `records` (list of records): The rows of GetPrekiuRusiuGrupes, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Product type group members
 
@@ -2435,8 +2473,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetPrekiuRusiuGrupesSudeti. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`.
+    - `records` (list of records): The rows of GetPrekiuRusiuGrupesSudeti, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Warehouses
 
@@ -2450,8 +2490,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetSandelius. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`.
+    - `records` (list of records): The rows of GetSandelius, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client discounts and prices (client × item)
 
@@ -2465,8 +2507,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKliPrekPasNuolPapKain. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kliento_kodas`, `kliento_pavadinimas`, `tipas`, `kodas`, `pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, ….
+    - `records` (list of records): The rows of GetKliPrekPasNuolPapKain, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kliento_kodas`, `kliento_pavadinimas`, `tipas`, `kodas`, `pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client type discounts and prices (client type × item)
 
@@ -2481,8 +2525,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKliRusPrekPasNuolPapKain. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `tipas`, `kodas`, `pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, ….
+    - `records` (list of records): The rows of GetKliRusPrekPasNuolPapKain, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `tipas`, `kodas`, `pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client discounts and prices (client × item type)
 
@@ -2497,8 +2543,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKliPrekPasRusNuolPapKain. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kliento_kodas`, `kliento_pavadinimas`, `tipas`, `kodas`, `pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, ….
+    - `records` (list of records): The rows of GetKliPrekPasRusNuolPapKain, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kliento_kodas`, `kliento_pavadinimas`, `tipas`, `kodas`, `pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client type discounts and prices (client type × item type)
 
@@ -2513,8 +2561,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKliRusPrekPasRusNuolPapKain. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `tipas`, `kodas`, `pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, ….
+    - `records` (list of records): The rows of GetKliRusPrekPasRusNuolPapKain, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `tipas`, `kodas`, `pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Taxes
 
@@ -2528,8 +2578,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetMokesciai. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `procentas_1`, `procentas_2`, `procentas_3`, `klasifikatorius`.
+    - `records` (list of records): The rows of GetMokesciai, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `procentas_1`, `procentas_2`, `procentas_3`, `klasifikatorius`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client service discounts
 
@@ -2545,8 +2597,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuPaslauguNuol. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kliento_kodas`, `kliento_pavadinimas`, `paslaugos_kodas`, `paslaugos_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
+    - `records` (list of records): The rows of GetKlientuPaslauguNuol, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kliento_kodas`, `kliento_pavadinimas`, `paslaugos_kodas`, `paslaugos_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client service prices
 
@@ -2562,8 +2616,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuPaslauguPapKainas. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kliento_kodas`, `kliento_pavadinimas`, `paslaugos_kodas`, `paslaugos_pavadinimas`, `kaina`, `valiuta`, `kaina_korteleje`, `kaina_su_terminu`, `valiuta_su_terminu`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
+    - `records` (list of records): The rows of GetKlientuPaslauguPapKainas, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kliento_kodas`, `kliento_pavadinimas`, `paslaugos_kodas`, `paslaugos_pavadinimas`, `kaina`, `valiuta`, `kaina_korteleje`, `kaina_su_terminu`, `valiuta_su_terminu`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client service type discounts
 
@@ -2579,8 +2635,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuPaslauguRusNuol. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kliento_kodas`, `kliento_pavadinimas`, `pasl_rusies_kodas`, `pasl_rusies_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
+    - `records` (list of records): The rows of GetKlientuPaslauguRusNuol, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kliento_kodas`, `kliento_pavadinimas`, `pasl_rusies_kodas`, `pasl_rusies_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client service type prices
 
@@ -2596,8 +2654,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuPaslauguRusPapKainas. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kliento_kodas`, `kliento_pavadinimas`, `pasl_rusies_kodas`, `pasl_rusies_pavadinimas`, `kaina_korteleje`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
+    - `records` (list of records): The rows of GetKlientuPaslauguRusPapKainas, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kliento_kodas`, `kliento_pavadinimas`, `pasl_rusies_kodas`, `pasl_rusies_pavadinimas`, `kaina_korteleje`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client product discounts
 
@@ -2613,8 +2673,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuPrekiuNuol. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kliento_kodas`, `kliento_pavadinimas`, `prekes_kodas`, `prekes_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
+    - `records` (list of records): The rows of GetKlientuPrekiuNuol, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kliento_kodas`, `kliento_pavadinimas`, `prekes_kodas`, `prekes_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client product prices
 
@@ -2630,8 +2692,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuPrekiuPapKainas. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kliento_kodas`, `kliento_pavadinimas`, `prekes_kodas`, `prekes_pavadinimas`, `kaina`, `valiuta`, `kaina_korteleje`, `kaina_su_terminu`, `valiuta_su_terminu`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
+    - `records` (list of records): The rows of GetKlientuPrekiuPapKainas, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kliento_kodas`, `kliento_pavadinimas`, `prekes_kodas`, `prekes_pavadinimas`, `kaina`, `valiuta`, `kaina_korteleje`, `kaina_su_terminu`, `valiuta_su_terminu`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client product type discounts
 
@@ -2647,8 +2711,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuPrekiuRusNuol. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kliento_kodas`, `kliento_pavadinimas`, `prek_rusies_kodas`, `prek_rusies_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
+    - `records` (list of records): The rows of GetKlientuPrekiuRusNuol, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kliento_kodas`, `kliento_pavadinimas`, `prek_rusies_kodas`, `prek_rusies_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client product type prices
 
@@ -2664,8 +2730,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuPrekiuRusPapKainas. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kliento_kodas`, `kliento_pavadinimas`, `prek_rusies_kodas`, `prek_rusies_pavadinimas`, `kaina_korteleje`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
+    - `records` (list of records): The rows of GetKlientuPrekiuRusPapKainas, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kliento_kodas`, `kliento_pavadinimas`, `prek_rusies_kodas`, `prek_rusies_pavadinimas`, `kaina_korteleje`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client type service discounts
 
@@ -2681,8 +2749,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuRusPaslauguNuol. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `paslaugos_kodas`, `paslaugos_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
+    - `records` (list of records): The rows of GetKlientuRusPaslauguNuol, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `paslaugos_kodas`, `paslaugos_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client type service prices
 
@@ -2698,8 +2768,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuRusPaslauguPapKainas. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `paslaugos_kodas`, `paslaugos_pavadinimas`, `kaina`, `valiuta`, `kaina_korteleje`, `kaina_su_terminu`, `valiuta_su_terminu`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
+    - `records` (list of records): The rows of GetKlientuRusPaslauguPapKainas, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `paslaugos_kodas`, `paslaugos_pavadinimas`, `kaina`, `valiuta`, `kaina_korteleje`, `kaina_su_terminu`, `valiuta_su_terminu`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client type service type discounts
 
@@ -2715,8 +2787,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuRusPaslauguRusNuol. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `pasl_rusies_kodas`, `pasl_rusies_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
+    - `records` (list of records): The rows of GetKlientuRusPaslauguRusNuol, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `pasl_rusies_kodas`, `pasl_rusies_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client type service type prices
 
@@ -2732,8 +2806,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuRusPaslauguRusPapKainas. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `pasl_rusies_kodas`, `pasl_rusies_pavadinimas`, `kaina_korteleje`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
+    - `records` (list of records): The rows of GetKlientuRusPaslauguRusPapKainas, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `pasl_rusies_kodas`, `pasl_rusies_pavadinimas`, `kaina_korteleje`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client type product discounts
 
@@ -2749,8 +2825,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuRusPrekiuNuol. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `prekes_kodas`, `prekes_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
+    - `records` (list of records): The rows of GetKlientuRusPrekiuNuol, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `prekes_kodas`, `prekes_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client type product prices
 
@@ -2766,8 +2844,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuRusPrekiuPapKainas. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `prekes_kodas`, `prekes_pavadinimas`, `kaina`, `valiuta`, `kaina_korteleje`, `kaina_su_terminu`, `valiuta_su_terminu`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
+    - `records` (list of records): The rows of GetKlientuRusPrekiuPapKainas, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `prekes_kodas`, `prekes_pavadinimas`, `kaina`, `valiuta`, `kaina_korteleje`, `kaina_su_terminu`, `valiuta_su_terminu`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client type product type discounts
 
@@ -2783,8 +2863,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuRusPrekiuRusNuol. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `prek_rusies_kodas`, `prek_rusies_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
+    - `records` (list of records): The rows of GetKlientuRusPrekiuRusNuol, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `prek_rusies_kodas`, `prek_rusies_pavadinimas`, `kiekis_1`, `suma_1`, `nuolaida_1`, `terminas_nuo_1`, `terminas_iki_1`, `kiekis_2`, `suma_2`, `nuolaida_2`, `terminas_nuo_2`, `terminas_iki_2`, `kiekis_3`, `suma_3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client type product type prices
 
@@ -2800,12 +2882,14 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientuRusPrekiuRusPapKainas. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `prek_rusies_kodas`, `prek_rusies_pavadinimas`, `kaina_korteleje`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
+    - `records` (list of records): The rows of GetKlientuRusPrekiuRusPapKainas, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kli_rusies_kodas`, `kli_rusies_pavadinimas`, `prek_rusies_kodas`, `prek_rusies_pavadinimas`, `kaina_korteleje`, `kaina_koreleje_su_terminu`, `terminas_nuo`, `terminas_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Object (level 1)
 
-    One level-1 object by code. Finvalda method GetObjektas1 (manual section 3.32).
+    One level-1 object by code. Finvalda method GetObjektas1 (manual section 3.32). Columns: bNaujas, sKodas, sPavadinimas, sPavadinimas2, sPapildomaInf1, sPapildomaInf2, sPapildomaInf3, sPapildomaInf4, sPapildomaInf5, sPapildomaInf6, sPapildomaInf7, sPapildomaInf8, sPapildomaInf9, sPapildomaInf10, sPozymis1, sPozymis2, sPozymis3, sRusis, tGaliojaNuo, tGaliojaIki.
 
     Action id `get_objektas1` · reads only · Finvalda: `GET GetObjektas1`
 
@@ -2815,13 +2899,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetObjektas1. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetObjektas1, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNaujas`, `sKodas`, `sPavadinimas`, `sPavadinimas2`, `sPapildomaInf1`, `sPapildomaInf2`, `sPapildomaInf3`, `sPapildomaInf4`, `sPapildomaInf5`, `sPapildomaInf6`, `sPapildomaInf7`, `sPapildomaInf8`, `sPapildomaInf9`, `sPapildomaInf10`, `sPozymis1`, `sPozymis2`, ….
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Object (level 2)
 
-    One level-2 object by code. Finvalda method GetObjektas2 (manual section 3.33).
+    One level-2 object by code. Finvalda method GetObjektas2 (manual section 3.33). Columns: bNaujas, sKodas, sPavadinimas, sPapildomaInf1, sPapildomaInf2, sPapildomaInf3, sPapildomaInf4, sPapildomaInf5, sPapildomaInf6, sPapildomaInf7, sPapildomaInf8, sPapildomaInf9, sPapildomaInf10, sPozymis1, sPozymis2, sPozymis3, sRusis, tGaliojaNuo, tGaliojaIki.
 
     Action id `get_objektas2` · reads only · Finvalda: `GET GetObjektas2`
 
@@ -2831,13 +2916,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetObjektas2. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetObjektas2, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNaujas`, `sKodas`, `sPavadinimas`, `sPapildomaInf1`, `sPapildomaInf2`, `sPapildomaInf3`, `sPapildomaInf4`, `sPapildomaInf5`, `sPapildomaInf6`, `sPapildomaInf7`, `sPapildomaInf8`, `sPapildomaInf9`, `sPapildomaInf10`, `sPozymis1`, `sPozymis2`, `sPozymis3`, ….
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Object (level 3)
 
-    One level-3 object by code. Finvalda method GetObjektas3 (manual section 3.34).
+    One level-3 object by code. Finvalda method GetObjektas3 (manual section 3.34). Columns: bNaujas, sKodas, sPavadinimas, sPapildomaInf1, sPapildomaInf2, tGaliojaNuo, tGaliojaIki.
 
     Action id `get_objektas3` · reads only · Finvalda: `GET GetObjektas3`
 
@@ -2847,13 +2933,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetObjektas3. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetObjektas3, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNaujas`, `sKodas`, `sPavadinimas`, `sPapildomaInf1`, `sPapildomaInf2`, `tGaliojaNuo`, `tGaliojaIki`.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Object (level 4)
 
-    One level-4 object by code. Finvalda method GetObjektas4 (manual section 3.35).
+    One level-4 object by code. Finvalda method GetObjektas4 (manual section 3.35). Columns: bNaujas, sKodas, sPavadinimas, sPapildomaInf1, sPapildomaInf2, tGaliojaNuo, tGaliojaIki.
 
     Action id `get_objektas4` · reads only · Finvalda: `GET GetObjektas4`
 
@@ -2863,13 +2950,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetObjektas4. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetObjektas4, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNaujas`, `sKodas`, `sPavadinimas`, `sPapildomaInf1`, `sPapildomaInf2`, `tGaliojaNuo`, `tGaliojaIki`.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Object (level 5)
 
-    One level-5 object by code. Finvalda method GetObjektas5 (manual section 3.36).
+    One level-5 object by code. Finvalda method GetObjektas5 (manual section 3.36). Columns: bNaujas, sKodas, sPavadinimas, sPapildomaInf1, sPapildomaInf2, tGaliojaNuo, tGaliojaIki.
 
     Action id `get_objektas5` · reads only · Finvalda: `GET GetObjektas5`
 
@@ -2879,13 +2967,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetObjektas5. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetObjektas5, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNaujas`, `sKodas`, `sPavadinimas`, `sPapildomaInf1`, `sPapildomaInf2`, `tGaliojaNuo`, `tGaliojaIki`.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Object (level 6)
 
-    One level-6 object by code. Finvalda method GetObjektas6 (manual section 3.37).
+    One level-6 object by code. Finvalda method GetObjektas6 (manual section 3.37). Columns: bNaujas, sKodas, sPavadinimas, sPapildomaInf1, sPapildomaInf2, tGaliojaNuo, tGaliojaIki.
 
     Action id `get_objektas6` · reads only · Finvalda: `GET GetObjektas6`
 
@@ -2895,13 +2984,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetObjektas6. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetObjektas6, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNaujas`, `sKodas`, `sPavadinimas`, `sPapildomaInf1`, `sPapildomaInf2`, `tGaliojaNuo`, `tGaliojaIki`.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client
 
-    One client by code. Finvalda method GetKlientas (manual section 3.38).
+    One client by code. Finvalda method GetKlientas (manual section 3.38). Columns: sKodas, sPavadinimas, sAdresas, sTelefonas, sFaksas, sAtsakingasAsmuo, sAtsiskaitymoTerminaiDebt, dDelspinigiaiDebt, sAtsiskaitymoTerminaiKred, dDelspinigiaiKred, sPvmMokKod, sDebtSask, sKredSask, nKreditas, sBankas, sBankoSaskaita, sKorespSaskBank, nTipas, sImKodas, sPvmMoketojoKod, sPastabos, sRusis, sEMail, nMaksPradlestosSkolosSum, nSkolaGalimaPradelstiDien, nAktyvus, sPasiulomaValiuta, sYraKlientoPadalinys, sObjektas1, sObjektas2, sObjektas3, sObjektas4, sPozymis1, sPozymis2, sPozymis3, dPapildomaInf, tKurimoData, tKoregavimoData.
 
     Action id `get_klientas` · reads only · Finvalda: `GET GetKlientas`
 
@@ -2911,9 +3001,10 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetKlientas. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetKlientas, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `sKodas`, `sPavadinimas`, `sAdresas`, `sTelefonas`, `sFaksas`, `sAtsakingasAsmuo`, `sAtsiskaitymoTerminaiDebt`, `dDelspinigiaiDebt`, `sAtsiskaitymoTerminaiKred`, `dDelspinigiaiKred`, `sPvmMokKod`, `sDebtSask`, `sKredSask`, `nKreditas`, `sBankas`, `sBankoSaskaita`, ….
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client by e-mail
 
@@ -2927,13 +3018,13 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetKlientasEMail. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of GetKlientasEMail: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
 
     ### Clients created or edited since
 
-    Clients created or edited since a date. Finvalda method GetKlientus (manual section 3.40).
+    Clients created or edited since a date. Finvalda method GetKlientus (manual section 3.40). Columns: sKodas, sPavadinimas, sAdresas, sTelefonas, sFaksas, sAtsakingasAsmuo, sAtsiskaitymoTerminaiDebt, dDelspinigiaiDebt, sAtsiskaitymoTerminaiKred, dDelspinigiaiKred, sPvmMokKod, sDebtSask, sKredSask, nKreditas, sBankas, sBankoSaskaita, sKorespSaskBank, nTipas, sImKodas, sPvmMoketojoKod, sPastabos, sRusis, sEMail, nMaksPradlestosSkolosSum, nSkolaGalimaPradelstiDien, nAktyvus, sPasiulomaValiuta, sYraKlientoPadalinys, sObjektas1, sObjektas2, sObjektas3, sObjektas4, sPozymis1, sPozymis2, sPozymis3, dPapildomaInf, tKurimoData, tKoregavimoData.
 
     Action id `get_klientus` · reads only · Finvalda: `GET GetKlientus`
 
@@ -2944,13 +3035,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetKlientus. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetKlientus, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `sKodas`, `sPavadinimas`, `sAdresas`, `sTelefonas`, `sFaksas`, `sAtsakingasAsmuo`, `sAtsiskaitymoTerminaiDebt`, `dDelspinigiaiDebt`, `sAtsiskaitymoTerminaiKred`, `dDelspinigiaiKred`, `sPvmMokKod`, `sDebtSask`, `sKredSask`, `nKreditas`, `sBankas`, `sBankoSaskaita`, ….
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Service
 
-    One service by code. Finvalda method GetPaslauga (manual section 3.41).
+    One service by code. Finvalda method GetPaslauga (manual section 3.41). Columns: bNauja, sKodas, sPavadinimas, sBARKodas, sPastaba, sRysysSuSask, sMokestis, sMatVienetas, dPirkimoKaina, dPardavimoKaina, sPastabos1, sPastabos2, sPastabos3, sPastabos4, sPastabos5, sPastabos6, sPastabos7, sPastabos8, sPastabos9, sPastabos10, sPastabos11, sPastabos12, nAktyvi, sObjektas1, sObjektas2, sObjektas3, sObjektas4, sRusis, sPozymis1, sPozymis2, sPozymis3, tKurimoData, tKoregavimoData.
 
     Action id `get_paslauga` · reads only · Finvalda: `GET GetPaslauga`
 
@@ -2960,13 +3052,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetPaslauga. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetPaslauga, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNauja`, `sKodas`, `sPavadinimas`, `sBARKodas`, `sPastaba`, `sRysysSuSask`, `sMokestis`, `sMatVienetas`, `dPirkimoKaina`, `dPardavimoKaina`, `sPastabos1`, `sPastabos2`, `sPastabos3`, `sPastabos4`, `sPastabos5`, `sPastabos6`, ….
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Services created or edited since
 
-    Services created or edited since a date. Finvalda method GetPaslaugos (manual section 3.42).
+    Services created or edited since a date. Finvalda method GetPaslaugos (manual section 3.42). Columns: bNauja, sKodas, sPavadinimas, sBARKodas, sPastaba, sRysysSuSask, sMokestis, sMatVienetas, dPirkimoKaina, dPardavimoKaina, sPastabos1, sPastabos2, sPastabos3, sPastabos4, sPastabos5, sPastabos6, sPastabos7, sPastabos8, sPastabos9, sPastabos10, sPastabos11, sPastabos12, nAktyvi, sObjektas1, sObjektas2, sObjektas3, sObjektas4, sRusis, sPozymis1, sPozymis2, sPozymis3, tKurimoData, tKoregavimoData.
 
     Action id `get_paslaugos` · reads only · Finvalda: `GET GetPaslaugos`
 
@@ -2977,13 +3070,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetPaslaugos. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetPaslaugos, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNauja`, `sKodas`, `sPavadinimas`, `sBARKodas`, `sPastaba`, `sRysysSuSask`, `sMokestis`, `sMatVienetas`, `dPirkimoKaina`, `dPardavimoKaina`, `sPastabos1`, `sPastabos2`, `sPastabos3`, `sPastabos4`, `sPastabos5`, `sPastabos6`, ….
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Product
 
-    One product by code. Finvalda method GetPreke (manual section 3.43).
+    One product by code. Finvalda method GetPreke (manual section 3.43). Columns: bNauja, sKodas, sPavadinimas, sBarKodas, sPastaba, sRysysSuSask, sMatavimoVnt, sMokestis, sInformacija, sRusis, sPozymis1, sPozymis2, sPozymis3, sPozymis4, sPozymis5, sPozymis6, sValiuta, sIntrastatKodas, dKaina1, dKaina2, dKaina3, dKaina4, dKaina5, dKaina6, dNeto, dBruto, dTuris, dAntkainis, nVietuSkaicius, nAktyvi, dPirkimoKaina, sPirkimoValiuta, sUrl, sObjektas1, sObjektas2, sObjektas3, sObjektas4, nYraPakuote, nYraPUI, nIvedamaGalData, nSudetine, nSavikainosSkaicMetodas, dPakPo1, dPakPo2, dPakSt1, dPakSt2, dPakMe1, dPakMe2, dPakPl1, dPakPl2, dPakKo1, dPakKo2, dPakKi1, dPakKi2, nMinimalusKiekis, nUzsakomaPrekiu, sTiekejas1, sPreKodTiek1Kataloge, sTiekejas2, sPreKodTiek2Kataloge, sTiekejas3, sPreKodTiek3Kataloge, tKurimoData, tKoregavimoData, sInfo1, sInfo2, sInfo3, sInfo4, sInfo5, sPrekGrupes, sKilmesSalis.
 
     Action id `get_preke` · reads only · Finvalda: `GET GetPreke`
 
@@ -2993,13 +3087,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetPreke. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetPreke, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNauja`, `sKodas`, `sPavadinimas`, `sBarKodas`, `sPastaba`, `sRysysSuSask`, `sMatavimoVnt`, `sMokestis`, `sInformacija`, `sRusis`, `sPozymis1`, `sPozymis2`, `sPozymis3`, `sPozymis4`, `sPozymis5`, `sPozymis6`, ….
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Products created or edited since
 
-    Products created or edited since a date. Finvalda method GetPrekes (manual section 3.44).
+    Products created or edited since a date. Finvalda method GetPrekes (manual section 3.44). Columns: bNauja, sKodas, sPavadinimas, sBarKodas, sPastaba, sRysysSuSask, sMatavimoVnt, sMokestis, sInformacija, sRusis, sPozymis1, sPozymis2, sPozymis3, sPozymis4, sPozymis5, sPozymis6, sValiuta, sIntrastatKodas, dKaina1, dKaina2, dKaina3, dKaina4, dKaina5, dKaina6, dNeto, dBruto, dTuris, dAntkainis, nVietuSkaicius, nAktyvi, dPirkimoKaina, sPirkimoValiuta, sUrl, sObjektas1, sObjektas2, sObjektas3, sObjektas4, nYraPakuote, nYraPUI, nIvedamaGalData, nSudetine, nSavikainosSkaicMetodas, dPakPo1, dPakPo2, dPakSt1, dPakSt2, dPakMe1, dPakMe2, dPakPl1, dPakPl2, dPakKo1, dPakKo2, dPakKi1, dPakKi2, nMinimalusKiekis, nUzsakomaPrekiu, sTiekejas1, sPreKodTiek1Kataloge, sTiekejas2, sPreKodTiek2Kataloge, sTiekejas3, sPreKodTiek3Kataloge, tKurimoData, tKoregavimoData, sInfo1, sInfo2, sInfo3, sInfo4, sInfo5, sPrekGrupes, sKilmesSalis.
 
     Action id `get_prekes` · reads only · Finvalda: `GET GetPrekes`
 
@@ -3010,13 +3105,14 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetPrekes. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetPrekes, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNauja`, `sKodas`, `sPavadinimas`, `sBarKodas`, `sPastaba`, `sRysysSuSask`, `sMatavimoVnt`, `sMokestis`, `sInformacija`, `sRusis`, `sPozymis1`, `sPozymis2`, `sPozymis3`, `sPozymis4`, `sPozymis5`, `sPozymis6`, ….
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Products in a warehouse
 
-    Products and quantities in one warehouse. Finvalda method GetPrekesSandelyje (manual section 3.46).
+    Products and quantities in one warehouse. Finvalda method GetPrekesSandelyje (manual section 3.46). Columns: bNauja, sKodas, sPavadinimas, sBarKodas, sPastaba, sRysysSuSask, sMatavimoVnt, sMokestis, sInformacija, sRusis, sPozymis1, sPozymis2, sPozymis3, sPozymis4, sPozymis5, sPozymis6, sValiuta, sIntrastatKodas, dKaina1, dKaina2, dKaina3, dKaina4, dKaina5, dKaina6, dNeto, dBruto, dTuris, dAntkainis, nVietuSkaicius, nAktyvi, dPirkimoKaina, sPirkimoValiuta, sUrl, sObjektas1, sObjektas2, sObjektas3, sObjektas4, nYraPakuote, nYraPUI, nIvedamaGalData, nSudetine, nSavikainosSkaicMetodas, dPakPo1, dPakPo2, dPakSt1, dPakSt2, dPakMe1, dPakMe2, dPakPl1, dPakPl2, dPakKo1, dPakKo2, dPakKi1, dPakKi2, nMinimalusKiekis, nUzsakomaPrekiu, sTiekejas1, sPreKodTiek1Kataloge, sTiekejas2, sPreKodTiek2Kataloge, sTiekejas3, sPreKodTiek3Kataloge, tKurimoData, tKoregavimoData, sInfo1, sInfo2, sInfo3, sInfo4, sInfo5, sPrekGrupes, sKilmesSalis.
 
     Action id `get_prekes_sandelyje` · reads only · Finvalda: `GET GetPrekesSandelyje`
 
@@ -3028,9 +3124,10 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetPrekesSandelyje. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list of records): The records of GetPrekesSandelyje, as the manual's example shows them; when Finvalda answers with them as XML text instead, the text is in response. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `bNauja`, `sKodas`, `sPavadinimas`, `sBarKodas`, `sPastaba`, `sRysysSuSask`, `sMatavimoVnt`, `sMokestis`, `sInformacija`, `sRusis`, `sPozymis1`, `sPozymis2`, `sPozymis3`, `sPozymis4`, `sPozymis5`, `sPozymis6`, ….
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Products in a warehouse, sorted
 
@@ -3047,9 +3144,9 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetPrekesSandelyjeOrder. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of GetPrekesSandelyjeOrder: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
 
     ### Products of a type
 
@@ -3063,8 +3160,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetPrekiuRusiesSudeti. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`.
+    - `records` (list of records): The rows of GetPrekiuRusiesSudeti, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Products sold in a period
 
@@ -3083,8 +3182,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetPardPrekPerPerioda. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `preke`, `kiekis`, `mato_vnt_pav`, `pirm_antr_mat_sant`, `pard_suma`, `pard_pvm`.
+    - `records` (list of records): The rows of GetPardPrekPerPerioda, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `preke`, `kiekis`, `mato_vnt_pav`, `pirm_antr_mat_sant`, `pard_suma`, `pard_pvm`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Services of a type
 
@@ -3098,8 +3199,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetPaslauguRusiesSudeti. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`.
+    - `records` (list of records): The rows of GetPaslauguRusiesSudeti, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Clients of a type
 
@@ -3113,8 +3216,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientusRusiesSudeti. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`.
+    - `records` (list of records): The rows of GetKlientusRusiesSudeti, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Payment terms
 
@@ -3128,8 +3233,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetAtsiskaitymoTerm. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `reikia_atsiskaityti`.
+    - `records` (list of records): The rows of GetAtsiskaitymoTerm, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `reikia_atsiskaityti`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Objects (level 1)
 
@@ -3145,8 +3252,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetObjektai1Set. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `pavadinimas2`, `info1`, `info2`, `info3`, `info4`, `info5`, `info6`, `info7`, `info8`, `info9`, `info10`, `rusis`, `pozymis1`, `pozymis2`, ….
+    - `records` (list of records): The rows of GetObjektai1Set, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `pavadinimas2`, `info1`, `info2`, `info3`, `info4`, `info5`, `info6`, `info7`, `info8`, `info9`, `info10`, `rusis`, `pozymis1`, `pozymis2`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Objects (level 2)
 
@@ -3162,8 +3271,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetObjektai2Set. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `info1`, `info2`, `info3`, `info4`, `info5`, `info6`, `info7`, `info8`, `info9`, `info10`, `rusis`, `pozymis1`, `pozymis2`, `pozymis3`, ….
+    - `records` (list of records): The rows of GetObjektai2Set, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `info1`, `info2`, `info3`, `info4`, `info5`, `info6`, `info7`, `info8`, `info9`, `info10`, `rusis`, `pozymis1`, `pozymis2`, `pozymis3`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Objects (level 3)
 
@@ -3179,8 +3290,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetObjektai3Set. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `info1`, `info2`, `grupės`, `galioja_nuo`, `galioja_iki`.
+    - `records` (list of records): The rows of GetObjektai3Set, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `info1`, `info2`, `grupės`, `galioja_nuo`, `galioja_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Objects (level 4)
 
@@ -3196,8 +3309,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetObjektai4Set. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `info1`, `info2`, `grupės`, `galioja_nuo`, `galioja_iki`.
+    - `records` (list of records): The rows of GetObjektai4Set, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `info1`, `info2`, `grupės`, `galioja_nuo`, `galioja_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Objects (level 5)
 
@@ -3213,8 +3328,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetObjektai5Set. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `info1`, `info2`, `grupės`, `galioja_nuo`, `galioja_iki`.
+    - `records` (list of records): The rows of GetObjektai5Set, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `info1`, `info2`, `grupės`, `galioja_nuo`, `galioja_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Objects (level 6)
 
@@ -3230,8 +3347,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetObjektai6Set. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `kodas`, `pavadinimas`, `info1`, `info2`, `grupės`, `galioja_nuo`, `galioja_iki`.
+    - `records` (list of records): The rows of GetObjektai6Set, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `kodas`, `pavadinimas`, `info1`, `info2`, `grupės`, `galioja_nuo`, `galioja_iki`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Order management: reservation status
 
@@ -3246,9 +3365,9 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetUVMPardRBusena. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of GetUVMPardRBusena: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
 
     ### Order management: cancelled reservations
 
@@ -3266,8 +3385,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetUVMPardRAnuliuoti. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `zurnalas`, `padalinys`, `numeris`, `dokumentas`, `pavadinimas1`, `pavadinimas2`, `pavadinimas3`, `pavadinimas4`, `pavadinimas5`, `kliento_kodas`, `kliento_pavadinimas`, `data`, `suma`, `valiuta`, `adresas`, `sutartis`, ….
+    - `records` (list of records): The rows of GetUVMPardRAnuliuoti, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `zurnalas`, `padalinys`, `numeris`, `dokumentas`, `pavadinimas1`, `pavadinimas2`, `pavadinimas3`, `pavadinimas4`, `pavadinimas5`, `kliento_kodas`, `kliento_pavadinimas`, `data`, `suma`, `valiuta`, `adresas`, `sutartis`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Order management: fulfilled reservations
 
@@ -3285,8 +3406,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetUVMPardRIvykdyti. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `zurnalas`, `padalinys`, `numeris`, `dokumentas`, `pavadinimas1`, `pavadinimas2`, `pavadinimas3`, `pavadinimas4`, `pavadinimas5`, `kliento_kodas`, `kliento_pavadinimas`, `data`, `suma`, `valiuta`, `adresas`, `sutartis`, ….
+    - `records` (list of records): The rows of GetUVMPardRIvykdyti, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `zurnalas`, `padalinys`, `numeris`, `dokumentas`, `pavadinimas1`, `pavadinimas2`, `pavadinimas3`, `pavadinimas4`, `pavadinimas5`, `kliento_kodas`, `kliento_pavadinimas`, `data`, `suma`, `valiuta`, `adresas`, `sutartis`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Order management: open reservations
 
@@ -3304,8 +3427,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetUVMPardRNeivykdyti. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `zurnalas`, `padalinys`, `numeris`, `dokumentas`, `pavadinimas1`, `pavadinimas2`, `pavadinimas3`, `pavadinimas4`, `pavadinimas5`, `kliento_kodas`, `kliento_pavadinimas`, `data`, `suma`, `valiuta`, `adresas`, `sutartis`, ….
+    - `records` (list of records): The rows of GetUVMPardRNeivykdyti, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `zurnalas`, `padalinys`, `numeris`, `dokumentas`, `pavadinimas1`, `pavadinimas2`, `pavadinimas3`, `pavadinimas4`, `pavadinimas5`, `kliento_kodas`, `kliento_pavadinimas`, `data`, `suma`, `valiuta`, `adresas`, `sutartis`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Client documents
 
@@ -3327,8 +3452,10 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetKlientoSaskaitas. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `operacija`, `operacijos_id`, `zurnalas`, `padalinys`, `numeris`, `op_tipas`, `serija`, `dokumentas`, `data`, `mod_data`, `klientas`, `im_kodas`, `suma_eur`, `suma_valiuta`, `likutis_eur`, `likutis_valiuta`, ….
+    - `records` (list of records): The rows of GetKlientoSaskaitas, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `operacija`, `operacijos_id`, `zurnalas`, `padalinys`, `numeris`, `op_tipas`, `serija`, `dokumentas`, `data`, `mod_data`, `klientas`, `im_kodas`, `suma_eur`, `suma_valiuta`, `likutis_eur`, `likutis_valiuta`, ….
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Product history
 
@@ -3344,9 +3471,9 @@ components:
 
     **Results**
 
-    - `records` (list): The rows of GetPrekesIstorija. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset).
+    - `records` (list): The rows of GetPrekesIstorija: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
-    - `response` (object): The rest of Finvalda's answer: everything but the rows and the status fields.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
 
     ### Activity by objects
 
@@ -3360,5 +3487,7 @@ components:
 
     **Results**
 
-    - `records` (list of records): The rows of GetVeiklaPagalObjektus. Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset). Fields: `op_date`, `op_tipas`, `op_numeris`, `zurnalas`, `klientas`, `dokumentas`, `tipas`, `prekes_kodas`, `prekes_pavadinimas`, `debitas`, `kreditas`, `pvm`, `kiekis`.
+    - `records` (list of records): The rows of GetVeiklaPagalObjektus, with the manual's Lithuanian column names whatever the connection's language (the manual lists no English names). Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `op_date`, `op_tipas`, `op_numeris`, `zurnalas`, `klientas`, `dokumentas`, `tipas`, `prekes_kodas`, `prekes_pavadinimas`, `debitas`, `kreditas`, `pvm`, `kiekis`.
     - `count` (whole number): How many rows were returned.
+    - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).

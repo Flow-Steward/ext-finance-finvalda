@@ -646,6 +646,7 @@ actions:
   - count
   - has_more
   - next_page
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -687,6 +688,7 @@ actions:
   - items
   - client_prices
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -731,6 +733,7 @@ actions:
   - overdue_total
   - documents
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -781,6 +784,7 @@ actions:
   - has_more
   - undated
   - undated_count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3773,6 +3777,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3821,6 +3827,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3873,6 +3881,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3914,6 +3924,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3948,6 +3960,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3994,6 +4008,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4028,6 +4044,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4066,6 +4084,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4113,6 +4133,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4309,6 +4331,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4343,6 +4367,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4391,6 +4417,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4490,6 +4518,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4524,6 +4554,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4558,6 +4590,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4595,6 +4629,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4628,6 +4664,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4666,6 +4704,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4710,6 +4750,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4754,6 +4796,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4798,6 +4842,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4832,6 +4878,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4878,6 +4926,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4923,6 +4973,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4969,6 +5021,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5013,6 +5067,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5059,6 +5115,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5104,6 +5162,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5150,6 +5210,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5194,6 +5256,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5240,6 +5304,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5285,6 +5351,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5331,6 +5399,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5375,6 +5445,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5421,6 +5493,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5466,6 +5540,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5512,6 +5588,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5556,6 +5634,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5575,7 +5655,10 @@ actions:
   - blocked_address
 - action_id: get_objektas1
   title: Advanced · Object (level 1)
-  description: One level-1 object by code. Finvalda method GetObjektas1 (manual section 3.32).
+  description: 'One level-1 object by code. Finvalda method GetObjektas1 (manual section 3.32). Columns:
+    bNaujas, sKodas, sPavadinimas, sPavadinimas2, sPapildomaInf1, sPapildomaInf2, sPapildomaInf3, sPapildomaInf4,
+    sPapildomaInf5, sPapildomaInf6, sPapildomaInf7, sPapildomaInf8, sPapildomaInf9, sPapildomaInf10, sPozymis1,
+    sPozymis2, sPozymis3, sRusis, tGaliojaNuo, tGaliojaIki.'
   required_scopes:
   - extension:invoke
   handler:
@@ -5593,6 +5676,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5612,7 +5696,10 @@ actions:
   - blocked_address
 - action_id: get_objektas2
   title: Advanced · Object (level 2)
-  description: One level-2 object by code. Finvalda method GetObjektas2 (manual section 3.33).
+  description: 'One level-2 object by code. Finvalda method GetObjektas2 (manual section 3.33). Columns:
+    bNaujas, sKodas, sPavadinimas, sPapildomaInf1, sPapildomaInf2, sPapildomaInf3, sPapildomaInf4, sPapildomaInf5,
+    sPapildomaInf6, sPapildomaInf7, sPapildomaInf8, sPapildomaInf9, sPapildomaInf10, sPozymis1, sPozymis2,
+    sPozymis3, sRusis, tGaliojaNuo, tGaliojaIki.'
   required_scopes:
   - extension:invoke
   handler:
@@ -5630,6 +5717,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5649,7 +5737,8 @@ actions:
   - blocked_address
 - action_id: get_objektas3
   title: Advanced · Object (level 3)
-  description: One level-3 object by code. Finvalda method GetObjektas3 (manual section 3.34).
+  description: 'One level-3 object by code. Finvalda method GetObjektas3 (manual section 3.34). Columns:
+    bNaujas, sKodas, sPavadinimas, sPapildomaInf1, sPapildomaInf2, tGaliojaNuo, tGaliojaIki.'
   required_scopes:
   - extension:invoke
   handler:
@@ -5667,6 +5756,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5686,7 +5776,8 @@ actions:
   - blocked_address
 - action_id: get_objektas4
   title: Advanced · Object (level 4)
-  description: One level-4 object by code. Finvalda method GetObjektas4 (manual section 3.35).
+  description: 'One level-4 object by code. Finvalda method GetObjektas4 (manual section 3.35). Columns:
+    bNaujas, sKodas, sPavadinimas, sPapildomaInf1, sPapildomaInf2, tGaliojaNuo, tGaliojaIki.'
   required_scopes:
   - extension:invoke
   handler:
@@ -5704,6 +5795,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5723,7 +5815,8 @@ actions:
   - blocked_address
 - action_id: get_objektas5
   title: Advanced · Object (level 5)
-  description: One level-5 object by code. Finvalda method GetObjektas5 (manual section 3.36).
+  description: 'One level-5 object by code. Finvalda method GetObjektas5 (manual section 3.36). Columns:
+    bNaujas, sKodas, sPavadinimas, sPapildomaInf1, sPapildomaInf2, tGaliojaNuo, tGaliojaIki.'
   required_scopes:
   - extension:invoke
   handler:
@@ -5741,6 +5834,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5760,7 +5854,8 @@ actions:
   - blocked_address
 - action_id: get_objektas6
   title: Advanced · Object (level 6)
-  description: One level-6 object by code. Finvalda method GetObjektas6 (manual section 3.37).
+  description: 'One level-6 object by code. Finvalda method GetObjektas6 (manual section 3.37). Columns:
+    bNaujas, sKodas, sPavadinimas, sPapildomaInf1, sPapildomaInf2, tGaliojaNuo, tGaliojaIki.'
   required_scopes:
   - extension:invoke
   handler:
@@ -5778,6 +5873,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5797,7 +5893,12 @@ actions:
   - blocked_address
 - action_id: get_klientas
   title: Advanced · Client
-  description: One client by code. Finvalda method GetKlientas (manual section 3.38).
+  description: 'One client by code. Finvalda method GetKlientas (manual section 3.38). Columns: sKodas,
+    sPavadinimas, sAdresas, sTelefonas, sFaksas, sAtsakingasAsmuo, sAtsiskaitymoTerminaiDebt, dDelspinigiaiDebt,
+    sAtsiskaitymoTerminaiKred, dDelspinigiaiKred, sPvmMokKod, sDebtSask, sKredSask, nKreditas, sBankas,
+    sBankoSaskaita, sKorespSaskBank, nTipas, sImKodas, sPvmMoketojoKod, sPastabos, sRusis, sEMail, nMaksPradlestosSkolosSum,
+    nSkolaGalimaPradelstiDien, nAktyvus, sPasiulomaValiuta, sYraKlientoPadalinys, sObjektas1, sObjektas2,
+    sObjektas3, sObjektas4, sPozymis1, sPozymis2, sPozymis3, dPapildomaInf, tKurimoData, tKoregavimoData.'
   required_scopes:
   - extension:invoke
   handler:
@@ -5815,6 +5916,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5871,7 +5973,13 @@ actions:
   - blocked_address
 - action_id: get_klientus
   title: Advanced · Clients created or edited since
-  description: Clients created or edited since a date. Finvalda method GetKlientus (manual section 3.40).
+  description: 'Clients created or edited since a date. Finvalda method GetKlientus (manual section 3.40).
+    Columns: sKodas, sPavadinimas, sAdresas, sTelefonas, sFaksas, sAtsakingasAsmuo, sAtsiskaitymoTerminaiDebt,
+    dDelspinigiaiDebt, sAtsiskaitymoTerminaiKred, dDelspinigiaiKred, sPvmMokKod, sDebtSask, sKredSask,
+    nKreditas, sBankas, sBankoSaskaita, sKorespSaskBank, nTipas, sImKodas, sPvmMoketojoKod, sPastabos,
+    sRusis, sEMail, nMaksPradlestosSkolosSum, nSkolaGalimaPradelstiDien, nAktyvus, sPasiulomaValiuta,
+    sYraKlientoPadalinys, sObjektas1, sObjektas2, sObjektas3, sObjektas4, sPozymis1, sPozymis2, sPozymis3,
+    dPapildomaInf, tKurimoData, tKoregavimoData.'
   required_scopes:
   - extension:invoke
   handler:
@@ -5892,6 +6000,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5911,7 +6020,11 @@ actions:
   - blocked_address
 - action_id: get_paslauga
   title: Advanced · Service
-  description: One service by code. Finvalda method GetPaslauga (manual section 3.41).
+  description: 'One service by code. Finvalda method GetPaslauga (manual section 3.41). Columns: bNauja,
+    sKodas, sPavadinimas, sBARKodas, sPastaba, sRysysSuSask, sMokestis, sMatVienetas, dPirkimoKaina, dPardavimoKaina,
+    sPastabos1, sPastabos2, sPastabos3, sPastabos4, sPastabos5, sPastabos6, sPastabos7, sPastabos8, sPastabos9,
+    sPastabos10, sPastabos11, sPastabos12, nAktyvi, sObjektas1, sObjektas2, sObjektas3, sObjektas4, sRusis,
+    sPozymis1, sPozymis2, sPozymis3, tKurimoData, tKoregavimoData.'
   required_scopes:
   - extension:invoke
   handler:
@@ -5929,6 +6042,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5948,7 +6062,11 @@ actions:
   - blocked_address
 - action_id: get_paslaugos
   title: Advanced · Services created or edited since
-  description: Services created or edited since a date. Finvalda method GetPaslaugos (manual section 3.42).
+  description: 'Services created or edited since a date. Finvalda method GetPaslaugos (manual section
+    3.42). Columns: bNauja, sKodas, sPavadinimas, sBARKodas, sPastaba, sRysysSuSask, sMokestis, sMatVienetas,
+    dPirkimoKaina, dPardavimoKaina, sPastabos1, sPastabos2, sPastabos3, sPastabos4, sPastabos5, sPastabos6,
+    sPastabos7, sPastabos8, sPastabos9, sPastabos10, sPastabos11, sPastabos12, nAktyvi, sObjektas1, sObjektas2,
+    sObjektas3, sObjektas4, sRusis, sPozymis1, sPozymis2, sPozymis3, tKurimoData, tKoregavimoData.'
   required_scopes:
   - extension:invoke
   handler:
@@ -5969,6 +6087,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5988,7 +6107,15 @@ actions:
   - blocked_address
 - action_id: get_preke
   title: Advanced · Product
-  description: One product by code. Finvalda method GetPreke (manual section 3.43).
+  description: 'One product by code. Finvalda method GetPreke (manual section 3.43). Columns: bNauja,
+    sKodas, sPavadinimas, sBarKodas, sPastaba, sRysysSuSask, sMatavimoVnt, sMokestis, sInformacija, sRusis,
+    sPozymis1, sPozymis2, sPozymis3, sPozymis4, sPozymis5, sPozymis6, sValiuta, sIntrastatKodas, dKaina1,
+    dKaina2, dKaina3, dKaina4, dKaina5, dKaina6, dNeto, dBruto, dTuris, dAntkainis, nVietuSkaicius, nAktyvi,
+    dPirkimoKaina, sPirkimoValiuta, sUrl, sObjektas1, sObjektas2, sObjektas3, sObjektas4, nYraPakuote,
+    nYraPUI, nIvedamaGalData, nSudetine, nSavikainosSkaicMetodas, dPakPo1, dPakPo2, dPakSt1, dPakSt2,
+    dPakMe1, dPakMe2, dPakPl1, dPakPl2, dPakKo1, dPakKo2, dPakKi1, dPakKi2, nMinimalusKiekis, nUzsakomaPrekiu,
+    sTiekejas1, sPreKodTiek1Kataloge, sTiekejas2, sPreKodTiek2Kataloge, sTiekejas3, sPreKodTiek3Kataloge,
+    tKurimoData, tKoregavimoData, sInfo1, sInfo2, sInfo3, sInfo4, sInfo5, sPrekGrupes, sKilmesSalis.'
   required_scopes:
   - extension:invoke
   handler:
@@ -6006,6 +6133,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6025,7 +6153,15 @@ actions:
   - blocked_address
 - action_id: get_prekes
   title: Advanced · Products created or edited since
-  description: Products created or edited since a date. Finvalda method GetPrekes (manual section 3.44).
+  description: 'Products created or edited since a date. Finvalda method GetPrekes (manual section 3.44).
+    Columns: bNauja, sKodas, sPavadinimas, sBarKodas, sPastaba, sRysysSuSask, sMatavimoVnt, sMokestis,
+    sInformacija, sRusis, sPozymis1, sPozymis2, sPozymis3, sPozymis4, sPozymis5, sPozymis6, sValiuta,
+    sIntrastatKodas, dKaina1, dKaina2, dKaina3, dKaina4, dKaina5, dKaina6, dNeto, dBruto, dTuris, dAntkainis,
+    nVietuSkaicius, nAktyvi, dPirkimoKaina, sPirkimoValiuta, sUrl, sObjektas1, sObjektas2, sObjektas3,
+    sObjektas4, nYraPakuote, nYraPUI, nIvedamaGalData, nSudetine, nSavikainosSkaicMetodas, dPakPo1, dPakPo2,
+    dPakSt1, dPakSt2, dPakMe1, dPakMe2, dPakPl1, dPakPl2, dPakKo1, dPakKo2, dPakKi1, dPakKi2, nMinimalusKiekis,
+    nUzsakomaPrekiu, sTiekejas1, sPreKodTiek1Kataloge, sTiekejas2, sPreKodTiek2Kataloge, sTiekejas3, sPreKodTiek3Kataloge,
+    tKurimoData, tKoregavimoData, sInfo1, sInfo2, sInfo3, sInfo4, sInfo5, sPrekGrupes, sKilmesSalis.'
   required_scopes:
   - extension:invoke
   handler:
@@ -6046,6 +6182,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6065,8 +6202,15 @@ actions:
   - blocked_address
 - action_id: get_prekes_sandelyje
   title: Advanced · Products in a warehouse
-  description: Products and quantities in one warehouse. Finvalda method GetPrekesSandelyje (manual section
-    3.46).
+  description: 'Products and quantities in one warehouse. Finvalda method GetPrekesSandelyje (manual section
+    3.46). Columns: bNauja, sKodas, sPavadinimas, sBarKodas, sPastaba, sRysysSuSask, sMatavimoVnt, sMokestis,
+    sInformacija, sRusis, sPozymis1, sPozymis2, sPozymis3, sPozymis4, sPozymis5, sPozymis6, sValiuta,
+    sIntrastatKodas, dKaina1, dKaina2, dKaina3, dKaina4, dKaina5, dKaina6, dNeto, dBruto, dTuris, dAntkainis,
+    nVietuSkaicius, nAktyvi, dPirkimoKaina, sPirkimoValiuta, sUrl, sObjektas1, sObjektas2, sObjektas3,
+    sObjektas4, nYraPakuote, nYraPUI, nIvedamaGalData, nSudetine, nSavikainosSkaicMetodas, dPakPo1, dPakPo2,
+    dPakSt1, dPakSt2, dPakMe1, dPakMe2, dPakPl1, dPakPl2, dPakKo1, dPakKo2, dPakKi1, dPakKi2, nMinimalusKiekis,
+    nUzsakomaPrekiu, sTiekejas1, sPreKodTiek1Kataloge, sTiekejas2, sPreKodTiek2Kataloge, sTiekejas3, sPreKodTiek3Kataloge,
+    tKurimoData, tKoregavimoData, sInfo1, sInfo2, sInfo3, sInfo4, sInfo5, sPrekGrupes, sKilmesSalis.'
   required_scopes:
   - extension:invoke
   handler:
@@ -6090,6 +6234,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6174,6 +6319,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6226,6 +6373,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6263,6 +6412,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6300,6 +6451,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6334,6 +6487,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6378,6 +6533,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6422,6 +6579,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6465,6 +6624,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6508,6 +6669,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6551,6 +6714,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6594,6 +6759,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6686,6 +6853,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6737,6 +6906,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6788,6 +6959,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6851,6 +7024,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6933,6 +7108,8 @@ actions:
   result_fields:
   - records
   - count
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -8042,6 +8219,8 @@ actions:
   - price
   - vat
   - discount
+  - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -8079,6 +8258,7 @@ actions:
   result_fields:
   - permissions
   - count
+  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -8120,6 +8300,7 @@ actions:
   result_fields:
   - records
   - count
+  - response
   error_codes:
   - invalid_payload
   - invalid_host_envelope

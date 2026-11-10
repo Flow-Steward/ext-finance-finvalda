@@ -7825,7 +7825,91 @@
   },
   "get_objektas1": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNaujas",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sPavadinimas2",
+     "text"
+    ],
+    [
+     "sPapildomaInf1",
+     "text"
+    ],
+    [
+     "sPapildomaInf2",
+     "text"
+    ],
+    [
+     "sPapildomaInf3",
+     "text"
+    ],
+    [
+     "sPapildomaInf4",
+     "text"
+    ],
+    [
+     "sPapildomaInf5",
+     "text"
+    ],
+    [
+     "sPapildomaInf6",
+     "text"
+    ],
+    [
+     "sPapildomaInf7",
+     "text"
+    ],
+    [
+     "sPapildomaInf8",
+     "text"
+    ],
+    [
+     "sPapildomaInf9",
+     "text"
+    ],
+    [
+     "sPapildomaInf10",
+     "text"
+    ],
+    [
+     "sPozymis1",
+     "text"
+    ],
+    [
+     "sPozymis2",
+     "text"
+    ],
+    [
+     "sPozymis3",
+     "text"
+    ],
+    [
+     "sRusis",
+     "text"
+    ],
+    [
+     "tGaliojaNuo",
+     "datetime"
+    ],
+    [
+     "tGaliojaIki",
+     "datetime"
+    ]
+   ],
+   "record_path": [
+    "Fvs.ObjektasI"
+   ],
    "method": "GetObjektas1",
    "verb": "GET",
    "params": [
@@ -7839,7 +7923,87 @@
   },
   "get_objektas2": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNaujas",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sPapildomaInf1",
+     "text"
+    ],
+    [
+     "sPapildomaInf2",
+     "text"
+    ],
+    [
+     "sPapildomaInf3",
+     "text"
+    ],
+    [
+     "sPapildomaInf4",
+     "text"
+    ],
+    [
+     "sPapildomaInf5",
+     "text"
+    ],
+    [
+     "sPapildomaInf6",
+     "text"
+    ],
+    [
+     "sPapildomaInf7",
+     "text"
+    ],
+    [
+     "sPapildomaInf8",
+     "text"
+    ],
+    [
+     "sPapildomaInf9",
+     "text"
+    ],
+    [
+     "sPapildomaInf10",
+     "text"
+    ],
+    [
+     "sPozymis1",
+     "text"
+    ],
+    [
+     "sPozymis2",
+     "text"
+    ],
+    [
+     "sPozymis3",
+     "text"
+    ],
+    [
+     "sRusis",
+     "text"
+    ],
+    [
+     "tGaliojaNuo",
+     "datetime"
+    ],
+    [
+     "tGaliojaIki",
+     "datetime"
+    ]
+   ],
+   "record_path": [
+    "Fvs.ObjektasII"
+   ],
    "method": "GetObjektas2",
    "verb": "GET",
    "params": [
@@ -7853,7 +8017,39 @@
   },
   "get_objektas3": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNaujas",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sPapildomaInf1",
+     "text"
+    ],
+    [
+     "sPapildomaInf2",
+     "text"
+    ],
+    [
+     "tGaliojaNuo",
+     "datetime"
+    ],
+    [
+     "tGaliojaIki",
+     "datetime"
+    ]
+   ],
+   "record_path": [
+    "Fvs.ObjektasIII"
+   ],
    "method": "GetObjektas3",
    "verb": "GET",
    "params": [
@@ -7867,7 +8063,39 @@
   },
   "get_objektas4": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNaujas",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sPapildomaInf1",
+     "text"
+    ],
+    [
+     "sPapildomaInf2",
+     "text"
+    ],
+    [
+     "tGaliojaNuo",
+     "datetime"
+    ],
+    [
+     "tGaliojaIki",
+     "datetime"
+    ]
+   ],
+   "record_path": [
+    "Fvs.ObjektasIV"
+   ],
    "method": "GetObjektas4",
    "verb": "GET",
    "params": [
@@ -7881,7 +8109,39 @@
   },
   "get_objektas5": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNaujas",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sPapildomaInf1",
+     "text"
+    ],
+    [
+     "sPapildomaInf2",
+     "text"
+    ],
+    [
+     "tGaliojaNuo",
+     "datetime"
+    ],
+    [
+     "tGaliojaIki",
+     "datetime"
+    ]
+   ],
+   "record_path": [
+    "Fvs.ObjektasV"
+   ],
    "method": "GetObjektas5",
    "verb": "GET",
    "params": [
@@ -7895,7 +8155,39 @@
   },
   "get_objektas6": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNaujas",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sPapildomaInf1",
+     "text"
+    ],
+    [
+     "sPapildomaInf2",
+     "text"
+    ],
+    [
+     "tGaliojaNuo",
+     "datetime"
+    ],
+    [
+     "tGaliojaIki",
+     "datetime"
+    ]
+   ],
+   "record_path": [
+    "Fvs.ObjektasVI"
+   ],
    "method": "GetObjektas6",
    "verb": "GET",
    "params": [
@@ -7909,7 +8201,163 @@
   },
   "get_klientas": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sAdresas",
+     "text"
+    ],
+    [
+     "sTelefonas",
+     "text"
+    ],
+    [
+     "sFaksas",
+     "text"
+    ],
+    [
+     "sAtsakingasAsmuo",
+     "text"
+    ],
+    [
+     "sAtsiskaitymoTerminaiDebt",
+     "text"
+    ],
+    [
+     "dDelspinigiaiDebt",
+     "decimal"
+    ],
+    [
+     "sAtsiskaitymoTerminaiKred",
+     "text"
+    ],
+    [
+     "dDelspinigiaiKred",
+     "decimal"
+    ],
+    [
+     "sPvmMokKod",
+     "text"
+    ],
+    [
+     "sDebtSask",
+     "text"
+    ],
+    [
+     "sKredSask",
+     "text"
+    ],
+    [
+     "nKreditas",
+     "integer"
+    ],
+    [
+     "sBankas",
+     "text"
+    ],
+    [
+     "sBankoSaskaita",
+     "text"
+    ],
+    [
+     "sKorespSaskBank",
+     "text"
+    ],
+    [
+     "nTipas",
+     "integer"
+    ],
+    [
+     "sImKodas",
+     "text"
+    ],
+    [
+     "sPvmMoketojoKod",
+     "text"
+    ],
+    [
+     "sPastabos",
+     "text"
+    ],
+    [
+     "sRusis",
+     "text"
+    ],
+    [
+     "sEMail",
+     "text"
+    ],
+    [
+     "nMaksPradlestosSkolosSum",
+     "integer"
+    ],
+    [
+     "nSkolaGalimaPradelstiDien",
+     "integer"
+    ],
+    [
+     "nAktyvus",
+     "integer"
+    ],
+    [
+     "sPasiulomaValiuta",
+     "text"
+    ],
+    [
+     "sYraKlientoPadalinys",
+     "text"
+    ],
+    [
+     "sObjektas1",
+     "text"
+    ],
+    [
+     "sObjektas2",
+     "text"
+    ],
+    [
+     "sObjektas3",
+     "text"
+    ],
+    [
+     "sObjektas4",
+     "text"
+    ],
+    [
+     "sPozymis1",
+     "text"
+    ],
+    [
+     "sPozymis2",
+     "text"
+    ],
+    [
+     "sPozymis3",
+     "text"
+    ],
+    [
+     "dPapildomaInf",
+     "decimal"
+    ],
+    [
+     "tKurimoData",
+     "datetime"
+    ],
+    [
+     "tKoregavimoData",
+     "datetime"
+    ]
+   ],
+   "record_path": [
+    "Fvs.Klientas"
+   ],
    "method": "GetKlientas",
    "verb": "GET",
    "params": [
@@ -7937,7 +8385,164 @@
   },
   "get_klientus": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sAdresas",
+     "text"
+    ],
+    [
+     "sTelefonas",
+     "text"
+    ],
+    [
+     "sFaksas",
+     "text"
+    ],
+    [
+     "sAtsakingasAsmuo",
+     "text"
+    ],
+    [
+     "sAtsiskaitymoTerminaiDebt",
+     "text"
+    ],
+    [
+     "dDelspinigiaiDebt",
+     "decimal"
+    ],
+    [
+     "sAtsiskaitymoTerminaiKred",
+     "text"
+    ],
+    [
+     "dDelspinigiaiKred",
+     "decimal"
+    ],
+    [
+     "sPvmMokKod",
+     "text"
+    ],
+    [
+     "sDebtSask",
+     "text"
+    ],
+    [
+     "sKredSask",
+     "text"
+    ],
+    [
+     "nKreditas",
+     "integer"
+    ],
+    [
+     "sBankas",
+     "text"
+    ],
+    [
+     "sBankoSaskaita",
+     "text"
+    ],
+    [
+     "sKorespSaskBank",
+     "text"
+    ],
+    [
+     "nTipas",
+     "integer"
+    ],
+    [
+     "sImKodas",
+     "text"
+    ],
+    [
+     "sPvmMoketojoKod",
+     "text"
+    ],
+    [
+     "sPastabos",
+     "text"
+    ],
+    [
+     "sRusis",
+     "text"
+    ],
+    [
+     "sEMail",
+     "text"
+    ],
+    [
+     "nMaksPradlestosSkolosSum",
+     "integer"
+    ],
+    [
+     "nSkolaGalimaPradelstiDien",
+     "integer"
+    ],
+    [
+     "nAktyvus",
+     "integer"
+    ],
+    [
+     "sPasiulomaValiuta",
+     "text"
+    ],
+    [
+     "sYraKlientoPadalinys",
+     "text"
+    ],
+    [
+     "sObjektas1",
+     "text"
+    ],
+    [
+     "sObjektas2",
+     "text"
+    ],
+    [
+     "sObjektas3",
+     "text"
+    ],
+    [
+     "sObjektas4",
+     "text"
+    ],
+    [
+     "sPozymis1",
+     "text"
+    ],
+    [
+     "sPozymis2",
+     "text"
+    ],
+    [
+     "sPozymis3",
+     "text"
+    ],
+    [
+     "dPapildomaInf",
+     "decimal"
+    ],
+    [
+     "tKurimoData",
+     "datetime"
+    ],
+    [
+     "tKoregavimoData",
+     "datetime"
+    ]
+   ],
+   "record_path": [
+    "Klientai",
+    "Fvs.Klientas"
+   ],
    "method": "GetKlientus",
    "verb": "GET",
    "params": [
@@ -7957,7 +8562,143 @@
   },
   "get_paslauga": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNauja",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sBARKodas",
+     "text"
+    ],
+    [
+     "sPastaba",
+     "text"
+    ],
+    [
+     "sRysysSuSask",
+     "text"
+    ],
+    [
+     "sMokestis",
+     "text"
+    ],
+    [
+     "sMatVienetas",
+     "text"
+    ],
+    [
+     "dPirkimoKaina",
+     "decimal"
+    ],
+    [
+     "dPardavimoKaina",
+     "decimal"
+    ],
+    [
+     "sPastabos1",
+     "text"
+    ],
+    [
+     "sPastabos2",
+     "text"
+    ],
+    [
+     "sPastabos3",
+     "text"
+    ],
+    [
+     "sPastabos4",
+     "text"
+    ],
+    [
+     "sPastabos5",
+     "text"
+    ],
+    [
+     "sPastabos6",
+     "text"
+    ],
+    [
+     "sPastabos7",
+     "text"
+    ],
+    [
+     "sPastabos8",
+     "text"
+    ],
+    [
+     "sPastabos9",
+     "text"
+    ],
+    [
+     "sPastabos10",
+     "text"
+    ],
+    [
+     "sPastabos11",
+     "text"
+    ],
+    [
+     "sPastabos12",
+     "text"
+    ],
+    [
+     "nAktyvi",
+     "integer"
+    ],
+    [
+     "sObjektas1",
+     "text"
+    ],
+    [
+     "sObjektas2",
+     "text"
+    ],
+    [
+     "sObjektas3",
+     "text"
+    ],
+    [
+     "sObjektas4",
+     "text"
+    ],
+    [
+     "sRusis",
+     "text"
+    ],
+    [
+     "sPozymis1",
+     "text"
+    ],
+    [
+     "sPozymis2",
+     "text"
+    ],
+    [
+     "sPozymis3",
+     "text"
+    ],
+    [
+     "tKurimoData",
+     "datetime"
+    ],
+    [
+     "tKoregavimoData",
+     "datetime"
+    ]
+   ],
+   "record_path": [
+    "Fvs.Paslauga"
+   ],
    "method": "GetPaslauga",
    "verb": "GET",
    "params": [
@@ -7971,7 +8712,144 @@
   },
   "get_paslaugos": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNauja",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sBARKodas",
+     "text"
+    ],
+    [
+     "sPastaba",
+     "text"
+    ],
+    [
+     "sRysysSuSask",
+     "text"
+    ],
+    [
+     "sMokestis",
+     "text"
+    ],
+    [
+     "sMatVienetas",
+     "text"
+    ],
+    [
+     "dPirkimoKaina",
+     "decimal"
+    ],
+    [
+     "dPardavimoKaina",
+     "decimal"
+    ],
+    [
+     "sPastabos1",
+     "text"
+    ],
+    [
+     "sPastabos2",
+     "text"
+    ],
+    [
+     "sPastabos3",
+     "text"
+    ],
+    [
+     "sPastabos4",
+     "text"
+    ],
+    [
+     "sPastabos5",
+     "text"
+    ],
+    [
+     "sPastabos6",
+     "text"
+    ],
+    [
+     "sPastabos7",
+     "text"
+    ],
+    [
+     "sPastabos8",
+     "text"
+    ],
+    [
+     "sPastabos9",
+     "text"
+    ],
+    [
+     "sPastabos10",
+     "text"
+    ],
+    [
+     "sPastabos11",
+     "text"
+    ],
+    [
+     "sPastabos12",
+     "text"
+    ],
+    [
+     "nAktyvi",
+     "integer"
+    ],
+    [
+     "sObjektas1",
+     "text"
+    ],
+    [
+     "sObjektas2",
+     "text"
+    ],
+    [
+     "sObjektas3",
+     "text"
+    ],
+    [
+     "sObjektas4",
+     "text"
+    ],
+    [
+     "sRusis",
+     "text"
+    ],
+    [
+     "sPozymis1",
+     "text"
+    ],
+    [
+     "sPozymis2",
+     "text"
+    ],
+    [
+     "sPozymis3",
+     "text"
+    ],
+    [
+     "tKurimoData",
+     "datetime"
+    ],
+    [
+     "tKoregavimoData",
+     "datetime"
+    ]
+   ],
+   "record_path": [
+    "Paslaugos",
+    "Fvs.Paslauga"
+   ],
    "method": "GetPaslaugos",
    "verb": "GET",
    "params": [
@@ -7991,7 +8869,295 @@
   },
   "get_preke": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNauja",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sBarKodas",
+     "text"
+    ],
+    [
+     "sPastaba",
+     "text"
+    ],
+    [
+     "sRysysSuSask",
+     "text"
+    ],
+    [
+     "sMatavimoVnt",
+     "text"
+    ],
+    [
+     "sMokestis",
+     "text"
+    ],
+    [
+     "sInformacija",
+     "text"
+    ],
+    [
+     "sRusis",
+     "text"
+    ],
+    [
+     "sPozymis1",
+     "text"
+    ],
+    [
+     "sPozymis2",
+     "text"
+    ],
+    [
+     "sPozymis3",
+     "text"
+    ],
+    [
+     "sPozymis4",
+     "text"
+    ],
+    [
+     "sPozymis5",
+     "text"
+    ],
+    [
+     "sPozymis6",
+     "text"
+    ],
+    [
+     "sValiuta",
+     "text"
+    ],
+    [
+     "sIntrastatKodas",
+     "text"
+    ],
+    [
+     "dKaina1",
+     "decimal"
+    ],
+    [
+     "dKaina2",
+     "decimal"
+    ],
+    [
+     "dKaina3",
+     "decimal"
+    ],
+    [
+     "dKaina4",
+     "decimal"
+    ],
+    [
+     "dKaina5",
+     "decimal"
+    ],
+    [
+     "dKaina6",
+     "decimal"
+    ],
+    [
+     "dNeto",
+     "decimal"
+    ],
+    [
+     "dBruto",
+     "decimal"
+    ],
+    [
+     "dTuris",
+     "decimal"
+    ],
+    [
+     "dAntkainis",
+     "decimal"
+    ],
+    [
+     "nVietuSkaicius",
+     "integer"
+    ],
+    [
+     "nAktyvi",
+     "integer"
+    ],
+    [
+     "dPirkimoKaina",
+     "decimal"
+    ],
+    [
+     "sPirkimoValiuta",
+     "text"
+    ],
+    [
+     "sUrl",
+     "text"
+    ],
+    [
+     "sObjektas1",
+     "text"
+    ],
+    [
+     "sObjektas2",
+     "text"
+    ],
+    [
+     "sObjektas3",
+     "text"
+    ],
+    [
+     "sObjektas4",
+     "text"
+    ],
+    [
+     "nYraPakuote",
+     "integer"
+    ],
+    [
+     "nYraPUI",
+     "integer"
+    ],
+    [
+     "nIvedamaGalData",
+     "integer"
+    ],
+    [
+     "nSudetine",
+     "integer"
+    ],
+    [
+     "nSavikainosSkaicMetodas",
+     "integer"
+    ],
+    [
+     "dPakPo1",
+     "decimal"
+    ],
+    [
+     "dPakPo2",
+     "decimal"
+    ],
+    [
+     "dPakSt1",
+     "decimal"
+    ],
+    [
+     "dPakSt2",
+     "decimal"
+    ],
+    [
+     "dPakMe1",
+     "decimal"
+    ],
+    [
+     "dPakMe2",
+     "decimal"
+    ],
+    [
+     "dPakPl1",
+     "decimal"
+    ],
+    [
+     "dPakPl2",
+     "decimal"
+    ],
+    [
+     "dPakKo1",
+     "decimal"
+    ],
+    [
+     "dPakKo2",
+     "decimal"
+    ],
+    [
+     "dPakKi1",
+     "decimal"
+    ],
+    [
+     "dPakKi2",
+     "decimal"
+    ],
+    [
+     "nMinimalusKiekis",
+     "integer"
+    ],
+    [
+     "nUzsakomaPrekiu",
+     "integer"
+    ],
+    [
+     "sTiekejas1",
+     "text"
+    ],
+    [
+     "sPreKodTiek1Kataloge",
+     "text"
+    ],
+    [
+     "sTiekejas2",
+     "text"
+    ],
+    [
+     "sPreKodTiek2Kataloge",
+     "text"
+    ],
+    [
+     "sTiekejas3",
+     "text"
+    ],
+    [
+     "sPreKodTiek3Kataloge",
+     "text"
+    ],
+    [
+     "tKurimoData",
+     "datetime"
+    ],
+    [
+     "tKoregavimoData",
+     "datetime"
+    ],
+    [
+     "sInfo1",
+     "text"
+    ],
+    [
+     "sInfo2",
+     "text"
+    ],
+    [
+     "sInfo3",
+     "text"
+    ],
+    [
+     "sInfo4",
+     "text"
+    ],
+    [
+     "sInfo5",
+     "text"
+    ],
+    [
+     "sPrekGrupes",
+     "text"
+    ],
+    [
+     "sKilmesSalis",
+     "text"
+    ]
+   ],
+   "record_path": [
+    "Fvs.Preke"
+   ],
    "method": "GetPreke",
    "verb": "GET",
    "params": [
@@ -8005,7 +9171,296 @@
   },
   "get_prekes": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNauja",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sBarKodas",
+     "text"
+    ],
+    [
+     "sPastaba",
+     "text"
+    ],
+    [
+     "sRysysSuSask",
+     "text"
+    ],
+    [
+     "sMatavimoVnt",
+     "text"
+    ],
+    [
+     "sMokestis",
+     "text"
+    ],
+    [
+     "sInformacija",
+     "text"
+    ],
+    [
+     "sRusis",
+     "text"
+    ],
+    [
+     "sPozymis1",
+     "text"
+    ],
+    [
+     "sPozymis2",
+     "text"
+    ],
+    [
+     "sPozymis3",
+     "text"
+    ],
+    [
+     "sPozymis4",
+     "text"
+    ],
+    [
+     "sPozymis5",
+     "text"
+    ],
+    [
+     "sPozymis6",
+     "text"
+    ],
+    [
+     "sValiuta",
+     "text"
+    ],
+    [
+     "sIntrastatKodas",
+     "text"
+    ],
+    [
+     "dKaina1",
+     "decimal"
+    ],
+    [
+     "dKaina2",
+     "decimal"
+    ],
+    [
+     "dKaina3",
+     "decimal"
+    ],
+    [
+     "dKaina4",
+     "decimal"
+    ],
+    [
+     "dKaina5",
+     "decimal"
+    ],
+    [
+     "dKaina6",
+     "decimal"
+    ],
+    [
+     "dNeto",
+     "decimal"
+    ],
+    [
+     "dBruto",
+     "decimal"
+    ],
+    [
+     "dTuris",
+     "decimal"
+    ],
+    [
+     "dAntkainis",
+     "decimal"
+    ],
+    [
+     "nVietuSkaicius",
+     "integer"
+    ],
+    [
+     "nAktyvi",
+     "integer"
+    ],
+    [
+     "dPirkimoKaina",
+     "decimal"
+    ],
+    [
+     "sPirkimoValiuta",
+     "text"
+    ],
+    [
+     "sUrl",
+     "text"
+    ],
+    [
+     "sObjektas1",
+     "text"
+    ],
+    [
+     "sObjektas2",
+     "text"
+    ],
+    [
+     "sObjektas3",
+     "text"
+    ],
+    [
+     "sObjektas4",
+     "text"
+    ],
+    [
+     "nYraPakuote",
+     "integer"
+    ],
+    [
+     "nYraPUI",
+     "integer"
+    ],
+    [
+     "nIvedamaGalData",
+     "integer"
+    ],
+    [
+     "nSudetine",
+     "integer"
+    ],
+    [
+     "nSavikainosSkaicMetodas",
+     "integer"
+    ],
+    [
+     "dPakPo1",
+     "decimal"
+    ],
+    [
+     "dPakPo2",
+     "decimal"
+    ],
+    [
+     "dPakSt1",
+     "decimal"
+    ],
+    [
+     "dPakSt2",
+     "decimal"
+    ],
+    [
+     "dPakMe1",
+     "decimal"
+    ],
+    [
+     "dPakMe2",
+     "decimal"
+    ],
+    [
+     "dPakPl1",
+     "decimal"
+    ],
+    [
+     "dPakPl2",
+     "decimal"
+    ],
+    [
+     "dPakKo1",
+     "decimal"
+    ],
+    [
+     "dPakKo2",
+     "decimal"
+    ],
+    [
+     "dPakKi1",
+     "decimal"
+    ],
+    [
+     "dPakKi2",
+     "decimal"
+    ],
+    [
+     "nMinimalusKiekis",
+     "integer"
+    ],
+    [
+     "nUzsakomaPrekiu",
+     "integer"
+    ],
+    [
+     "sTiekejas1",
+     "text"
+    ],
+    [
+     "sPreKodTiek1Kataloge",
+     "text"
+    ],
+    [
+     "sTiekejas2",
+     "text"
+    ],
+    [
+     "sPreKodTiek2Kataloge",
+     "text"
+    ],
+    [
+     "sTiekejas3",
+     "text"
+    ],
+    [
+     "sPreKodTiek3Kataloge",
+     "text"
+    ],
+    [
+     "tKurimoData",
+     "datetime"
+    ],
+    [
+     "tKoregavimoData",
+     "datetime"
+    ],
+    [
+     "sInfo1",
+     "text"
+    ],
+    [
+     "sInfo2",
+     "text"
+    ],
+    [
+     "sInfo3",
+     "text"
+    ],
+    [
+     "sInfo4",
+     "text"
+    ],
+    [
+     "sInfo5",
+     "text"
+    ],
+    [
+     "sPrekGrupes",
+     "text"
+    ],
+    [
+     "sKilmesSalis",
+     "text"
+    ]
+   ],
+   "record_path": [
+    "Prekes",
+    "Fvs.Preke"
+   ],
    "method": "GetPrekes",
    "verb": "GET",
    "params": [
@@ -8025,7 +9480,296 @@
   },
   "get_prekes_sandelyje": {
    "runner": "method_read",
-   "columns": [],
+   "columns": [
+    [
+     "bNauja",
+     "boolean"
+    ],
+    [
+     "sKodas",
+     "text"
+    ],
+    [
+     "sPavadinimas",
+     "text"
+    ],
+    [
+     "sBarKodas",
+     "text"
+    ],
+    [
+     "sPastaba",
+     "text"
+    ],
+    [
+     "sRysysSuSask",
+     "text"
+    ],
+    [
+     "sMatavimoVnt",
+     "text"
+    ],
+    [
+     "sMokestis",
+     "text"
+    ],
+    [
+     "sInformacija",
+     "text"
+    ],
+    [
+     "sRusis",
+     "text"
+    ],
+    [
+     "sPozymis1",
+     "text"
+    ],
+    [
+     "sPozymis2",
+     "text"
+    ],
+    [
+     "sPozymis3",
+     "text"
+    ],
+    [
+     "sPozymis4",
+     "text"
+    ],
+    [
+     "sPozymis5",
+     "text"
+    ],
+    [
+     "sPozymis6",
+     "text"
+    ],
+    [
+     "sValiuta",
+     "text"
+    ],
+    [
+     "sIntrastatKodas",
+     "text"
+    ],
+    [
+     "dKaina1",
+     "decimal"
+    ],
+    [
+     "dKaina2",
+     "decimal"
+    ],
+    [
+     "dKaina3",
+     "decimal"
+    ],
+    [
+     "dKaina4",
+     "decimal"
+    ],
+    [
+     "dKaina5",
+     "decimal"
+    ],
+    [
+     "dKaina6",
+     "decimal"
+    ],
+    [
+     "dNeto",
+     "decimal"
+    ],
+    [
+     "dBruto",
+     "decimal"
+    ],
+    [
+     "dTuris",
+     "decimal"
+    ],
+    [
+     "dAntkainis",
+     "decimal"
+    ],
+    [
+     "nVietuSkaicius",
+     "integer"
+    ],
+    [
+     "nAktyvi",
+     "integer"
+    ],
+    [
+     "dPirkimoKaina",
+     "decimal"
+    ],
+    [
+     "sPirkimoValiuta",
+     "text"
+    ],
+    [
+     "sUrl",
+     "text"
+    ],
+    [
+     "sObjektas1",
+     "text"
+    ],
+    [
+     "sObjektas2",
+     "text"
+    ],
+    [
+     "sObjektas3",
+     "text"
+    ],
+    [
+     "sObjektas4",
+     "text"
+    ],
+    [
+     "nYraPakuote",
+     "integer"
+    ],
+    [
+     "nYraPUI",
+     "integer"
+    ],
+    [
+     "nIvedamaGalData",
+     "integer"
+    ],
+    [
+     "nSudetine",
+     "integer"
+    ],
+    [
+     "nSavikainosSkaicMetodas",
+     "integer"
+    ],
+    [
+     "dPakPo1",
+     "decimal"
+    ],
+    [
+     "dPakPo2",
+     "decimal"
+    ],
+    [
+     "dPakSt1",
+     "decimal"
+    ],
+    [
+     "dPakSt2",
+     "decimal"
+    ],
+    [
+     "dPakMe1",
+     "decimal"
+    ],
+    [
+     "dPakMe2",
+     "decimal"
+    ],
+    [
+     "dPakPl1",
+     "decimal"
+    ],
+    [
+     "dPakPl2",
+     "decimal"
+    ],
+    [
+     "dPakKo1",
+     "decimal"
+    ],
+    [
+     "dPakKo2",
+     "decimal"
+    ],
+    [
+     "dPakKi1",
+     "decimal"
+    ],
+    [
+     "dPakKi2",
+     "decimal"
+    ],
+    [
+     "nMinimalusKiekis",
+     "integer"
+    ],
+    [
+     "nUzsakomaPrekiu",
+     "integer"
+    ],
+    [
+     "sTiekejas1",
+     "text"
+    ],
+    [
+     "sPreKodTiek1Kataloge",
+     "text"
+    ],
+    [
+     "sTiekejas2",
+     "text"
+    ],
+    [
+     "sPreKodTiek2Kataloge",
+     "text"
+    ],
+    [
+     "sTiekejas3",
+     "text"
+    ],
+    [
+     "sPreKodTiek3Kataloge",
+     "text"
+    ],
+    [
+     "tKurimoData",
+     "datetime"
+    ],
+    [
+     "tKoregavimoData",
+     "datetime"
+    ],
+    [
+     "sInfo1",
+     "text"
+    ],
+    [
+     "sInfo2",
+     "text"
+    ],
+    [
+     "sInfo3",
+     "text"
+    ],
+    [
+     "sInfo4",
+     "text"
+    ],
+    [
+     "sInfo5",
+     "text"
+    ],
+    [
+     "sPrekGrupes",
+     "text"
+    ],
+    [
+     "sKilmesSalis",
+     "text"
+    ]
+   ],
+   "record_path": [
+    "Prekes",
+    "Fvs.Preke"
+   ],
    "method": "GetPrekesSandelyje",
    "verb": "GET",
    "params": [
@@ -20518,6 +22262,8 @@
     ]
    },
    "columns": [],
+   "returned": [],
+   "returned_from": "",
    "source": "postman"
   },
   "Address": {
@@ -20561,6 +22307,8 @@
     "house",
     "flat"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "BarCodes": {
@@ -20573,6 +22321,11 @@
     ]
    },
    "columns": [],
+   "returned": [
+    "code",
+    "barcode"
+   ],
+   "returned_from": "postman",
    "source": "manual"
   },
   "CalendarEvents": {
@@ -20607,6 +22360,8 @@
     "client",
     "url"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "ClientGroups": {
@@ -20617,6 +22372,8 @@
     "info1",
     "info2"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "ClientIndividualCards": {
@@ -20633,6 +22390,8 @@
     "code",
     "client"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "postman"
   },
   "Clients": {
@@ -20700,11 +22459,15 @@
     "max_amount_of_debt",
     "debt_can_be_paid_in_days"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "CompanyWorkStart": {
    "filters": {},
    "columns": [],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "CountClients": {
@@ -20715,6 +22478,10 @@
     ]
    },
    "columns": [],
+   "returned": [
+    "quantity"
+   ],
+   "returned_from": "postman",
    "source": "manual"
   },
   "CountSales": {
@@ -20727,6 +22494,12 @@
     ]
    },
    "columns": [],
+   "returned": [
+    "quantity",
+    "sales_sum",
+    "settled_sum"
+   ],
+   "returned_from": "manual",
    "source": "manual"
   },
   "CurrencyRates": {
@@ -20738,6 +22511,12 @@
     ]
    },
    "columns": [],
+   "returned": [
+    "code",
+    "date",
+    "rate"
+   ],
+   "returned_from": "postman",
    "source": "manual"
   },
   "CurrentStock": {
@@ -20823,6 +22602,8 @@
     "date_created",
     "date_edited"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "CurrentStockDet": {
@@ -20914,6 +22695,8 @@
     "object5",
     "object6"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "DocumentSeries": {
@@ -20924,6 +22707,12 @@
     ]
    },
    "columns": [],
+   "returned": [
+    "code",
+    "title",
+    "number"
+   ],
+   "returned_from": "manual",
    "source": "manual"
   },
   "FixedAsset": {
@@ -20944,6 +22733,8 @@
     "writeoff_date",
     "depreciation_date"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "InvoiceList": {
@@ -20953,6 +22744,13 @@
     ]
    },
    "columns": [],
+   "returned": [
+    "OpClass",
+    "Code",
+    "Title",
+    "Description"
+   ],
+   "returned_from": "postman",
    "source": "manual"
   },
   "LogbookGroups": {
@@ -20963,6 +22761,8 @@
     "info1",
     "info2"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "OpTypeGroups": {
@@ -20973,11 +22773,15 @@
     "info1",
     "info2"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "OperationStatuses": {
    "filters": {},
    "columns": [],
+   "returned": [],
+   "returned_from": "",
    "source": "postman"
   },
   "PartnerProducts": {
@@ -20998,6 +22802,8 @@
     "used_price",
     "partner_type"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "Prices": {
@@ -21048,6 +22854,8 @@
     "date_edited",
     "adress"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "PricesByClientAndItemTypes": {
@@ -21093,6 +22901,8 @@
     "date_created",
     "date_edited"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "PricesByClientType": {
@@ -21142,6 +22952,8 @@
     "date_created",
     "date_edited"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "PricesByItemType": {
@@ -21187,6 +22999,8 @@
     "date_created",
     "date_edited"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "ProductionItem": {
@@ -21198,6 +23012,20 @@
     ]
    },
    "columns": [],
+   "returned": [
+    "code",
+    "title",
+    "quantity",
+    "description1",
+    "active",
+    "planned_quantity",
+    "description2",
+    "date_edited",
+    "outputs",
+    "materials",
+    "extra_costs"
+   ],
+   "returned_from": "postman",
    "source": "manual"
   },
   "Products": {
@@ -21342,6 +23170,8 @@
     "tag20_title",
     "barcode_list"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "ReportList": {
@@ -21351,6 +23181,8 @@
     ]
    },
    "columns": [],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "Services": {
@@ -21393,6 +23225,8 @@
     "date_edited",
     "vat_percent"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "StockOnDate": {
@@ -21423,6 +23257,8 @@
     "primary_cost",
     "account"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "TypesAndTags": {
@@ -21436,11 +23272,18 @@
     ]
    },
    "columns": [],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   },
   "Vehicles": {
    "filters": {},
    "columns": [],
+   "returned": [
+    "code",
+    "info1"
+   ],
+   "returned_from": "postman",
    "source": "manual"
   },
   "WarehouseGroups": {
@@ -21451,6 +23294,8 @@
     "info1",
     "info2"
    ],
+   "returned": [],
+   "returned_from": "",
    "source": "manual"
   }
  }

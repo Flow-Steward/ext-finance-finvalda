@@ -131,6 +131,37 @@ def _result_fields(rows: list[list[str]]) -> list[dict[str, str]]:
     return out
 
 
+def _result_xml(body: list[str]) -> dict[str, Any] | None:
+    """The record an XML result example shows: its element and its fields in order.
+
+    Methods such as GetKlientas return one record of a class
+    (``<Fvs.Klientas><sKodas>…``) instead of a result table.
+    """
+    in_xml = False
+    root: str | None = None
+    fields: list[str] = []
+    for line in body:
+        if line.startswith("### "):
+            break
+        if line.startswith("```"):
+            if in_xml and root:
+                break
+            in_xml = line.strip() == "```xml"
+            continue
+        if not in_xml:
+            continue
+        tag = re.match(r"^\s*<([A-Za-z][\w.]*)\b[^>]*>", line)
+        if not tag:
+            continue
+        if root is None:
+            root = tag.group(1)
+        elif tag.group(1) != root and tag.group(1) not in fields:
+            fields.append(tag.group(1))
+    if not root or not fields:
+        return None
+    return {"element": root, "fields": fields}
+
+
 def parse_manual(text: str) -> dict[str, Any]:
     lines = text.splitlines()
     meta = {
@@ -175,9 +206,11 @@ def parse_manual(text: str) -> dict[str, Any]:
                 if match and match.group("name") not in NOT_INPUTS:
                     documented.append(match.group("name"))
         result_rows: list[list[str]] = []
+        result_xml: dict[str, Any] | None = None
         for j, line in enumerate(body):
             if line.startswith("### Rezultatas"):
                 result_rows, _ = _table_after(body, j + 1)
+                result_xml = _result_xml(body[j + 1 :])
                 break
         for name in names:
             params = signatures.get(name)
@@ -186,6 +219,7 @@ def parse_manual(text: str) -> dict[str, Any]:
                 "params": params if params is not None else list(dict.fromkeys(documented)),
                 "params_from": "signature" if params is not None else "text",
                 "result_fields": _result_fields(result_rows),
+                **({"result_xml": result_xml} if result_xml and not result_rows else {}),
             }
     # Every read method named in the grouped lists of section 3, Xml twins aside.
     listed: set[str] = set()
@@ -295,6 +329,13 @@ def _descriptions(lines: list[str]) -> dict[str, Any]:
         if not kind:
             continue
         entry: dict[str, Any] = {"filters": {}, "columns": [], "paging": '"page"' in text}
+        # Some types name the columns they return in prose only:
+        # 'gražinami stulpeliai „code, title, number“'.
+        returned = re.search(r'stulpeliai\s*[„"“]([a-z_, ]+)[“"”]', text)
+        if returned:
+            entry["returned_columns"] = [
+                c.strip() for c in returned.group(1).split(",") if c.strip()
+            ]
         current: str | None = None
         in_columns = False
         for raw in body:
@@ -352,6 +393,20 @@ def parse_postman(data: dict[str, Any]) -> dict[str, Any]:
     descriptions: dict[str, Any] = {}
     operations: dict[str, Any] = {}
     examples: dict[str, Any] = {}
+    returned: dict[str, list[str]] = {}
+
+    def response_columns(item: dict[str, Any]) -> list[str]:
+        """The keys of the first row of each saved response example."""
+        names: list[str] = []
+        for response in item.get("response") or []:
+            try:
+                answer = json.loads(response.get("body") or "")
+            except json.JSONDecodeError:
+                continue
+            rows = answer.get("items") if isinstance(answer, dict) else None
+            if isinstance(rows, list) and rows and isinstance(rows[0], dict):
+                names += [k for k in rows[0] if k not in names]
+        return names
 
     def walk(items: list[dict[str, Any]]) -> None:
         for item in items:
@@ -377,6 +432,10 @@ def parse_postman(data: dict[str, Any]) -> dict[str, Any]:
                     entry = descriptions.setdefault(
                         kind, {"filter_key": None, "filter": [], "columns": []}
                     )
+                    for column in response_columns(item):
+                        entry.setdefault("returned_columns", [])
+                        if column not in entry["returned_columns"]:
+                            entry["returned_columns"].append(column)
                     same = isinstance(full, dict) and full.get("type") == kind
                     for source in (params, full if same else {}):
                         for key, value in source.items():
@@ -412,6 +471,11 @@ def parse_postman(data: dict[str, Any]) -> dict[str, Any]:
                                     entry[out].append(c)
             elif isinstance(parsed, dict) and name not in examples:
                 examples[name] = sorted(parsed)
+            if name not in {"GetDescriptions", "GetOperations"}:
+                columns = response_columns(item)
+                if columns:
+                    known = returned.setdefault(name, [])
+                    known += [c for c in columns if c not in known]
 
     walk(data["item"])
     return {
@@ -421,6 +485,7 @@ def parse_postman(data: dict[str, Any]) -> dict[str, Any]:
         "descriptions": dict(sorted(descriptions.items())),
         "operations": dict(sorted(operations.items())),
         "body_keys": dict(sorted(examples.items())),
+        "returned_columns": dict(sorted(returned.items())),
     }
 
 

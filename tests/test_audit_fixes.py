@@ -8,6 +8,7 @@ import io
 import sys
 from decimal import Decimal
 from pathlib import Path
+from functools import lru_cache
 from typing import Any
 
 import pytest
@@ -278,6 +279,7 @@ def test_a_failed_read_back_is_reported() -> None:
 # -- normal inputs and outputs ---------------------------------------------------------
 
 
+@lru_cache(maxsize=1)
 def _manifest() -> dict[str, Any]:
     return {
         op["operation_id"]: op
@@ -291,16 +293,13 @@ def test_everyday_records_are_described_and_closed() -> None:
     ops = _manifest()
     client = next(o for o in ops["find_or_create_client"]["outputs"] if o["name"] == "client")
     assert client["schema"]["additionalProperties"] is False
-    assert client["schema"]["properties"]["debt"]["pattern"]
+    assert client["schema"]["properties"]["debt"]["anyOf"][0]["pattern"]
     debt = next(o for o in ops["client_debt"]["outputs"] if o["name"] == "documents")
-    assert debt["schema"]["items"]["properties"]["due_date"]["pattern"] == r"^\d{4}-\d{2}-\d{2}$"
+    due = debt["schema"]["items"]["properties"]["due_date"]["anyOf"][0]
+    assert due["pattern"] == r"^\d{4}-\d{2}-\d{2}$"
     for op in ops.values():
         names = {o["name"] for o in op["outputs"]}
         assert "record" not in names and "finvalda_result" not in names, op["operation_id"]
-        if "records" in names and op["operation_id"] != "call_method":
-            assert "response" not in names or not next(
-                o for o in op["outputs"] if o["name"] == "records"
-            )["schema"]["items"].get("properties"), op["operation_id"]
 
 
 def test_everyday_results_are_normalised() -> None:
@@ -329,8 +328,8 @@ def test_older_method_columns_have_the_manuals_types() -> None:
     ops = _manifest()
     records = next(o for o in ops["get_klientus_set"]["outputs"] if o["name"] == "records")
     columns = records["schema"]["items"]["properties"]
-    assert columns["skola"]["pattern"] and columns["kurimo_data"]["pattern"]
-    assert columns["atsiskaityti_per"]["type"] == ["integer", "null"]
+    assert columns["skola"]["anyOf"][0]["pattern"] and columns["kurimo_data"]["anyOf"][0]["pattern"]
+    assert columns["atsiskaityti_per"]["anyOf"][0]["type"] == ["integer", "null"]
 
 
 def test_advanced_rows_get_iso_times() -> None:

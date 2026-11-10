@@ -10,6 +10,7 @@ from decimal import Decimal
 from typing import Any
 
 from .errors import invalid
+from .values import finvalda_datetime
 
 _DIGITS = re.compile(r"-?[0-9]{1,10}")
 
@@ -78,12 +79,17 @@ _ISO_TIME_TAIL = re.compile(r"^T\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?(Z|[+-]\d{2}:\d{
 
 
 def date_input(name: str, value: Any, *, required: bool = False) -> str:
-    """YYYY-MM-DD, also taken from an ISO 8601 time (its date part)."""
+    """YYYY-MM-DD, also taken from an ISO 8601 time (its date in Lithuania)."""
     text = text_input(name, value, limit=35, required=required)
     if not text:
         return ""
     if len(text) > 10 and _ISO_TIME_TAIL.fullmatch(text[10:]):
-        text = text[:10]
+        # A time with an offset is first moved to Lithuanian time: 2024-03-31T22:30Z
+        # is already 1 April in Vilnius. A time without one is Lithuanian already.
+        moment = finvalda_datetime(text)
+        if moment is None:
+            raise invalid(f"{name} is not a real date and time")
+        text = moment.date().isoformat()
     if not _DATE_RE.fullmatch(text):
         raise invalid(f"{name} must be a date, YYYY-MM-DD (or an ISO 8601 time)")
     try:

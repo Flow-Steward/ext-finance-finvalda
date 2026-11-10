@@ -17,13 +17,15 @@ Kinds and how a value is written in a result:
 
 from __future__ import annotations
 
-import re
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Any
+from decimal import Decimal
+from typing import Any, overload
 
 from .fields import field
-from .values import decimal_of, finvalda_datetime, iso_date, iso_moment
+from .values import as_decimal, decimal_of, finvalda_datetime, iso_date, iso_moment
 
 
 @dataclass(frozen=True)
@@ -151,34 +153,83 @@ SHAPES: dict[str, tuple[Field, ...]] = {
 
 _TRUE = {"1", "t", "true", "taip", "y", "yes"}
 _FALSE = {"0", "f", "false", "ne", "n", "no"}
+_UNFIT = object()
+
+#: The warnings of the step being run, when it collects them (collect_value_warnings).
+_SINK: ContextVar[list[str] | None] = ContextVar("finvalda_value_warnings", default=None)
 
 
-def to_kind(kind: str, value: Any) -> Any:
-    """A Finvalda value as the kind says, or None when it is missing or unreadable."""
-    if value is None or value == "":
-        return None
+@contextmanager
+def collect_value_warnings() -> Iterator[list[str]]:
+    """Collect the warnings of values that did not fit their type, for one step."""
+    found: list[str] = []
+    token = _SINK.set(found)
+    try:
+        yield found
+    finally:
+        _SINK.reset(token)
+
+
+def _convert(kind: str, value: Any) -> Any:
+    """``value`` as ``kind`` says, ``_UNFIT`` when it does not fit the kind."""
     if kind == "decimal":
-        number = decimal_of(value)
-        return None if number is None else format(number, "f")
+        exact_text = as_decimal(value)
+        return _UNFIT if exact_text is None else exact_text
     if kind == "integer":
         number = decimal_of(value)
         if number is None or number != number.to_integral_value():
-            return None
+            return _UNFIT
         return int(number)
     if kind == "boolean":
         if isinstance(value, bool):
             return value
         text = str(value).strip().lower()
-        return True if text in _TRUE else False if text in _FALSE else None
-    if kind == "date":
-        return iso_date(finvalda_datetime(value))
-    if kind == "datetime":
-        return iso_moment(finvalda_datetime(value))
+        return True if text in _TRUE else False if text in _FALSE else _UNFIT
+    if kind in {"date", "datetime"}:
+        moment = finvalda_datetime(value)
+        if moment is None:
+            return _UNFIT
+        return iso_date(moment) if kind == "date" else iso_moment(moment)
     text = str(value).strip()
     return text or None
 
 
-def shape(kind: str, row: Mapping[str, Any] | None) -> dict[str, Any] | None:
+def to_kind(kind: str, value: Any, *, warnings: list[str] | None = None, where: str = "") -> Any:
+    """A Finvalda value as the kind says; None when it is missing.
+
+    A value that does not fit the kind (2.5 in an integer column, 0000-00-00 in a
+    date) is not dropped: it is returned as the text Finvalda sent, and a warning
+    says so.
+    """
+    if value is None or value == "":
+        return None
+    converted = _convert(kind, value)
+    if converted is not _UNFIT:
+        return converted
+    text = format(value, "f") if isinstance(value, Decimal) else str(value)
+    if warnings is None:
+        warnings = _SINK.get()
+    if warnings is not None and len(warnings) < MAX_WARNINGS:
+        warnings.append(
+            f"{where or 'A value'}: Finvalda sent {text[:60]!r}, which is not a {kind}; "
+            "it is returned as it came"
+        )
+    return text
+
+
+#: At most this many value warnings per result.
+MAX_WARNINGS = 20
+
+
+@overload
+def shape(
+    kind: str, row: Mapping[str, Any], warnings: list[str] | None = None
+) -> dict[str, Any]: ...
+@overload
+def shape(kind: str, row: None, warnings: list[str] | None = None) -> None: ...
+def shape(
+    kind: str, row: Mapping[str, Any] | None, warnings: list[str] | None = None
+) -> dict[str, Any] | None:
     """``row`` as the record ``kind`` describes, every field present."""
     if row is None:
         return None
@@ -189,45 +240,38 @@ def shape(kind: str, row: Mapping[str, Any] | None) -> dict[str, Any] | None:
             value = field(row, column)
             if value not in (None, ""):
                 break
-        out[item.name] = to_kind(item.kind, value)
+        out[item.name] = to_kind(item.kind, value, warnings=warnings, where=f"{kind}.{item.name}")
     return out
 
 
-_MOMENT_TEXT = re.compile(
-    r"^(\d{4}[-.]\d{2}[-.]\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?)?|/Date\(-?\d+([+-]\d{4})?\)/)$"
-)
+def column_kinds(columns: Any) -> dict[str, str]:
+    """A spec's ``[[column, kind], …]`` as a lower-case lookup, built once per read."""
+    return {str(name).lower(): kind for name, kind in columns or []}
 
 
-def normalize_value(value: Any, kind: str | None = None) -> Any:
-    """One value of a raw Finvalda row: by its documented kind, else by its form.
+def normalize_row(
+    row: Any, kinds: Mapping[str, str] | None = None, warnings: list[str] | None = None
+) -> Any:
+    """A raw Finvalda row: documented columns as their kinds, everything else as sent.
 
-    Without a kind, only what is certain is changed: a date or time in one of
-    Finvalda's forms becomes ISO 8601 (a date, or a time with Lithuania's offset).
+    ``kinds`` is a lower-case lookup (``column_kinds``). Only columns the manual
+    documents with a type are changed; a value elsewhere that merely looks like a
+    date (a document number 2024.01.15) is left alone. Nested rows are kept as sent.
     """
-    if kind is not None:
-        return to_kind(kind, value)
-    if isinstance(value, str) and _MOMENT_TEXT.match(value.strip()):
-        moment = finvalda_datetime(value)
-        if moment is None:
-            return value
-        has_time = "T" in value or " " in value.strip() or value.startswith("/Date")
-        return iso_moment(moment) if has_time else iso_date(moment)
-    return value
-
-
-def normalize_row(row: Any, kinds: Mapping[str, str] | None = None) -> Any:
-    """A raw Finvalda row with its values normalised (nested rows too)."""
     if isinstance(row, Mapping):
-        known = {k.lower(): v for k, v in (kinds or {}).items()}
-        return {
-            key: normalize_row(value)
-            if isinstance(value, (Mapping, list))
-            else normalize_value(value, known.get(str(key).lower()))
-            for key, value in row.items()
-        }
+        known = kinds or {}
+        out: dict[str, Any] = {}
+        for key, value in row.items():
+            kind = known.get(str(key).lower())
+            out[key] = (
+                to_kind(kind, value, warnings=warnings, where=str(key))
+                if kind is not None and not isinstance(value, (Mapping, list))
+                else value
+            )
+        return out
     if isinstance(row, list):
-        return [normalize_row(item, kinds) for item in row]
-    return normalize_value(row)
+        return [normalize_row(item, kinds, warnings) for item in row]
+    return row
 
 
 #: The manual's column types (Char (15), Double, Numeric, Integer, Date …) as kinds.
@@ -248,7 +292,7 @@ def manual_kind(manual_type: str) -> str:
     return "text"
 
 
-KIND_SCHEMAS: dict[str, dict[str, Any]] = {
+_TYPED: dict[str, dict[str, Any]] = {
     "text": {"type": ["string", "null"]},
     "decimal": {"type": ["string", "null"], "pattern": r"^-?\d+(\.\d+)?$"},
     "integer": {"type": ["integer", "null"]},
@@ -259,6 +303,21 @@ KIND_SCHEMAS: dict[str, dict[str, Any]] = {
         "pattern": r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?[+-]\d{2}:\d{2}$",
     },
 }
+_AS_SENT = {
+    "type": "string",
+    "description": "A value that does not fit the type, as Finvalda sent it (see warnings).",
+}
+
+#: The schema of each kind: the typed value, or the text of a value that did not fit.
+KIND_SCHEMAS: dict[str, dict[str, Any]] = {
+    kind: typed if kind == "text" else {"anyOf": [typed, _AS_SENT]}
+    for kind, typed in _TYPED.items()
+}
+
+
+def typed_schema(kind: str) -> dict[str, Any]:
+    """The schema of a well-formed value of ``kind`` (without the fallback)."""
+    return dict(_TYPED[kind])
 
 
 def schema(kind: str, *, extra: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -278,12 +337,15 @@ def schema(kind: str, *, extra: dict[str, Any] | None = None) -> dict[str, Any]:
 
 __all__ = [
     "KIND_SCHEMAS",
+    "MAX_WARNINGS",
     "SHAPES",
     "Field",
+    "collect_value_warnings",
+    "column_kinds",
     "manual_kind",
     "normalize_row",
-    "normalize_value",
     "schema",
     "shape",
     "to_kind",
+    "typed_schema",
 ]

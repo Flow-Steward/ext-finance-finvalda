@@ -15,7 +15,7 @@ from ..limits import MAX_LIST_ITEMS
 from ..records import check_fields
 from ..reference_data import CALLABLE_METHODS, CLASSES
 from ..rows import op_result
-from ..transport import dumps_json
+from ..transport import WRITE_METHODS, dumps_json
 
 
 def _item_parameter(context: Context | None, inputs: Mapping[str, Any]) -> str:
@@ -447,7 +447,11 @@ def _validate_call(spec: Mapping[str, Any], inputs: Mapping[str, Any], _: Any) -
 
 def run_call_method(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
     method, verb, query, body = call_request(context.operation_input)
-    reply = context.call(method, verb=verb, query=query, body=body, mutating=True)
+    # Only the methods that change Finvalda are sent as writes (one attempt, a
+    # confirmation required); the documented reads are plain reads.
+    reply = context.call(
+        method, verb=verb, query=query, body=body, mutating=method in WRITE_METHODS
+    )
     result: dict[str, Any] = {"method": method, "response": reply.data}
     if not budget.fits(result):
         result["response"] = None

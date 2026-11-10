@@ -9,7 +9,6 @@ from decimal import Decimal
 from typing import Any
 
 from ..shapes import shape
-from ..values import iso_moment
 from .. import budget, errors
 from ..advanced.reads import read_description_pages
 from ..errors import invalid
@@ -17,7 +16,7 @@ from ..fields import field
 from ..inputs import _DATE_TIME_RE, date_input, whole_input
 from ..reference_data import CHANGE_ENTITIES, DESCRIPTION_TYPES
 from ..rows import rows_of
-from ..values import as_decimal, cents, finvalda_date, finvalda_datetime
+from ..values import as_decimal, cents, finvalda_date, finvalda_datetime, iso_moment
 from .common import (
     CLIENT_COLUMNS,
     OPERATION_COLUMNS,
@@ -183,7 +182,7 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             unpaid += Decimal(remaining)
             if late:
                 overdue += Decimal(remaining)
-        document = shape("debt_document", row) or {}
+        document = shape("debt_document", row)
         document["overdue"] = late
         documents.append(document)
     record = rows[0]

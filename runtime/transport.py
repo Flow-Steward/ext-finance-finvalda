@@ -513,6 +513,9 @@ RESULT_CODE_WRITES: frozenset[str] = frozenset(
 #: The newer document writes answer with a result object: saved only with errorCode 0
 #: (manual 3.80 InsertDocumentOut, 3.82 AttachDocumentOut).
 RESULT_OBJECT_WRITES: frozenset[str] = frozenset({"InsertDocument", "AttachDocument"})
+#: Every method that changes Finvalda; every other documented method only reads
+#: (Get…, IsOperationLocked, MakeInvoice, MakeReport).
+WRITE_METHODS: frozenset[str] = RESULT_CODE_WRITES | RESULT_OBJECT_WRITES | {"DeleteDocument"}
 
 
 def confirm_write(data: Mapping[str, Any], method_name: str, *, status: int) -> None:
@@ -523,13 +526,19 @@ def confirm_write(data: Mapping[str, Any], method_name: str, *, status: int) -> 
     sent, and nothing says it was saved.
     """
     access = field(data, "AccessResult")
-    confirmed = isinstance(access, str) and access.lower() == "success"
-    if confirmed and method_name in RESULT_CODE_WRITES:
-        confirmed = result_code(data, keys=("nResult",)) == 0
-    elif confirmed and method_name in RESULT_OBJECT_WRITES:
+    if access is None:
+        access = field(data, "accessResult")
+    success = isinstance(access, str) and access.lower() == "success"
+    if method_name in RESULT_OBJECT_WRITES:
+        # The JSON form carries AccessResult and ``result``; the XML form only the
+        # ``…Out`` element (manual 3.80, 3.82). errorCode 0 confirms either one.
         code, _ = nested_result(data)
-        confirmed = code == 0
-    elif confirmed and method_name == "DeleteDocument":
+        confirmed = code == 0 and (access is None or success)
+    elif method_name in RESULT_CODE_WRITES:
+        confirmed = success and result_code(data, keys=("nResult",)) == 0
+    else:
+        confirmed = success
+    if confirmed and method_name == "DeleteDocument":
         # DeleteDocument(string fileName, out string error) (manual 3.81).
         confirmed = field(data, "error") == "" or field(data, "sError") == ""
     if not confirmed:

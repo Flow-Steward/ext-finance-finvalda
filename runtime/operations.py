@@ -21,6 +21,7 @@ from .errors import ExtensionError, error_response, invalid
 from .inputs import _text
 from .limits import ARTIFACT_WRITE_TIMEOUT_SECONDS, STEP_MARGIN_SECONDS, STEP_TIMEOUT_SECONDS
 from .reference_data import OPERATIONS
+from .shapes import collect_value_warnings
 from .results import _ok, fit_write_result, mark_write
 from .transport import DeadlineReached, FinvaldaTransport
 
@@ -62,14 +63,19 @@ def handle_runtime(
             artifact_reader=artifact_reader,
             artifact_writer=artifact_writer,
         )
+        with collect_value_warnings() as value_warnings:
+            if operation_id in catalog.FRIENDLY_IDS:
+                result = everyday.run(context, operation_id)
+            else:
+                spec = OPERATIONS[operation_id]
+                result = RUNNERS[spec["runner"]](context, spec)
+        if value_warnings:
+            result["warnings"] = [*(result.get("warnings") or []), *value_warnings]
         if operation_id in catalog.FRIENDLY_IDS:
-            result = everyday.run(context, operation_id)
             if operation_id in catalog.FRIENDLY_WRITE_IDS:
                 return _ok(mark_write(fit_write_result(result)))
             budget.ensure_fits(result)
             return _ok(result)
-        spec = OPERATIONS[operation_id]
-        result = RUNNERS[spec["runner"]](context, spec)
         if operation_id in catalog.WRITE_OPERATION_IDS:
             return _ok(mark_write(fit_write_result(result)))
         budget.ensure_fits(result)

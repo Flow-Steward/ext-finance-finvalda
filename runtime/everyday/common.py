@@ -81,6 +81,7 @@ OPERATION_COLUMNS = [
     "payment_date",
     "currency",
     "amount",
+    "initial_debt",
     "date_created",
     "date_edited",
 ]

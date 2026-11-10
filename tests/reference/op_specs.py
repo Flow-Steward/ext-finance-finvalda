@@ -218,7 +218,9 @@ def records_out(name: str, kind: str, description: str) -> dict[str, Any]:
 #: A Finvalda column whose type the documents do not give: what a row may hold.
 ANY_VALUE: dict[str, Any] = {"type": ["string", "number", "integer", "boolean", "null"]}
 NUMBERS_NOTE = (
-    "Numbers are exact decimal text; dates and times are ISO 8601 (times with Lithuania's offset)."
+    "Numbers are exact decimal text. Columns the manual documents with a type are given in "
+    "it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as "
+    "Finvalda sends them."
 )
 
 
@@ -247,7 +249,8 @@ RESPONSE = out(
     "response",
     "object",
     ["object", "null"],
-    "The rest of Finvalda's answer: everything but the rows and the status fields.",
+    "The rest of Finvalda's answer, as sent: everything but the rows and the status fields "
+    "(null when there is nothing else).",
 )
 SAVED = out("saved", "boolean", "boolean", "True when Finvalda confirmed the change.")
 WARNINGS = out_schema(
@@ -256,7 +259,8 @@ WARNINGS = out_schema(
     {
         "type": "array",
         "items": {"type": "string"},
-        "description": "What the step could not do after its write, for example read the record back.",
+        "description": "What the step could not do fully: read a record back after its write, "
+        "or read a value of the type its field has (that value is returned as Finvalda sent it).",
     },
 )
 OP_RESULT = [
@@ -703,6 +707,56 @@ def param_input(method: str, wire: str) -> dict[str, Any]:
 # Advanced: the documented methods one by one
 
 
+#: The kind of a class field by its prefix (sKodas text, dKaina decimal, nTipas
+#: integer, tKurimoData time, bNaujas flag), as in the manual's class tables.
+_FIELD_PREFIX_KINDS = {"s": "text", "d": "decimal", "n": "integer", "t": "datetime", "b": "boolean"}
+
+
+def field_kind(name: str) -> str:
+    match = re.match(r"^([sdntb])[A-Z]", name)
+    return _FIELD_PREFIX_KINDS[match.group(1)] if match else "text"
+
+
+def class_records(methods: dict[str, Any]) -> dict[str, list[str]]:
+    """The fields of each class a method's XML example shows one record of."""
+    out: dict[str, list[str]] = {}
+    for info in methods.values():
+        xml = info.get("result_xml")
+        if xml and len(xml["fields"]) > 1:
+            out.setdefault(xml["element"], xml["fields"])
+    return out
+
+
+def xml_result(method: str, methods: dict[str, Any]) -> tuple[list[str], list[dict[str, str]]]:
+    """For a method whose result is one record or a list of a class (GetKlientas,
+    GetKlientus): where the rows are in the answer, and the class's fields."""
+    xml = methods[method].get("result_xml")
+    if not xml:
+        return [], []
+    classes = class_records(methods)
+    if len(xml["fields"]) == 1 and xml["fields"][0] in classes:
+        path, cls = [xml["element"], xml["fields"][0]], xml["fields"][0]
+    elif len(xml["fields"]) > 1:
+        path, cls = [xml["element"]], xml["element"]
+    else:
+        return [], []
+    section = {m: i["section"] for m, i in methods.items()}
+    example = next(
+        m for m, i in methods.items() if (i.get("result_xml") or {}).get("element") == cls
+    )
+    fields = [
+        {
+            "name": name,
+            "type": field_kind(name),
+            "description": f"Field {name} of Finvalda's {cls} (manual {section[example]}, "
+            f"{example}'s example).",
+        }
+        for name in classes[cls]
+        if name not in {"FvsDatabase", "FvsUser"}
+    ]
+    return path, fields
+
+
 def legacy_read_specs() -> list[dict[str, Any]]:
     methods = reference()["manual"]["methods"]
     specs = []
@@ -715,9 +769,15 @@ def legacy_read_specs() -> list[dict[str, Any]]:
         names = [i["name"] for i in inputs]
         if len(names) != len(set(names)):
             raise SystemExit(f"{method}: two parameters map to the same input name")
-        fields = [f["name"] for f in documented["result_fields"]]
+        documented_fields = [
+            {**f, "type": shapes.manual_kind(f["type"]), "manual_type": f["type"]}
+            for f in documented["result_fields"]
+        ]
+        record_path, class_fields = xml_result(method, methods)
+        result_fields = documented_fields or class_fields
+        fields = [f["name"] for f in result_fields]
         detail = f" Columns: {', '.join(fields)}." if fields else ""
-        kinds = [[f["name"], shapes.manual_kind(f["type"])] for f in documented["result_fields"]]
+        kinds = [[f["name"], f["type"]] for f in result_fields]
         records = out_schema(
             "records",
             "array",
@@ -725,16 +785,25 @@ def legacy_read_specs() -> list[dict[str, Any]]:
                 {
                     f["name"]: column(
                         f["name"],
-                        shapes.manual_kind(f["type"]),
-                        f"{f['description']} (Finvalda's column {f['name']}, {f['type']}; "
-                        "English names when the connection's language is en).",
+                        f["type"],
+                        f"{f['description']} (Finvalda's column {f['name']}, {f['manual_type']})."
+                        if "manual_type" in f
+                        else f["description"],
                     )
-                    for f in documented["result_fields"]
+                    for f in result_fields
                 },
-                f"The rows of {method}.",
+                (
+                    f"The rows of {method}, with the manual's Lithuanian column names whatever "
+                    "the connection's language (the manual lists no English names)."
+                    if documented_fields
+                    else f"The records of {method}, as the manual's example shows them; when "
+                    "Finvalda answers with them as XML text instead, the text is in response."
+                    if class_fields
+                    else f"The rows of {method}: columns not documented by Finvalda."
+                ),
             ),
         )
-        outputs = [records, COUNT] + ([] if fields else [RESPONSE])
+        outputs = [records, COUNT, RESPONSE] + ([WARNINGS] if fields else [])
         specs.append(
             {
                 "operation_id": snake(method),
@@ -748,6 +817,11 @@ def legacy_read_specs() -> list[dict[str, Any]]:
                 "runtime": {
                     "runner": "method_read",
                     "columns": kinds,
+                    **(
+                        {"record_path": record_path}
+                        if class_fields and not documented_fields
+                        else {}
+                    ),
                     "method": method,
                     "verb": "GET",
                     "params": [
@@ -786,9 +860,17 @@ def description_types() -> dict[str, dict[str, Any]]:
         for column in pm.get("columns") or []:
             if column not in columns:
                 columns.append(column)
+        # What a type returns when its columns cannot be chosen: named in the
+        # manual's text, else shown by Postman's saved answer.
+        returned = list(manual.get(kind, {}).get("returned_columns") or [])
+        returned_from = "manual" if returned else ""
+        if not returned and not columns and pm.get("returned_columns"):
+            returned, returned_from = list(pm["returned_columns"]), "postman"
         out[kind] = {
             "filters": filters,
             "columns": columns,
+            "returned": returned,
+            "returned_from": returned_from,
             "source": "manual" if kind in manual else "postman",
         }
     return out
@@ -899,8 +981,17 @@ def description_specs() -> list[dict[str, Any]]:
                         "records",
                         "array",
                         rows_schema(
-                            {name: column(name) for name in columns},
-                            f"The rows of {title.lower()}.",
+                            {name: column(name) for name in columns or info["returned"]},
+                            f"The rows of {title.lower()}."
+                            + (
+                                ""
+                                if columns
+                                else " Its columns as the manual names them."
+                                if info["returned_from"] == "manual"
+                                else " Its columns as Postman's saved answer shows them."
+                                if info["returned"]
+                                else " Columns not documented by Finvalda."
+                            ),
                         ),
                     ),
                     COUNT,
@@ -1696,7 +1787,18 @@ def file_and_document_specs() -> list[dict[str, Any]]:
             "description": "The names of the reports Finvalda prepares automatically (GetAutoReportsList, "
             "from the Postman collection).",
             "inputs": [CONNECTION],
-            "outputs": [out("names", "array", "array", "The report file names."), COUNT],
+            "outputs": [
+                out_schema(
+                    "names",
+                    "array",
+                    {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "The report file names.",
+                    },
+                ),
+                COUNT,
+            ],
             "runtime": {
                 "runner": "auto_reports_list",
                 "method": "GetAutoReportsList",
@@ -1875,7 +1977,26 @@ def file_and_document_specs() -> list[dict[str, Any]]:
                 ),
             ],
             "outputs": [
-                out("files", "array", "array", "Each attached file's name and size."),
+                out_schema(
+                    "files",
+                    "array",
+                    {
+                        "type": "array",
+                        "description": "The attached files.",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "required": ["name", "size_bytes"],
+                            "properties": {
+                                "name": {"type": "string", "description": "The file's name."},
+                                "size_bytes": {
+                                    "type": "integer",
+                                    "description": "Its size in bytes.",
+                                },
+                            },
+                        },
+                    },
+                ),
                 COUNT,
                 *FILE_OUTPUTS,
             ],
@@ -1930,14 +2051,13 @@ def file_and_document_specs() -> list[dict[str, Any]]:
                 fin_user,
             ],
             "outputs": [
-                out(
-                    "price",
-                    "text",
-                    ["string", "null"],
-                    "Price without discount and VAT, exact decimal.",
+                out_schema(
+                    "price", "text", column("price", "decimal", "Price without discount and VAT.")
                 ),
-                out("vat", "text", ["string", "null"], "VAT, exact decimal."),
-                out("discount", "text", ["string", "null"], "Discount, exact decimal."),
+                out_schema("vat", "text", column("vat", "decimal", "VAT.")),
+                out_schema("discount", "text", column("discount", "decimal", "Discount.")),
+                RESPONSE,
+                WARNINGS,
             ],
             "runtime": {
                 "runner": "recommended_price",
@@ -1980,6 +2100,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
                     },
                 ),
                 COUNT,
+                RESPONSE,
             ],
             "runtime": {
                 "runner": "user_permissions",
@@ -2005,7 +2126,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
                     maximum=10,
                 ),
             ],
-            "outputs": [RECORDS, COUNT],
+            "outputs": [RECORDS, COUNT, RESPONSE],
             "runtime": {
                 "runner": "related_invoices",
                 "method": "GetInvoicesRelatedToCustomer",
@@ -2248,11 +2369,13 @@ EVERYDAY_OUTPUTS: dict[str, list[dict[str, Any]]] = {
         COUNT,
         out("has_more", "boolean", "boolean", "True when more rows may follow."),
         out("next_page", "integer", ["integer", "null"], "The page to read next, or null."),
+        WARNINGS,
     ],
     "product_prices": [
         records_out("items", "product_price", "One row per product."),
         records_out("client_prices", "client_price", "The client's special prices and discounts."),
         COUNT,
+        WARNINGS,
     ],
     "client_debt": [
         out("client_code", "text", "string", "The client's code."),
@@ -2278,6 +2401,7 @@ EVERYDAY_OUTPUTS: dict[str, list[dict[str, Any]]] = {
             },
         ),
         COUNT,
+        WARNINGS,
     ],
     "changes_since": [
         out_schema(
@@ -2323,6 +2447,7 @@ EVERYDAY_OUTPUTS: dict[str, list[dict[str, Any]]] = {
             "integer",
             "How many records have an edit time in no known form.",
         ),
+        WARNINGS,
     ],
 }
 

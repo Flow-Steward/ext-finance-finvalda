@@ -95,6 +95,9 @@ def _type_word(schema: dict[str, Any], value_type: str) -> str:
     """A short human type: text, whole number, yes/no, date, list of …, record."""
     if value_type == "artifact_handle":
         return "file"
+    if "anyOf" in schema and "type" not in schema:
+        # A typed value, or the text of a value that did not fit: named by its type.
+        schema = schema["anyOf"][0]
     kinds = schema.get("type")
     kinds = [kinds] if isinstance(kinds, str) else list(kinds or [])
     kinds = [k for k in kinds if k != "null"]

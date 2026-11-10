@@ -3761,7 +3761,13 @@
      "sPassword"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Fvs.FvsUser",
+     "fields": [
+      "UserName"
+     ]
+    }
    },
    "GetObjektas1": {
     "section": "3.32",
@@ -3769,7 +3775,34 @@
      "sObj1Kod"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Fvs.ObjektasI",
+     "fields": [
+      "FvsDatabase",
+      "FvsUser",
+      "bNaujas",
+      "sKodas",
+      "sPavadinimas",
+      "sPavadinimas2",
+      "sPapildomaInf1",
+      "sPapildomaInf2",
+      "sPapildomaInf3",
+      "sPapildomaInf4",
+      "sPapildomaInf5",
+      "sPapildomaInf6",
+      "sPapildomaInf7",
+      "sPapildomaInf8",
+      "sPapildomaInf9",
+      "sPapildomaInf10",
+      "sPozymis1",
+      "sPozymis2",
+      "sPozymis3",
+      "sRusis",
+      "tGaliojaNuo",
+      "tGaliojaIki"
+     ]
+    }
    },
    "GetObjektas2": {
     "section": "3.33",
@@ -3777,7 +3810,33 @@
      "sObj2Kod"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Fvs.ObjektasII",
+     "fields": [
+      "FvsDatabase",
+      "FvsUser",
+      "bNaujas",
+      "sKodas",
+      "sPavadinimas",
+      "sPapildomaInf1",
+      "sPapildomaInf2",
+      "sPapildomaInf3",
+      "sPapildomaInf4",
+      "sPapildomaInf5",
+      "sPapildomaInf6",
+      "sPapildomaInf7",
+      "sPapildomaInf8",
+      "sPapildomaInf9",
+      "sPapildomaInf10",
+      "sPozymis1",
+      "sPozymis2",
+      "sPozymis3",
+      "sRusis",
+      "tGaliojaNuo",
+      "tGaliojaIki"
+     ]
+    }
    },
    "GetObjektas3": {
     "section": "3.34",
@@ -3785,7 +3844,21 @@
      "sObj3Kod"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Fvs.ObjektasIII",
+     "fields": [
+      "FvsDatabase",
+      "FvsUser",
+      "bNaujas",
+      "sKodas",
+      "sPavadinimas",
+      "sPapildomaInf1",
+      "sPapildomaInf2",
+      "tGaliojaNuo",
+      "tGaliojaIki"
+     ]
+    }
    },
    "GetObjektas4": {
     "section": "3.35",
@@ -3793,7 +3866,21 @@
      "sObj4Kod"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Fvs.ObjektasIV",
+     "fields": [
+      "FvsDatabase",
+      "FvsUser",
+      "bNaujas",
+      "sKodas",
+      "sPavadinimas",
+      "sPapildomaInf1",
+      "sPapildomaInf2",
+      "tGaliojaNuo",
+      "tGaliojaIki"
+     ]
+    }
    },
    "GetObjektas5": {
     "section": "3.36",
@@ -3801,7 +3888,21 @@
      "sObj5Kod"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Fvs.ObjektasV",
+     "fields": [
+      "FvsDatabase",
+      "FvsUser",
+      "bNaujas",
+      "sKodas",
+      "sPavadinimas",
+      "sPapildomaInf1",
+      "sPapildomaInf2",
+      "tGaliojaNuo",
+      "tGaliojaIki"
+     ]
+    }
    },
    "GetObjektas6": {
     "section": "3.37",
@@ -3809,7 +3910,21 @@
      "sObj6Kod"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Fvs.ObjektasVI",
+     "fields": [
+      "FvsDatabase",
+      "FvsUser",
+      "bNaujas",
+      "sKodas",
+      "sPavadinimas",
+      "sPapildomaInf1",
+      "sPapildomaInf2",
+      "tGaliojaNuo",
+      "tGaliojaIki"
+     ]
+    }
    },
    "GetKlientas": {
     "section": "3.38",
@@ -3817,7 +3932,52 @@
      "sKliKod"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Fvs.Klientas",
+     "fields": [
+      "FvsDatabase",
+      "FvsUser",
+      "sKodas",
+      "sPavadinimas",
+      "sAdresas",
+      "sTelefonas",
+      "sFaksas",
+      "sAtsakingasAsmuo",
+      "sAtsiskaitymoTerminaiDebt",
+      "dDelspinigiaiDebt",
+      "sAtsiskaitymoTerminaiKred",
+      "dDelspinigiaiKred",
+      "sPvmMokKod",
+      "sDebtSask",
+      "sKredSask",
+      "nKreditas",
+      "sBankas",
+      "sBankoSaskaita",
+      "sKorespSaskBank",
+      "nTipas",
+      "sImKodas",
+      "sPvmMoketojoKod",
+      "sPastabos",
+      "sRusis",
+      "sEMail",
+      "nMaksPradlestosSkolosSum",
+      "nSkolaGalimaPradelstiDien",
+      "nAktyvus",
+      "sPasiulomaValiuta",
+      "sYraKlientoPadalinys",
+      "sObjektas1",
+      "sObjektas2",
+      "sObjektas3",
+      "sObjektas4",
+      "sPozymis1",
+      "sPozymis2",
+      "sPozymis3",
+      "dPapildomaInf",
+      "tKurimoData",
+      "tKoregavimoData"
+     ]
+    }
    },
    "GetKlientasEMail": {
     "section": "3.39",
@@ -3834,7 +3994,13 @@
      "tSukurimoData"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Klientai",
+     "fields": [
+      "Fvs.Klientas"
+     ]
+    }
    },
    "GetPaslauga": {
     "section": "3.41",
@@ -3842,7 +4008,47 @@
      "sPaslaugosKodas"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Fvs.Paslauga",
+     "fields": [
+      "FvsDatabase",
+      "FvsUser",
+      "bNauja",
+      "sKodas",
+      "sPavadinimas",
+      "sBARKodas",
+      "sPastaba",
+      "sRysysSuSask",
+      "sMokestis",
+      "sMatVienetas",
+      "dPirkimoKaina",
+      "dPardavimoKaina",
+      "sPastabos1",
+      "sPastabos2",
+      "sPastabos3",
+      "sPastabos4",
+      "sPastabos5",
+      "sPastabos6",
+      "sPastabos7",
+      "sPastabos8",
+      "sPastabos9",
+      "sPastabos10",
+      "sPastabos11",
+      "sPastabos12",
+      "nAktyvi",
+      "sObjektas1",
+      "sObjektas2",
+      "sObjektas3",
+      "sObjektas4",
+      "sRusis",
+      "sPozymis1",
+      "sPozymis2",
+      "sPozymis3",
+      "tKurimoData",
+      "tKoregavimoData"
+     ]
+    }
    },
    "GetPaslaugos": {
     "section": "3.42",
@@ -3851,7 +4057,13 @@
      "tSukurimoData"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Paslaugos",
+     "fields": [
+      "Fvs.Paslauga"
+     ]
+    }
    },
    "GetPreke": {
     "section": "3.43",
@@ -3859,7 +4071,85 @@
      "sPrekesKodas"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Fvs.Preke",
+     "fields": [
+      "FvsDatabase",
+      "FvsUser",
+      "bNauja",
+      "sKodas",
+      "sPavadinimas",
+      "sBarKodas",
+      "sPastaba",
+      "sRysysSuSask",
+      "sMatavimoVnt",
+      "sMokestis",
+      "sInformacija",
+      "sRusis",
+      "sPozymis1",
+      "sPozymis2",
+      "sPozymis3",
+      "sPozymis4",
+      "sPozymis5",
+      "sPozymis6",
+      "sValiuta",
+      "sIntrastatKodas",
+      "dKaina1",
+      "dKaina2",
+      "dKaina3",
+      "dKaina4",
+      "dKaina5",
+      "dKaina6",
+      "dNeto",
+      "dBruto",
+      "dTuris",
+      "dAntkainis",
+      "nVietuSkaicius",
+      "nAktyvi",
+      "dPirkimoKaina",
+      "sPirkimoValiuta",
+      "sUrl",
+      "sObjektas1",
+      "sObjektas2",
+      "sObjektas3",
+      "sObjektas4",
+      "nYraPakuote",
+      "nYraPUI",
+      "nIvedamaGalData",
+      "nSudetine",
+      "nSavikainosSkaicMetodas",
+      "dPakPo1",
+      "dPakPo2",
+      "dPakSt1",
+      "dPakSt2",
+      "dPakMe1",
+      "dPakMe2",
+      "dPakPl1",
+      "dPakPl2",
+      "dPakKo1",
+      "dPakKo2",
+      "dPakKi1",
+      "dPakKi2",
+      "nMinimalusKiekis",
+      "nUzsakomaPrekiu",
+      "sTiekejas1",
+      "sPreKodTiek1Kataloge",
+      "sTiekejas2",
+      "sPreKodTiek2Kataloge",
+      "sTiekejas3",
+      "sPreKodTiek3Kataloge",
+      "tKurimoData",
+      "tKoregavimoData",
+      "sInfo1",
+      "sInfo2",
+      "sInfo3",
+      "sInfo4",
+      "sInfo5",
+      "sPrekGrupes",
+      "sKilmesSalis"
+     ]
+    }
    },
    "GetPrekes": {
     "section": "3.44",
@@ -3868,7 +4158,13 @@
      "tSukurimoData"
     ],
     "params_from": "signature",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Prekes",
+     "fields": [
+      "Fvs.Preke"
+     ]
+    }
    },
    "GetPrekesImage": {
     "section": "3.45",
@@ -3888,7 +4184,13 @@
      "tSukurimoData"
     ],
     "params_from": "text",
-    "result_fields": []
+    "result_fields": [],
+    "result_xml": {
+     "element": "Prekes",
+     "fields": [
+      "Fvs.Preke"
+     ]
+    }
    },
    "GetPrekesSandelyjeOrder": {
     "section": "3.47",
@@ -19322,7 +19624,12 @@
      ]
     },
     "columns": [],
-    "paging": false
+    "paging": false,
+    "returned_columns": [
+     "quantity",
+     "sales_sum",
+     "settled_sum"
+    ]
    },
    "CurrencyRates": {
     "filters": {
@@ -19519,7 +19826,12 @@
      ]
     },
     "columns": [],
-    "paging": false
+    "paging": false,
+    "returned_columns": [
+     "code",
+     "title",
+     "number"
+    ]
    },
    "FixedAsset": {
     "filters": {
@@ -20147,6 +20459,26 @@
      "street",
      "house",
      "flat"
+    ],
+    "returned_columns": [
+     "client",
+     "code",
+     "info1",
+     "info2",
+     "info3",
+     "tag1",
+     "tag2",
+     "tag3",
+     "tag4",
+     "tag5",
+     "city",
+     "email",
+     "post_code",
+     "country",
+     "phone",
+     "street",
+     "house",
+     "flat"
     ]
    },
    "BarCodes": {
@@ -20155,7 +20487,11 @@
      "Codes",
      "BarCodes"
     ],
-    "columns": []
+    "columns": [],
+    "returned_columns": [
+     "code",
+     "barcode"
+    ]
    },
    "CalendarEvents": {
     "filter_key": "CalendarEvents",
@@ -20211,6 +20547,19 @@
     "columns": [
      "code",
      "client"
+    ],
+    "returned_columns": [
+     "code",
+     "title",
+     "quantity",
+     "description1",
+     "active",
+     "planned_quantity",
+     "description2",
+     "date_edited",
+     "outputs",
+     "materials",
+     "extra_costs"
     ]
    },
    "Clients": {
@@ -20276,6 +20625,56 @@
      "credit",
      "max_amount_of_debt",
      "debt_can_be_paid_in_days"
+    ],
+    "returned_columns": [
+     "code",
+     "title",
+     "debt",
+     "address",
+     "phone",
+     "fax",
+     "representative",
+     "payment_term",
+     "tax",
+     "bank",
+     "account_debitor",
+     "account_creditor",
+     "company_code",
+     "vat_payer_code",
+     "remarks",
+     "type",
+     "email",
+     "currency",
+     "is_subdivision",
+     "additional_inf",
+     "tag1",
+     "tag2",
+     "tag3",
+     "date_created",
+     "date_edited",
+     "address2",
+     "name2",
+     "country",
+     "country_name",
+     "city",
+     "current_debt",
+     "object1",
+     "object2",
+     "object3",
+     "object4",
+     "object5",
+     "object6",
+     "active",
+     "payment_term_deb",
+     "penalty_deb",
+     "payment_term_cre",
+     "penalty_cre",
+     "vat_payment_code",
+     "debit_account",
+     "credit_account",
+     "credit",
+     "max_amount_of_debt",
+     "debt_can_be_paid_in_days"
     ]
    },
    "CompanyWorkStart": {
@@ -20289,7 +20688,10 @@
      "DateFrom",
      "DateTo"
     ],
-    "columns": []
+    "columns": [],
+    "returned_columns": [
+     "quantity"
+    ]
    },
    "CountSales": {
     "filter_key": "CountFilter",
@@ -20299,7 +20701,12 @@
      "Paid",
      "Client"
     ],
-    "columns": []
+    "columns": [],
+    "returned_columns": [
+     "quantity",
+     "sales_sum",
+     "settled_sum"
+    ]
    },
    "CurrencyRates": {
     "filter_key": "CurrencyRates",
@@ -20308,7 +20715,12 @@
      "DateFrom",
      "DateTo"
     ],
-    "columns": []
+    "columns": [],
+    "returned_columns": [
+     "code",
+     "date",
+     "rate"
+    ]
    },
    "CurrentStock": {
     "filter_key": "Products",
@@ -20351,7 +20763,47 @@
      "WarehouseGroup",
      "columns"
     ],
-    "columns": []
+    "columns": [],
+    "returned_columns": [
+     "warehouse",
+     "warehouse_title",
+     "code",
+     "title",
+     "quantity",
+     "quantity_with_reserved",
+     "measure_unit",
+     "primary_cost",
+     "type",
+     "tag1",
+     "tag2",
+     "tag3",
+     "tag4",
+     "tag5",
+     "tag6",
+     "tag7",
+     "tag8",
+     "tag9",
+     "tag10",
+     "tag11",
+     "tag12",
+     "tag13",
+     "tag14",
+     "tag15",
+     "tag16",
+     "tag17",
+     "tag18",
+     "tag19",
+     "tag20",
+     "sell_price1",
+     "sell_price2",
+     "sell_price3",
+     "sell_price4",
+     "sell_price5",
+     "sell_price6",
+     "sell_currency",
+     "purchase_price",
+     "purchase_currency"
+    ]
    },
    "CurrentStockDet": {
     "filter_key": "CurrentStockDet",
@@ -20406,7 +20858,13 @@
      "Type",
      "UserName"
     ],
-    "columns": []
+    "columns": [],
+    "returned_columns": [
+     "code",
+     "title",
+     "number",
+     "type"
+    ]
    },
    "FixedAsset": {
     "filter_key": "FixedAsset",
@@ -20424,6 +20882,18 @@
      "commissioning_date",
      "writeoff_date",
      "depreciation_date"
+    ],
+    "returned_columns": [
+     "code",
+     "title",
+     "initial_value",
+     "depreciated",
+     "salvage_value",
+     "residual_value",
+     "acquisition_date",
+     "commissioning_date",
+     "writeoff_date",
+     "depreciation_date"
     ]
    },
    "InvoiceList": {
@@ -20431,7 +20901,13 @@
     "filter": [
      "OpClass"
     ],
-    "columns": []
+    "columns": [],
+    "returned_columns": [
+     "OpClass",
+     "Code",
+     "Title",
+     "Description"
+    ]
    },
    "LogbookGroups": {
     "filter_key": null,
@@ -20465,6 +20941,17 @@
      "Client"
     ],
     "columns": [
+     "client",
+     "product",
+     "partner_product",
+     "price1",
+     "price2",
+     "price3",
+     "currency",
+     "used_price",
+     "partner_type"
+    ],
+    "returned_columns": [
      "client",
      "product",
      "partner_product",
@@ -20516,7 +21003,20 @@
      "EditedFrom",
      "CreatedFrom"
     ],
-    "columns": []
+    "columns": [],
+    "returned_columns": [
+     "code",
+     "title",
+     "quantity",
+     "description1",
+     "active",
+     "planned_quantity",
+     "description2",
+     "date_edited",
+     "outputs",
+     "materials",
+     "extra_costs"
+    ]
    },
    "Products": {
     "filter_key": "Products",
@@ -20569,6 +21069,111 @@
      "bruto",
      "volume",
      "barcode_list"
+    ],
+    "returned_columns": [
+     "product",
+     "title",
+     "measure_unit",
+     "measure_unit_ratio",
+     "barcode",
+     "sell_price1",
+     "sell_currency",
+     "neto",
+     "bruto",
+     "volume",
+     "remarks",
+     "information",
+     "type",
+     "tag1",
+     "tag2",
+     "tag3",
+     "tag4",
+     "tag5",
+     "tag6",
+     "tag7",
+     "tag8",
+     "tag9",
+     "tag10",
+     "tag11",
+     "tag12",
+     "tag13",
+     "tag14",
+     "tag15",
+     "tag16",
+     "tag17",
+     "tag18",
+     "tag19",
+     "tag20",
+     "tag1_title",
+     "tag2_title",
+     "tag3_title",
+     "tag4_title",
+     "tag5_title",
+     "tag6_title",
+     "tag7_title",
+     "tag8_title",
+     "tag9_title",
+     "tag10_title",
+     "tag11_title",
+     "tag12_title",
+     "tag13_title",
+     "tag14_title",
+     "tag15_title",
+     "tag16_title",
+     "tag17_title",
+     "tag18_title",
+     "tag19_title",
+     "tag20_title",
+     "purchase_price",
+     "purchase_currency",
+     "last_purchase_price",
+     "last_purchase_currency",
+     "sell_price2",
+     "sell_price3",
+     "sell_price4",
+     "sell_price5",
+     "sell_price6",
+     "overcharge",
+     "num_of_places",
+     "date_created",
+     "date_edited",
+     "info1",
+     "info2",
+     "info3",
+     "info4",
+     "info5",
+     "package_paper1",
+     "package_paper2",
+     "package_glass1",
+     "package_glass2",
+     "package_metal1",
+     "package_metal2",
+     "package_plastic1",
+     "package_plastic2",
+     "package_combined1",
+     "package_combined2",
+     "package_other1",
+     "package_other2",
+     "code_in_supplier1",
+     "code_in_supplier2",
+     "code_in_supplier3",
+     "supplier",
+     "supplier2",
+     "supplier3",
+     "object1",
+     "object2",
+     "object3",
+     "object4",
+     "object5",
+     "object6",
+     "country_of_origin",
+     "active",
+     "min_quantity",
+     "quantity",
+     "quantity_with_reserved",
+     "groups",
+     "primary_cost",
+     "barcodes"
     ]
    },
    "ReportList": {
@@ -20589,7 +21194,35 @@
      "CreatedFrom",
      "EditedFrom"
     ],
-    "columns": []
+    "columns": [],
+    "returned_columns": [
+     "code",
+     "title",
+     "barcode",
+     "measure_unit",
+     "purchase_price",
+     "sell_price",
+     "remarks_1",
+     "remarks_2",
+     "remarks_3",
+     "remarks_4",
+     "remarks_5",
+     "remarks_6",
+     "remarks_7",
+     "remarks_8",
+     "remarks_9",
+     "remarks_10",
+     "remarks_11",
+     "remarks_12",
+     "remarks_13",
+     "type",
+     "tag1",
+     "tag2",
+     "tag3",
+     "date_created",
+     "date_edited",
+     "vat_percent"
+    ]
    },
    "StockOnDate": {
     "filter_key": "StockOnDate",
@@ -20611,7 +21244,11 @@
    "Vehicles": {
     "filter_key": null,
     "filter": [],
-    "columns": []
+    "columns": [],
+    "returned_columns": [
+     "code",
+     "info1"
+    ]
    },
    "WarehouseGroups": {
     "filter_key": null,
@@ -20892,6 +21529,134 @@
     "ItemClassName",
     "sParametras",
     "xmlstring"
+   ]
+  },
+  "returned_columns": {
+   "GetEinamiejiLikuciai": [
+    "sandelis",
+    "sandelio_pav",
+    "preke",
+    "prekes_pav",
+    "kiekis",
+    "kiekis_su_rezervuotom",
+    "mato_vnt_pav",
+    "pirm_antr_mat_sant",
+    "savikaina"
+   ],
+   "GetKlientusSet": [
+    "kodas",
+    "pavadinimas",
+    "skola",
+    "ardesas",
+    "telefonas",
+    "faksas",
+    "atskaitingas_asmuo",
+    "atsiskaityti_per",
+    "mokestis",
+    "bankas",
+    "banko_sask",
+    "korsp_sask_bank",
+    "im_kodas",
+    "pvm_moketojo_kodas",
+    "pastabos",
+    "rusis",
+    "el_pastas",
+    "pasiuloma_valiuta",
+    "yra_padalinys",
+    "papildoma_inf",
+    "pozymis_1",
+    "pozymis_2",
+    "pozymis_3",
+    "kurimo_data",
+    "koregavimo_data",
+    "adresas2",
+    "pavadinimas2",
+    "valstybe",
+    "valstybe_pav",
+    "miestas",
+    "einamoji_skola"
+   ],
+   "GetPaslaugosSet": [
+    "kodas",
+    "pavadinimas",
+    "bar_kodas",
+    "matavimo_vienetas",
+    "pirkimo_kaina",
+    "pardavimo_kaina",
+    "pastabos_1",
+    "pastabos_2",
+    "pastabos_3",
+    "pastabos_4",
+    "pastabos_5",
+    "pastabos_6",
+    "pastabos_7",
+    "pastabos_8",
+    "pastabos_9",
+    "pastabos_10",
+    "pastabos_11",
+    "pastabos_12",
+    "pastabos_13",
+    "rusis",
+    "pozymis_1",
+    "pozymims_2",
+    "pozymis_3",
+    "kurimo_data",
+    "koregavimo_data"
+   ],
+   "GetPrekesSet": [
+    "kodas",
+    "pavadinimas",
+    "mat_vieneto_pav",
+    "mat_santykis",
+    "bar_kodas",
+    "pastabos",
+    "informacija",
+    "rusis",
+    "pozymis_1",
+    "pozymis_2",
+    "pozymis_3",
+    "pozymis_4",
+    "pozymis_5",
+    "pozymis_6",
+    "pirk_kaina",
+    "pirk_valiuta",
+    "pard_kaina_1",
+    "pard_kaina_2",
+    "pard_kaina_3",
+    "pard_kaina_4",
+    "pard_kaina_5",
+    "pard_kaina_6",
+    "pard_val",
+    "neto",
+    "bruto",
+    "turis",
+    "antkainis",
+    "vietu_skaicius",
+    "pvm_proc",
+    "kurimo_data",
+    "koregavimo_data",
+    "info1",
+    "info2",
+    "info3",
+    "info4",
+    "info5",
+    "pak_po1",
+    "pak_po2",
+    "pak_st1",
+    "pak_st2",
+    "pak_me1",
+    "pak_me2",
+    "pak_pl1",
+    "pak_pl2",
+    "pak_ko1",
+    "pak_ko2",
+    "pak_ki1",
+    "pak_ki2",
+    "pre_tek1n",
+    "pre_tek2n",
+    "pre_tek3n",
+    "kilmes_salis",
+    "url"
    ]
   }
  }

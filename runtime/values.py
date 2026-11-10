@@ -151,10 +151,6 @@ def finvalda_date(value: Any) -> Date | None:
     return moment.date() if moment else None
 
 
-def _iso(value: Date | None) -> str | None:
-    return value.isoformat() if value else None
-
-
 def iso_date(moment: datetime | None) -> str | None:
     """YYYY-MM-DD of a Lithuanian wall time."""
     return moment.date().isoformat() if moment is not None else None

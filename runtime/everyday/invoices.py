@@ -10,15 +10,14 @@ from .. import errors
 from ..advanced.files import read_input_file
 from ..advanced.reads import fin_user_of
 from ..advanced.writes import import_parameter
-from ..shapes import shape
-from ..values import decimal_of
 from ..errors import invalid
 from ..fields import field
 from ..inputs import date_input, decimal_input, text_input
 from ..records import check_fields
 from ..rows import op_result
+from ..shapes import shape
 from ..transport import dumps_json
-from ..values import cents
+from ..values import cents, decimal_of
 from .common import (
     MAX_LINES,
     Progress,
@@ -76,8 +75,9 @@ _LINE_KEYS = {
 
 def invoice_lines(
     inputs: Mapping[str, Any], operation_id: str, currency: str
-) -> tuple[dict[str, list[dict[str, Any]]], Decimal, Decimal]:
-    """Lines by class, with Finvalda's amount fields computed; and the two totals."""
+) -> tuple[dict[str, list[dict[str, Any]]], Decimal, Decimal, Totals]:
+    """Lines by class, with Finvalda's amount fields computed; the two totals; and what
+    the document's amount may be (``Totals``)."""
     _head, _cls, product_class, service_class = INVOICES[operation_id]
     raw = inputs.get("lines")
     if not isinstance(raw, list) or not raw or len(raw) > MAX_LINES:
@@ -85,6 +85,7 @@ def invoice_lines(
     warehouse = text("warehouse", inputs, 10)
     out: dict[str, list[dict[str, Any]]] = {}
     total = vat_total = Decimal(0)
+    totals = Totals()
     for index, line in enumerate(raw):
         where = f"lines[{index}]"
         if not isinstance(line, Mapping) or set(line) - _LINE_KEYS:
@@ -163,7 +164,52 @@ def invoice_lines(
         out.setdefault(cls, []).append(check_fields(cls, fields, enforce_required=True))
         total += gross - discount_amount
         vat_total += vat
-    return out, total, vat_total
+        totals.add(
+            gross - discount_amount,
+            gross_eur - discount_eur,
+            vat if line.get("vat_percent") is not None else None,
+            fields.get("dSumaPVML"),
+        )
+    return out, total, vat_total, totals
+
+
+class Totals:
+    """What an invoice of these lines can show as its amount, in its currency and in EUR.
+
+    A line without vat_percent takes the VAT of the product's or service's card,
+    which this request does not know; its VAT is then anything from 0 up to (not
+    including) the line's own amount (Finvalda's rate is a Numeric(4,2) percent).
+    """
+
+    def __init__(self) -> None:
+        self.net = [Decimal(0), Decimal(0)]
+        self.vat = [Decimal(0), Decimal(0)]
+        self.unknown = [Decimal(0), Decimal(0)]
+
+    def add(self, net: Decimal, net_eur: Decimal, vat: Decimal | None, vat_eur: Any) -> None:
+        self.net[0] += net
+        self.net[1] += net_eur
+        if vat is None:
+            self.unknown[0] += net
+            self.unknown[1] += net_eur
+        else:
+            self.vat[0] += vat
+            self.vat[1] += Decimal(str(vat_eur)) if vat_eur is not None else Decimal(0)
+
+    def matches(self, amount: Decimal, *, eur: bool) -> bool:
+        i = 1 if eur else 0
+        amount = cents(amount)
+        net, with_vat = cents(self.net[i]), cents(self.net[i] + self.vat[i])
+        if amount in {net, with_vat}:
+            return True
+        unknown = self.unknown[i]
+        return unknown > 0 and with_vat <= amount < cents(with_vat + unknown)
+
+    def shown(self, currency: str) -> str:
+        net = cents(self.net[0])
+        if self.unknown[0]:
+            return f"{net} {currency} without VAT, VAT from the cards"
+        return f"{net} {currency} without VAT, {cents(self.net[0] + self.vat[0])} with VAT"
 
 
 def invoice_header(
@@ -193,7 +239,7 @@ def invoice_op(
 ) -> dict[str, Any]:
     head, op_class, _product, _service = INVOICES[operation_id]
     currency = currency_input(inputs)
-    lines, total, vat_total = invoice_lines(inputs, operation_id, currency)
+    lines, total, vat_total, totals = invoice_lines(inputs, operation_id, currency)
     parameter = import_parameter(context, inputs)
     document = text("document", inputs, 20, required=True)
     series = text("series", inputs, 10)
@@ -210,7 +256,7 @@ def invoice_op(
     created = existing is None
     warnings: list[str] = []
     if existing is not None:
-        same_as_request(existing, client, document, currency, total, vat_total)
+        same_as_request(existing, client, document, currency, totals)
     if existing is None:
         operation = {**header, **lines}
         body = {
@@ -290,24 +336,37 @@ def same_as_request(
     client: str,
     document: str,
     currency: str,
-    total: Decimal,
-    vat_total: Decimal,
+    totals: Totals,
 ) -> None:
     """A document found by number is this one only when its currency and amount match.
 
-    Finvalda's operation amount is compared with this request's total with and
-    without VAT (which one it shows is not documented); anything else — another
-    currency, another amount, an amount that cannot be read — is another document.
+    The manual (3.77) names the header's ``amount`` and ``initial_debt`` columns
+    but not whether they include VAT, nor whether a foreign-currency operation shows
+    them in its currency or in EUR, so each is compared with this request's total
+    without and with VAT, in the currency and in EUR. Lines without vat_percent
+    take the card's VAT, so any VAT is accepted for them. Another currency or an
+    amount that fits none of these is not this request.
     """
     found_currency = str(field(existing, "currency") or "").strip().upper()
-    amount = decimal_of(field(existing, "amount"))
-    totals = {cents(total), cents(total + vat_total)}
-    if found_currency == currency and amount is not None and cents(amount) in totals:
+    amounts = [
+        number
+        for number in (
+            decimal_of(field(existing, "amount")),
+            decimal_of(field(existing, "initial_debt")),
+        )
+        if number is not None
+    ]
+    if found_currency == currency and any(
+        totals.matches(a, eur=False) or (currency != "EUR" and totals.matches(a, eur=True))
+        for a in amounts
+    ):
         return
-    shown = f"{amount if amount is not None else '?'} {found_currency or '?'}"
+    shown = f"{amounts[0] if amounts else '?'} {found_currency or '?'}"
     raise errors.no_effect(
         errors.CONFLICT,
-        f"Document {document} of client {client} is already in Finvalda with {shown}, which "
-        f"does not match this request ({cents(total + vat_total)} {currency}); check Finvalda, "
-        "or give this document a number of its own",
+        f"Document {document} of client {client} is already in Finvalda with {shown}, and "
+        f"this request is {totals.shown(currency)}. Nothing was written. Check that "
+        "document in Finvalda: if it is this invoice, nothing more needs to be done; if "
+        "it is not, correct the document in Finvalda or the request before running the "
+        "step again",
     )

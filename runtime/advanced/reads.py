@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping
 from datetime import date as Date
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 from typing import Any
 
 from .. import budget, errors
@@ -25,7 +25,7 @@ from ..inputs import (
 from ..limits import DEFAULT_LIMIT, DEFAULT_MAX_PAGES, MAX_LIMIT, MAX_LIST_ITEMS, MAX_PAGES
 from ..reference_data import DESCRIPTION_TYPES
 from ..rows import rest_of, rows_of
-from ..shapes import normalize_row
+from ..shapes import column_kinds, normalize_row, to_kind
 from ..transport import DeadlineReached, dumps_json
 
 #: Filter values that are lists in the manual's examples.
@@ -69,38 +69,69 @@ def _validate_method_read(spec: Mapping[str, Any], inputs: Mapping[str, Any], _:
 
 def run_method_read(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
     query = _method_query(spec, context.operation_input)
-    reply = context.call(spec["method"], verb=spec["verb"], query=query, mutating=False)
-    rows = rows_of(reply.data, strict=False)
-    kinds = {name: kind for name, kind in spec.get("columns", [])}
-    result: dict[str, Any] = {
+    kinds = column_kinds(spec.get("columns"))
+    # The manual documents the columns by their Lithuanian names and has no English
+    # list, so a read whose columns are typed asks for Lithuanian names whatever the
+    # connection's language: the rows then match the step's schema.
+    reply = context.call(
+        spec["method"],
+        verb=spec["verb"],
+        query=query,
+        mutating=False,
+        language="lt" if kinds else None,
+    )
+    data: Mapping[str, Any] = reply.data
+    rows = rows_of(data, strict=False)
+    if not rows and spec.get("record_path"):
+        rows, data = _records_at(data, spec["record_path"])
+    return {
         "records": [normalize_row(row, kinds) for row in rows],
         "count": len(rows),
+        # Anything else in the answer (totals, a text, one record): never dropped.
+        "response": rest_of(data, rows),
     }
-    if not spec.get("columns"):
-        # Methods the manual documents without columns (one record, a status):
-        # their answer is returned whole.
-        result["response"] = normalize_row(rest_of(reply.data, rows))
-    return result
+
+
+def _records_at(data: Mapping[str, Any], path: list[str]) -> tuple[list[Any], Mapping[str, Any]]:
+    """The records under the element the manual's example names (``Fvs.Klientas``, or
+    ``Klientai`` → ``Fvs.Klientas``), and the answer without them; ``[]`` and the
+    whole answer when they are not there as objects (for example, XML text)."""
+    found: Any = data
+    for name in path:
+        found = field(found, name) if isinstance(found, Mapping) else None
+    rows = [found] if isinstance(found, Mapping) else found if isinstance(found, list) else []
+    if not rows or not all(isinstance(r, Mapping) for r in rows):
+        return [], data
+    head = path[0].lower()
+    return list(rows), {k: v for k, v in data.items() if str(k).lower() != head}
 
 
 def check_columns(
     value: Any, name: str = "columns", documented: list[str] | None = None
 ) -> list[str]:
-    """Column names; only the documented ones when the documents list them."""
+    """Column names; only the documented ones when the documents list them.
+
+    Names are matched without regard to case (Finvalda reads them so) and sent in
+    the documented spelling.
+    """
     if value is None:
         return []
     if not isinstance(value, list) or len(value) > 200:
         raise invalid(f"{name} must be a list of at most 200 column names")
+    canonical = {c.lower(): c for c in documented or []}
     columns = []
     for item in value:
         if not isinstance(item, str) or not _COLUMN_RE.fullmatch(item.strip()):
             raise invalid(f"{name}: {item!r} is not a column name")
-        if documented and item.strip() not in documented:
-            raise invalid(
-                f"{name}: {item.strip()} is not a documented column; use "
-                + ", ".join(documented[:60])
-            )
-        columns.append(item.strip())
+        column = item.strip()
+        if canonical:
+            if column.lower() not in canonical:
+                raise invalid(
+                    f"{name}: {column} is not a documented column; use "
+                    + ", ".join((documented or [])[:60])
+                )
+            column = canonical[column.lower()]
+        columns.append(column)
     return columns
 
 
@@ -269,7 +300,7 @@ def run_descriptions(context: Context, spec: Mapping[str, Any]) -> dict[str, Any
     # The advanced list step keeps what it read and says where to continue.
     read.pop("timed_out")
     return {
-        "records": [normalize_row(row) for row in records],
+        "records": records,
         "count": len(records),
         **read,
     }
@@ -329,7 +360,7 @@ def run_operations(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
     body = operations_body(spec, context.operation_input)
     reply = context.call("GetOperations", verb="POST", body=body, mutating=False)
     rows = rows_of(reply.data)
-    result = {"records": [normalize_row(row) for row in rows], "count": len(rows)}
+    result = {"records": rows, "count": len(rows)}
     if not budget.fits(result):
         raise errors.no_effect(
             errors.RESPONSE_TOO_LARGE,
@@ -379,20 +410,16 @@ def run_recommended_price(context: Context, spec: Mapping[str, Any]) -> dict[str
     data = reply.data
     result = field(data, "result")
     source = result if isinstance(result, Mapping) else data
-
-    def money(key: str) -> str | None:
-        value = field(source, key)
-        if isinstance(value, bool) or value is None:
-            return None
-        try:
-            return str(Decimal(str(value)))
-        except InvalidOperation:
-            return None
-
+    taken = {"price", "vat", "discount", "errorcode", "errortext"}
+    rest = {k: v for k, v in source.items() if str(k).lower() not in taken}
+    if source is not data:
+        rest.update({k: v for k, v in (rest_of(data, []) or {}).items() if k != "result"})
     return {
-        "price": money("price"),
-        "vat": money("vat"),
-        "discount": money("discount"),
+        **{
+            key: to_kind("decimal", field(source, key), where=key)
+            for key in ("price", "vat", "discount")
+        },
+        "response": rest or None,
     }
 
 
@@ -410,7 +437,17 @@ def run_user_permissions(context: Context, spec: Mapping[str, Any]) -> dict[str,
         result = field(reply.data, "result")
         found = field(result, "perrmissions") if isinstance(result, Mapping) else None
         permissions = found if isinstance(found, list) else []
-    return {"permissions": normalize_row(permissions), "count": len(permissions)}
+    rest = rest_of(reply.data, permissions)
+    if rest and isinstance(rest.get("result"), Mapping):
+        inner = {
+            k: v
+            for k, v in rest["result"].items()
+            if v is not permissions and str(k).lower() not in {"errorcode", "errortext"}
+        }
+        rest = {k: v for k, v in rest.items() if k != "result"} | (
+            {"result": inner} if inner else {}
+        )
+    return {"permissions": permissions, "count": len(permissions), "response": rest or None}
 
 
 def run_related_invoices(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
@@ -454,7 +491,7 @@ def run_related_invoices(context: Context, spec: Mapping[str, Any]) -> dict[str,
                     f"Finvalda's answer holds invoices that are not shown to belong to client "
                     f"{client}; it is not passed on",
                 )
-    return {"records": [normalize_row(row) for row in rows_all], "count": len(rows_all)}
+    return {"records": rows_all, "count": len(rows_all), "response": rest_of(reply.data, rows_all)}
 
 
 def fin_user_of(context: Context | None, inputs: Mapping[str, Any], *, required: bool) -> str:
