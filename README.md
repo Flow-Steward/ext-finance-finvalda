@@ -65,8 +65,13 @@ serves several companies, and the two import parameters.
   for that client. Finvalda itself refuses a document number already used (codes 1001, 1035,
   1058). A step that saves more than one thing (an invoice and its file) names what it already
   saved when a later call fails.
+- The newer methods (prices, documents, permissions; manual 3.79-3.84) answer with their own
+  result object; its error code is checked too. Their Finvalda employee (finUser) is a Finvalda
+  employee, not the web service user, so it is set on the connection or the step.
+- Amounts are exact decimals end to end: Finvalda's numbers are read as decimals and passed on as
+  text; fields are checked against the manual's precision (Numeric(14,2) and so on).
 - The password travels only in the request header the web service requires; it is removed from
-  every answer before it is read, and never appears in a result or an error.
+  every answer (also XML-escaped) before it is read, and never appears in a result or an error.
 - The web service address must be https and a public host name; the SDK's pinned opener refuses
   private and reserved addresses.
 
@@ -87,10 +92,11 @@ python3 tests/reference/extract_reference.py <FVS_Webservice.md>   # re-extract 
 python3 tests/reference/build_contracts.py                         # regenerate contracts and pages
 ```
 
-From the Flow Steward checkout (all checks run in the `fs-audit` container):
+From a Flow Steward checkout (all checks run in the `fs-audit` container), with `EXT` the
+absolute path of this repository:
 
 ```bash
-EXT=$PWD/workspace/extensions/flowsteward_finvalda
+EXT=/path/to/ext-finance-finvalda
 ./core/entrypoints/cli/scripts/lint.sh --checks extension-static,extension-tests --extension-root "$EXT"
 ./flow-steward extensions validate flowsteward.finvalda --root <bundle folder> --health --marketplace
 ```

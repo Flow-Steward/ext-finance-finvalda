@@ -6,12 +6,14 @@ import io
 import json
 from collections.abc import Callable
 from email.message import Message
+from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError
 from urllib.parse import parse_qsl, urlsplit
 
 from runtime.operations import handle_runtime
 
+BUNDLE = Path(__file__).resolve().parents[1]
 PASSWORD = "fixture-Password-123"  # pragma: allowlist secret
 BASE_URL = "https://fvs.example.lt/FvsServicePure.svc"
 OK: dict[str, Any] = {"AccessResult": "Success", "error": ""}
@@ -50,6 +52,7 @@ class Call:
         self.verb = request.get_method()
         self.query = dict(parse_qsl(parts.query))
         self.headers = {k.lower(): v for k, v in request.header_items()}
+        self.raw_body = request.data or b""
         self.body = json.loads(request.data.decode()) if request.data else None
 
     def inner(self) -> Any:
@@ -171,6 +174,7 @@ def payload(
                         "company_id": "IMONE",
                         "operation_parameter": "PARAM_PARD",
                         "item_parameter": "PARAM_APR",
+                        "fin_user": "BUHALT",
                         **(config or {}),
                     },
                     "secrets": {"password": PASSWORD},

@@ -52,7 +52,7 @@ components:
 
     ### Create sales invoice
 
-    Creates a sales invoice (PardDok) with product and service lines; amounts and VAT are computed from quantity, price, discount and VAT percent. The document number makes it safe to run again: the step first looks for a sales invoice of that client with that number and returns it instead of a second one, and Finvalda itself refuses a number already used. Can attach a file, such as the PDF.
+    Creates a sales invoice (PardDok) with product and service lines; amounts and VAT are computed from quantity, price, discount and VAT percent. The document number makes it safe to run again: the step first looks for a sales invoice of that client with that number and returns it instead of a second one, and Finvalda itself refuses a number already used. Can attach a file, such as the PDF, for which the connection needs a Finvalda employee.
 
     - Action id: `create_sales_invoice`
     - Kind: write
@@ -62,7 +62,7 @@ components:
 
     ### Create purchase invoice
 
-    Creates a purchase invoice (PirkDok) with product and service lines; amounts and VAT are computed from quantity, price, discount and VAT percent. The document number makes it safe to run again: the step first looks for a purchase invoice of that client with that number and returns it instead of a second one, and Finvalda itself refuses a number already used. Can attach a file, such as the PDF.
+    Creates a purchase invoice (PirkDok) with product and service lines; amounts and VAT are computed from quantity, price, discount and VAT percent. The document number makes it safe to run again: the step first looks for a purchase invoice of that client with that number and returns it instead of a second one, and Finvalda itself refuses a number already used. Can attach a file, such as the PDF, for which the connection needs a Finvalda employee.
 
     - Action id: `create_purchase_invoice`
     - Kind: write
@@ -72,7 +72,7 @@ components:
 
     ### Register payment
 
-    Registers money received from a client (inflow) or paid to a supplier (disbursement), against one document or as a prepayment. The payment's document number makes it safe to run again: an inflow or disbursement with that number for the client is returned instead of a second one.
+    Registers money received from a client (inflow) or paid to a supplier (disbursement), against one document or as a prepayment. Safe to run again: a payment of the client with the same document number, amount and paid invoice is returned instead of a second one; one bank statement may hold several payments, and a payment that cannot be told apart from an earlier one stops the step.
 
     - Action id: `register_payment`
     - Kind: write
@@ -767,7 +767,7 @@ components:
     - Finvalda calls: `POST GetOperations OpClass=Production`
     - Inputs: `filter` (optional), `columns` (optional), `full_op` (optional), `columns_det` (optional)
     - Results: `records`, `record`, `count`
-- component_id: operations_records,
+- component_id: operations_writes_and_files
   type: markdown
   title: Records, operations and files
   body: |
@@ -1015,7 +1015,7 @@ components:
 
     ### Invoices related to a client
 
-    The invoices related to a client by debt type (GetInvoicesRelatedToCustomer, from the Postman collection).
+    The invoices related to a client by debt type (GetInvoicesRelatedToCustomer, from the Postman collection, which shows only nDebtType; the client is sent as sKlientoKodas, the name a published client of the web service uses).
 
     - Action id: `invoices_related_to_customer`
     - Kind: read

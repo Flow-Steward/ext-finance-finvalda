@@ -305,7 +305,7 @@ def test_invoice_with_file_is_attached() -> None:
         fake, "create_sales_invoice", {**INVOICE, "document_file": "art_1"}, files=Files(b"PDF")
     )
     assert response["ok"] is True, response
-    assert response["result"]["attachment_name"] == "S-1001.pdf"
+    assert response["result"]["attachment_name"] == "sale-K1-S-1001.pdf"
     attach = [c for c in fake.calls if c.method == "AttachDocument"][0]
     assert (
         attach.query["entityType"] == "3"
@@ -344,7 +344,7 @@ def test_incoming_payment_for_an_invoice() -> None:
 def test_payment_rerun_returns_the_existing_one() -> None:
     fake = FakeFinvalda(
         GetOperations=items(
-            {"journal": "ISM", "op_number": 3, "order_number": "B-2", "client": "K1"}
+            {"journal": "ISM", "op_number": 3, "order_number": "B-2", "client": "K1", "amount": 5}
         )
     )
     response = run(
@@ -495,7 +495,7 @@ def test_product_prices_with_client_prices() -> None:
     )
     response = run(fake, "product_prices", {"product_codes": ["P1"], "client_code": "K1"})
     assert response["result"]["items"][0]["sell_price1"] == "9.99"
-    assert response["result"]["client_prices"][0]["price"] == 8.5
+    assert response["result"]["client_prices"][0]["price"] == "8.5"
     assert fake.calls[1].read_params()["Prices"] == {"Type": 1, "Client": "K1", "Codes": ["P1"]}
 
 
@@ -522,7 +522,7 @@ def test_changes_since_for_operations() -> None:
     )
     response = run(fake, "changes_since", {"entity": "sales", "since": "2026-11-01T00:00:00"})
     assert response["result"]["count"] == 1 and response["result"]["has_more"] is False
-    assert fake.calls[0].op_params()["filter"] == {"DateEditedFrom": "2026-11-01T00:00:00"}
+    assert fake.calls[0].op_params()["filter"] == {"DateEditedFrom": "2026-11-01"}
 
 
 def test_everyday_writes_in_test_mode_send_nothing() -> None:

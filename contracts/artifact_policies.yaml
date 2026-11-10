@@ -8,7 +8,7 @@ artifact_policies:
     binding_key: finvalda_upload
     field: document_file
     required: false
-    max_size_bytes: 10485760
+    max_size_bytes: 8388608
 - operation_id: create_purchase_invoice
   inputs:
   - kind: artifact
@@ -16,7 +16,7 @@ artifact_policies:
     binding_key: finvalda_upload
     field: document_file
     required: false
-    max_size_bytes: 10485760
+    max_size_bytes: 8388608
 - operation_id: download_invoice_pdf
   outputs:
   - kind: artifact
@@ -33,7 +33,7 @@ artifact_policies:
     binding_key: finvalda_upload
     field: document_file
     required: true
-    max_size_bytes: 10485760
+    max_size_bytes: 8388608
 - operation_id: make_invoice
   outputs:
   - kind: artifact
@@ -77,7 +77,7 @@ artifact_policies:
     binding_key: finvalda_upload
     field: document_file
     required: true
-    max_size_bytes: 10485760
+    max_size_bytes: 8388608
 - operation_id: attached_documents
   outputs:
   - kind: artifact

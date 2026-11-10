@@ -42,6 +42,8 @@ SECRET_FIELDS: frozenset[str] = frozenset({"password"})
 LANGUAGES: dict[str, str] = {"lt": "0", "en": "1"}
 
 MAX_SECRET_LENGTH = 256
+#: Shorter passwords could not be removed from answers without mangling them.
+MIN_SECRET_LENGTH = 4
 #: Printable ASCII, so a header can never be split (no CR, LF or control byte).
 _HEADER_VALUE_RE = re.compile(r"^[\x20-\x7e]+$")
 _CODE_RE = re.compile(r"^[\x21-\x7e]{1,64}$")
@@ -68,7 +70,7 @@ class Connection:
 
     def secret_fragments(self) -> tuple[str, ...]:
         """The password, for redacting text Finvalda might echo back."""
-        return (self._password,) if len(self._password) >= 4 else ()
+        return (self._password,)
 
     def headers(self) -> dict[str, str]:
         """The documented request headers (Postman collection variables)."""
@@ -124,6 +126,10 @@ def base_url_of(value: Any) -> str:
         pass
     else:
         raise _invalid("The Finvalda web service address must use a host name, not an IP address")
+    labels = host.split(".")
+    numeric = all(re.fullmatch(r"(0x[0-9a-f]*|[0-9]+)", label) for label in labels)
+    if numeric or not re.search(r"[a-z]", labels[-1]) or labels[-1].startswith("0x"):
+        raise _invalid("The Finvalda web service address must use a host name, not an IP address")
     if host == "localhost" or host.endswith((".localhost", ".local")) or not _HOST_RE.match(host):
         raise _invalid("The Finvalda web service address is not a public host name")
     try:
@@ -149,8 +155,15 @@ def _password(value: Any) -> str:
     text = value if isinstance(value, str) else ""
     if not text:
         raise _invalid("Add the web service user's password to this connection")
-    if len(text) > MAX_SECRET_LENGTH or not _HEADER_VALUE_RE.fullmatch(text):
-        raise _invalid("The password is not usable: printable ASCII characters only, at most 256")
+    if (
+        len(text) < MIN_SECRET_LENGTH
+        or len(text) > MAX_SECRET_LENGTH
+        or not _HEADER_VALUE_RE.fullmatch(text)
+    ):
+        raise _invalid(
+            "The password is not usable: 4 to 256 printable ASCII characters "
+            "(a web service open to the internet needs a real password)"
+        )
     return text
 
 

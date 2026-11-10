@@ -38,7 +38,9 @@ DEFAULT_MAX_PAGES = 10
 MAX_PAGES = 100
 EXPORT_PAGE = 1000
 EXPORT_MAX_PAGES = 2000
-MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+#: Files travel hex-encoded (two characters a byte) inside one JSON body of at most
+#: 20 MB (transport.MAX_REQUEST_BODY_BYTES), so 8 MB is the most that fits.
+MAX_UPLOAD_BYTES = 8 * 1024 * 1024
 MAX_DOWNLOAD_BYTES = 40 * 1024 * 1024
 MAX_EXPORT_BYTES = 200 * 1024 * 1024
 MAX_TEXT = 1000
@@ -57,6 +59,8 @@ _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _DATE_TIME_RE = re.compile(r"^\d{4}[-.]\d{2}[-.]\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d{1,7})?)?)?$")
 _COLUMN_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,60}$")
 _NUMBER_RE = re.compile(r"^-?\d{1,15}(\.\d{1,8})?$")
+#: "Numeric(14,2)": at most 14 digits, 2 of them after the point.
+_NUMERIC_SIZE = re.compile(r"^numeric\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)")
 _QUERY_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,60}$")
 _FILE_NAME_RE = re.compile(r"^[^\\/:*?\"<>|\x00-\x1f]{1,200}$")
 #: Filter values that are lists in the manual's examples.
@@ -280,6 +284,8 @@ def whole_input(
         return default
     if isinstance(value, str) and _DIGITS.fullmatch(value.strip()):
         value = int(value.strip())
+    if isinstance(value, Decimal) and value.is_finite() and value == value.to_integral_value():
+        value = int(value)
     if isinstance(value, bool) or not isinstance(value, int) or not minimum <= value <= maximum:
         raise invalid(f"{name} must be a whole number from {minimum} to {maximum}")
     return value
@@ -315,6 +321,10 @@ def decimal_input(
         if not math.isfinite(value):
             raise invalid(f"{name} must be a finite number")
         value = repr(value)
+    if isinstance(value, Decimal):
+        if not value.is_finite():
+            raise invalid(f"{name} must be a finite number")
+        value = format(value, "f")
     text = str(value).strip().replace(" ", "")
     if not _NUMBER_RE.fullmatch(text):
         raise invalid(f"{name} must be a number with '.' as the decimal point")
@@ -357,7 +367,17 @@ def _field_value(cls: str, spec: Mapping[str, Any], value: Any) -> Any:
     if kind in {"long", "int", "integer"}:
         return whole_input(where, value, minimum=-2_147_483_648, maximum=2_147_483_647)
     if kind.startswith(("double", "numeric", "decimal")):
-        return str(decimal_input(where, value, places=8))
+        size = _NUMERIC_SIZE.match(kind)
+        if size is None:
+            return str(decimal_input(where, value, places=8))
+        precision, scale = int(size.group(1)), int(size.group(2))
+        number = decimal_input(where, value, places=scale)
+        if abs(number) >= Decimal(10) ** (precision - scale):
+            raise invalid(
+                f"{where} must be below {Decimal(10) ** (precision - scale)} "
+                f"(Finvalda's {spec.get('type')})"
+            )
+        return str(number)
     if kind.startswith("datetime") or kind == "date":
         text = text_input(where, value, limit=27)
         if not _DATE_TIME_RE.fullmatch(text):
@@ -365,6 +385,8 @@ def _field_value(cls: str, spec: Mapping[str, Any], value: Any) -> Any:
         return text
     if isinstance(value, bool):
         return int(value)
+    if isinstance(value, Decimal):
+        return str(decimal_input(where, value, places=8))
     if isinstance(value, (int, float, str)):
         return value
     raise invalid(f"{where} has a value of the wrong kind")
@@ -506,10 +528,21 @@ def fit_write_result(result: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def exact(value: Any) -> Any:
+    """Finvalda's numbers are read as Decimal; a result carries them as exact text."""
+    if isinstance(value, Decimal):
+        return format(value, "f") if value.is_finite() else None
+    if isinstance(value, Mapping):
+        return {k: exact(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [exact(v) for v in value]
+    return value
+
+
 def _ok(result: Mapping[str, Any]) -> dict[str, Any]:
     response: dict[str, Any] = {
         "ok": True,
-        "result": dict(result),
+        "result": exact(dict(result)),
         "error_code": None,
         "error": None,
         "errors": [],
@@ -644,6 +677,8 @@ def _filter_value(where: str, key: str, value: Any) -> Any:
     if isinstance(value, int) and abs(value) < 2**31:
         return value
     if isinstance(value, float) and math.isfinite(value):
+        return Decimal(repr(value))
+    if isinstance(value, Decimal) and value.is_finite():
         return value
     if isinstance(value, str):
         return text_input(f"{where}.{key}", value, limit=200)
@@ -1415,10 +1450,9 @@ def run_product_image(context: Context, spec: Mapping[str, Any]) -> dict[str, An
     )
 
 
-def read_input_file(context: Context, handle: Any) -> tuple[bytes, str]:
-    """A workflow file's bytes and name, size-checked before and while reading."""
+def read_input_file(context: Context, handle: Any) -> bytes:
+    """A workflow file's bytes, size-checked before and while reading."""
     handle = text_input("document_file", handle, limit=300, required=True)
-    name = ""
     declared = None
     try:
         descriptor = find_artifact_descriptor(dict(context.payload), artifact_id=handle)
@@ -1427,13 +1461,8 @@ def read_input_file(context: Context, handle: Any) -> tuple[bytes, str]:
     if isinstance(descriptor, Mapping):
         size = descriptor.get("size_bytes")
         declared = size if isinstance(size, int) and not isinstance(size, bool) else None
-        for key in ("filename", "name"):
-            value = descriptor.get(key)
-            if isinstance(value, str) and value.strip():
-                name = value.strip()
-                break
     if declared is not None and declared > MAX_UPLOAD_BYTES:
-        raise invalid("The file is larger than 10 MB")
+        raise invalid("The file is larger than 8 MB")
     remaining = context.transport.remaining() - MIN_CALL_WINDOW_SECONDS
     if remaining <= 0:
         raise DeadlineReached
@@ -1453,8 +1482,8 @@ def read_input_file(context: Context, handle: Any) -> tuple[bytes, str]:
     if not isinstance(body, (bytes, bytearray)) or not body:
         raise invalid("The file is empty")
     if len(body) > MAX_UPLOAD_BYTES:
-        raise invalid("The file is larger than 10 MB")
-    return bytes(body), name
+        raise invalid("The file is larger than 8 MB")
+    return bytes(body)
 
 
 def file_name_input(name: str, value: Any) -> str:
@@ -1464,13 +1493,25 @@ def file_name_input(name: str, value: Any) -> str:
     return text
 
 
-def fin_user_of(context: Context | None, inputs: Mapping[str, Any]) -> str:
+def fin_user_of(context: Context | None, inputs: Mapping[str, Any], *, required: bool) -> str:
+    """The Finvalda employee (finUser) of the newer methods (manual 3.79-3.84).
+
+    It is a Finvalda employee, "not the same as the web service user" (manual
+    3.80), so the web service user is never sent in its place.
+    """
     given = text_input("fin_user", inputs.get("fin_user"), limit=20)
     if given:
         return given
     if context is None:
         return ""
-    return context.connection.fin_user or context.connection.user_name
+    if context.connection.fin_user:
+        return context.connection.fin_user
+    if required:
+        raise invalid(
+            "Give fin_user, or set the Finvalda employee on the connection: this method needs "
+            "a Finvalda employee, which is not the web service user"
+        )
+    return ""
 
 
 def _composition_date(value: str) -> dict[str, int]:
@@ -1497,7 +1538,7 @@ def insert_document_params(
             "searchPhrase": text_input("search_phrase", inputs.get("search_phrase"), limit=200),
             "info": [text_input("info", i, limit=200) for i in info],
             "content": content.hex().upper(),
-            "finUser": fin_user_of(context, inputs),
+            "finUser": fin_user_of(context, inputs, required=True),
         }
     }
 
@@ -1523,7 +1564,8 @@ def _validate_insert_document(spec: Mapping[str, Any], inputs: Mapping[str, Any]
 def run_insert_document(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
     inputs = context.operation_input
     _validate_insert_document(spec, inputs, None)
-    raw, _name = read_input_file(context, inputs.get("document_file"))
+    insert_document_params(inputs, context, b"")
+    raw = read_input_file(context, inputs.get("document_file"))
     body = insert_document_params(inputs, context, raw)
     context.call("InsertDocument", verb="POST", body=body, mutating=True)
     return {"file_name": body["inParams"]["fileName"], "size_bytes": len(raw)}
@@ -1568,7 +1610,7 @@ def attach_document_query(
     allowed(inputs, {"entity_type", "entity_id1", "entity_id2", "file_name", "fin_user"})
     query = entity_query(inputs)
     query.append(("documentId", file_name_input("file_name", inputs.get("file_name"))))
-    user = fin_user_of(context, inputs)
+    user = fin_user_of(context, inputs, required=True)
     if user:
         query.append(("finUser", user))
     return query
@@ -1677,13 +1719,13 @@ def run_recommended_price(context: Context, spec: Mapping[str, Any]) -> dict[str
         "invoiceDate": {"year": day.year, "month": day.month, "day": day.day},
         "itemType": item_type,
         "itemCode": text_input("item_code", inputs.get("item_code"), limit=20, required=True),
-        "itemAmount": float(decimal_input("quantity", inputs.get("quantity"), minimum=Decimal(0))),
+        "itemAmount": decimal_input("quantity", inputs.get("quantity"), minimum=Decimal(0)),
         "warehouseCode": text_input("warehouse_code", inputs.get("warehouse_code"), limit=10),
         "clientCode": text_input("client_code", inputs.get("client_code"), limit=15),
         "clientAdressCode": text_input(
             "client_address_code", inputs.get("client_address_code"), limit=13
         ),
-        "finUser": fin_user_of(context, inputs),
+        "finUser": fin_user_of(context, inputs, required=False),
     }
     reply = context.call(
         "GetRecommendedPrice", verb="POST", body={"inParams": params}, mutating=False
@@ -1715,7 +1757,7 @@ def run_user_permissions(context: Context, spec: Mapping[str, Any]) -> dict[str,
     reply = context.call(
         "GetUserPermissions",
         verb="GET",
-        query=[("finUser", fin_user_of(context, inputs))],
+        query=[("finUser", fin_user_of(context, inputs, required=True))],
         mutating=False,
     )
     permissions = rows_of(reply.data)
@@ -1862,6 +1904,8 @@ def call_request(
             rendered = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
         elif isinstance(value, bool):
             rendered = "true" if value else "false"
+        elif isinstance(value, Decimal):
+            rendered = format(value, "f")
         elif isinstance(value, (int, float, str)):
             rendered = str(value)
         else:

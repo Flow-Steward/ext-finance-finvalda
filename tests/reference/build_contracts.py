@@ -45,13 +45,13 @@ GENERATED_HEADER = (
 UPLOAD_BINDING = "finvalda_upload"
 DOWNLOAD_BINDING = "finvalda_file"
 EXPORT_BINDING = "finvalda_export"
-MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+MAX_UPLOAD_BYTES = 8 * 1024 * 1024
 MAX_DOWNLOAD_BYTES = 40 * 1024 * 1024
 MAX_EXPORT_BYTES = 200 * 1024 * 1024
 DOWNLOAD_CONTENT_TYPE = "application/octet-stream"
 EXPORT_CONTENT_TYPE = "application/x-ndjson"
 EXPORT_FILENAME = "finvalda-export.jsonl"
-FILE_FIELD_HELP = "A workflow file, e.g. the invoice PDF from an earlier step, up to 10 MB."
+FILE_FIELD_HELP = "A workflow file, e.g. the invoice PDF from an earlier step, up to 8 MB."
 TEXTAREA_INPUTS = {"notes", "file_description"}
 
 BASE_ERRORS = [
@@ -501,9 +501,9 @@ def splice_effects(effects: list[dict[str, Any]]) -> None:
         if key != "external_effects":
             rebuilt[key] = value
     rebuilt.setdefault("external_effects", effects)
-    manifest.write_text(
-        yaml.safe_dump(rebuilt, sort_keys=False, allow_unicode=True, width=100), encoding="utf-8"
-    )
+    # The same form ``flow-steward extensions lock-deps`` writes, so either tool
+    # leaves the other's output unchanged.
+    manifest.write_text(yaml.safe_dump(rebuilt, sort_keys=False), encoding="utf-8")
 
 
 def outputs() -> dict[str, Any]:

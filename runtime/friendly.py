@@ -19,6 +19,7 @@ from . import operations as ops
 from .errors import ExtensionError, invalid
 from .fields import field
 from .reference_data import CHANGE_ENTITIES, DESCRIPTION_TYPES
+from . import budget
 from .transport import DeadlineReached
 
 CENT = Decimal("0.01")
@@ -172,16 +173,20 @@ def today() -> str:
 # Lookups
 
 
-def describe(
+def read_list(
     context: Any,
     kind: str,
     conditions: Mapping[str, Any],
     columns: list[str] | None,
     *,
-    limit: int = 50,
-    max_pages: int = 1,
-) -> list[dict[str, Any]]:
-    """Rows of a GetDescriptions type; ``conditions`` belong to its first filter group."""
+    limit: int,
+    max_pages: int,
+    meter: budget.Meter | None = None,
+) -> tuple[list[dict[str, Any]], bool]:
+    """Rows of a GetDescriptions type and whether more may follow.
+
+    ``conditions`` belong to the type's first filter group.
+    """
     groups = DESCRIPTION_TYPES[kind]["filters"]
     group = next(iter(groups))
     inputs: dict[str, Any] = {
@@ -190,9 +195,29 @@ def describe(
     if columns:
         inputs["columns"] = columns
     read = ops.read_description_pages(
-        context, kind, groups, inputs, first_page=1, limit=limit, max_pages=max_pages, meter=None
+        context, kind, groups, inputs, first_page=1, limit=limit, max_pages=max_pages, meter=meter
     )
-    return [dict(row) for row in read["records"] if isinstance(row, Mapping)]
+    rows = [dict(row) for row in read["records"] if isinstance(row, Mapping)]
+    return rows, bool(read["has_more"])
+
+
+def describe(
+    context: Any,
+    kind: str,
+    conditions: Mapping[str, Any],
+    columns: list[str] | None,
+    *,
+    limit: int = 100,
+    max_pages: int = 5,
+) -> list[dict[str, Any]]:
+    """Every row a lookup matches; a lookup that matches more is an error, never cut short."""
+    rows, more = read_list(context, kind, conditions, columns, limit=limit, max_pages=max_pages)
+    if more:
+        raise errors.no_effect(
+            errors.CONFLICT,
+            f"More than {len(rows)} Finvalda {kind} rows match {dict(conditions)}; give a code",
+        )
+    return rows
 
 
 def operations_of(
@@ -373,6 +398,32 @@ PRODUCT_INPUTS = {
 }
 
 
+def barcode_owners(rows: list[dict[str, Any]], barcode: str) -> list[str]:
+    """The product codes of the rows that carry this barcode.
+
+    The manual (4.28) does not name BarCodes' columns, so a row is used only when
+    it shows both a product code and the barcode; anything else is an error rather
+    than a reason to create a second product.
+    """
+    owners: set[str] = set()
+    for row in rows:
+        code = str(field(row, "code") or field(row, "product") or "").strip()
+        values = {
+            str(v).strip()
+            for k, v in row.items()
+            if "bar" in str(k).lower() and isinstance(v, (str, int))
+        }
+        if not code or not values:
+            raise errors.no_effect(
+                errors.CONFLICT,
+                f"Finvalda found barcode {barcode} but its answer does not say which product has "
+                "it; give the product code",
+            )
+        if barcode in values:
+            owners.add(code)
+    return sorted(owners)
+
+
 def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> dict[str, Any]:
     code = code_input("code", inputs, 20)
     barcode = text("barcode", inputs, 13)
@@ -391,7 +442,7 @@ def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
             }
     if barcode:
         hits = describe(context, "BarCodes", {"BarCodes": [barcode]}, None)
-        codes = sorted({str(field(r, "code") or field(r, "product") or "") for r in hits} - {""})
+        codes = barcode_owners(hits, barcode)
         if len(codes) > 1:
             raise errors.no_effect(errors.CONFLICT, f"{len(codes)} products have barcode {barcode}")
         if codes:
@@ -540,7 +591,9 @@ def invoice_lines(
         code = ops.text_input(
             f"{where}.code", line.get("code"), limit=20 if kind == "product" else 13, required=True
         )
-        quantity = ops.decimal_input(f"{where}.quantity", line.get("quantity"), places=4)
+        quantity = ops.decimal_input(
+            f"{where}.quantity", line.get("quantity"), places=4 if kind == "product" else 2
+        )
         if quantity <= 0:
             raise invalid(f"{where}.quantity must be positive")
         price = money(f"{where}.price", line.get("price"))
@@ -564,7 +617,9 @@ def invoice_lines(
         discount_eur = cents(gross_eur * discount / 100)
         fields: dict[str, Any] = {
             "sKodas": code,
-            "nKiekis": str(quantity),
+            # Service lines take the quantity times 100 (manual 3.70: "Kiekis padaugintas
+            # iš 100", 0.5 is sent as 50); product lines take it as is in the first unit.
+            "nKiekis": str(quantity) if kind == "product" else str(int(quantity * 100)),
             "dSumaV": str(gross),
             "dSumaL": str(gross_eur),
         }
@@ -587,8 +642,8 @@ def invoice_lines(
             rate = ops.decimal_input(
                 f"{where}.vat_percent", line["vat_percent"], minimum=Decimal(0), places=2
             )
-            if rate > 100:
-                raise invalid(f"{where}.vat_percent must be 0 to 100")
+            if rate >= 100:
+                raise invalid(f"{where}.vat_percent must be below 100 (Finvalda's Numeric(4,2))")
             vat = cents((gross - discount_amount) * rate / 100)
             fields["dPVM_Procentas"] = str(rate)
             fields["dSumaPVMV"] = str(vat)
@@ -631,22 +686,46 @@ def invoice_header(
     return ops.check_fields(head, fields)
 
 
-def find_operation(
-    context: Any, op_class: str, client: str, document: str, series: str = ""
-) -> dict[str, Any] | None:
-    """The operation of this client with this document number, if there is one."""
+def same_document(
+    context: Any, op_class: str, document: str, series: str = "", client: str = ""
+) -> list[dict[str, Any]]:
+    """Operations of ``op_class`` with this document number (and series, and client)."""
     conditions: dict[str, Any] = {"OrderNumber": document}
     if series:
         conditions["Series"] = series
+    if client:
+        conditions["Client"] = client
     rows = operations_of(context, op_class, conditions, OPERATION_COLUMNS)
-    same_document = [r for r in rows if _same(field(r, "order_number"), document)]
+    rows = [r for r in rows if _same(field(r, "order_number"), document)]
     if series:
-        same_document = [r for r in same_document if _same(field(r, "series"), series)]
-    if not same_document:
+        rows = [r for r in rows if _same(field(r, "series"), series)]
+    if client:
+        # The "client" column holds the client's code ("client_code" is its company code).
+        rows = [r for r in rows if _same(field(r, "client"), client)]
+    return rows
+
+
+def find_operation(
+    context: Any,
+    op_class: str,
+    client: str,
+    document: str,
+    series: str = "",
+    *,
+    per_client: bool = False,
+) -> dict[str, Any] | None:
+    """The operation of this client with this document number, if there is one.
+
+    Sales numbers are the company's own, so the same number for another client is a
+    conflict. Purchase numbers are the supplier's: two suppliers may use the same one
+    (``per_client``).
+    """
+    rows = same_document(context, op_class, document, series, client if per_client else "")
+    if not rows:
         return None
-    mine = [r for r in same_document if _same(field(r, "client"), client)]
+    mine = [r for r in rows if _same(field(r, "client"), client)]
     if not mine:
-        other = field(same_document[0], "client")
+        other = field(rows[0], "client")
         raise errors.no_effect(
             errors.CONFLICT,
             f"Document {document} already exists in Finvalda for client {other}, not {client}",
@@ -678,7 +757,13 @@ def invoice_op(
     client = client_code_of(context, inputs)
     header = invoice_header(operation_id, inputs, client, currency)
     has_file = bool(inputs.get("document_file"))
-    existing = find_operation(context, op_class, client, document, series)
+    content: bytes | None = None
+    if has_file:
+        # Everything the file needs is checked before the invoice is written.
+        ops.fin_user_of(context, {}, required=True)
+        content = ops.read_input_file(context, inputs["document_file"])
+    per_client = head == "PirkDok"
+    existing = find_operation(context, op_class, client, document, series, per_client=per_client)
     created = existing is None
     if existing is None:
         operation = {**header, **lines}
@@ -693,7 +778,11 @@ def invoice_op(
             f"{head} {saved['journal'] or '?'} #{saved['op_number'] if saved['op_number'] is not None else '?'} "
             f"(document {document})"
         )
-        record = _best_effort(lambda: find_operation(context, op_class, client, document, series))
+        record = _best_effort(
+            lambda: find_operation(
+                context, op_class, client, document, series, per_client=per_client
+            )
+        )
     else:
         record = existing
         saved = {
@@ -715,21 +804,21 @@ def invoice_op(
                 "Attaching the file",
             )
         entity = 3 if head == "PardDok" else 7
-        name = f"{re.sub(r'[^A-Za-z0-9._-]+', '_', series + document).strip('_') or 'document'}.pdf"
-        attachment = progress.guard(
-            "Attaching the file",
-            lambda: store_and_attach(
-                context,
-                {
-                    "entity_type": entity,
-                    "entity_id1": saved["journal"],
-                    "entity_id2": str(saved["op_number"]),
-                    "document_file": inputs["document_file"],
-                    "file_name": name,
-                },
-                progress,
-            )["file_name"],
-        )
+        # The register's file names are global: the kind and the client keep a sale's
+        # and a purchase's (or two suppliers') equal document numbers apart.
+        stem = f"{'sale' if head == 'PardDok' else 'purchase'}-{client}-{series}{document}"
+        name = f"{re.sub(r'[^A-Za-z0-9._-]+', '_', stem).strip('_')[:190]}.pdf"
+        attachment = store_and_attach(
+            context,
+            {
+                "entity_type": entity,
+                "entity_id1": saved["journal"],
+                "entity_id2": str(saved["op_number"]),
+                "file_name": name,
+            },
+            progress,
+            content=content,
+        )["file_name"]
     return {
         **saved,
         "created": created,
@@ -804,7 +893,9 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     client = client_code_of(context, inputs)
     head, op_class, operation = payment_body(inputs, client)
     document = operation["sDokumentas"]
-    existing = find_operation(context, op_class, client, document)
+    amount = Decimal(operation[next(k for k in operation if k.endswith("DetEil"))][0]["dSumaV"])
+    invoice = text("invoice_document", inputs, 20)
+    existing = find_payment(context, op_class, client, document, amount, invoice)
     if existing is not None:
         return {
             "journal": errors.safe_text(field(existing, "journal"), 20) or None,
@@ -823,8 +914,84 @@ def payment_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     }
     reply = context.call("InsertNewOperation", verb="POST", body=body, mutating=True)
     saved = ops.op_result(reply.data)
-    record = _best_effort(lambda: find_operation(context, op_class, client, document))
+    record = _best_effort(
+        lambda: next(
+            (
+                r
+                for r in same_document(context, op_class, document, client=client)
+                if _op_number(r) == saved["op_number"]
+            ),
+            None,
+        )
+    )
     return {**saved, "created": True, "client_code": client, "record": record}
+
+
+def _amount_of(row: Mapping[str, Any]) -> Decimal | None:
+    value = field(row, "amount")
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        return Decimal(str(value))
+    except InvalidOperation:
+        return None
+
+
+def find_payment(
+    context: Any, op_class: str, client: str, document: str, amount: Decimal, invoice: str
+) -> dict[str, Any] | None:
+    """The same payment made before, if this step already made it.
+
+    One bank statement usually holds several payments of a client, so its number
+    alone is no key: a payment is the same only with the same client, statement
+    number and amount and — when it pays an invoice — a line naming that invoice.
+    When that cannot be told, the step stops instead of guessing either way.
+    """
+    rows = same_document(context, op_class, document, client=client)
+    if not rows:
+        return None
+    if any(_amount_of(r) is None for r in rows):
+        raise errors.no_effect(
+            errors.CONFLICT,
+            f"Payment document {document} of client {client} exists in Finvalda, but its amount "
+            "could not be read; check Finvalda before registering it",
+        )
+    same_amount = [r for r in rows if _amount_of(r) == amount]
+    if not same_amount:
+        return None
+    if invoice:
+        confirmed, unknown = [], 0
+        for row in same_amount:
+            number = _op_number(row)
+            lines = (
+                operations_of(
+                    context,
+                    f"{op_class}Det",
+                    {"Journal": str(field(row, "journal") or ""), "OpNumber": number},
+                )
+                if number is not None
+                else []
+            )
+            if not lines:
+                unknown += 1
+            elif any(
+                _same(value, invoice)
+                for line in lines
+                for value in line.values()
+                if isinstance(value, str)
+            ):
+                confirmed.append(row)
+        if len(confirmed) == 1 and not unknown:
+            return confirmed[0]
+        if not confirmed and not unknown:
+            return None
+    elif len(same_amount) == 1:
+        return same_amount[0]
+    raise errors.no_effect(
+        errors.CONFLICT,
+        f"{len(same_amount)} payments of client {client} with document {document} and amount "
+        f"{amount} exist in Finvalda and this one cannot be told apart; check Finvalda",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -840,22 +1007,34 @@ ATTACH_INPUTS = {
 }
 
 
-def store_and_attach(context: Any, inputs: Mapping[str, Any], progress: Progress) -> dict[str, Any]:
-    """Store a workflow file in the register and attach it, unless it is already attached."""
+def store_and_attach(
+    context: Any, inputs: Mapping[str, Any], progress: Progress, *, content: bytes | None = None
+) -> dict[str, Any]:
+    """Store a workflow file in the register and attach it, unless it is already attached.
+
+    Every call is guarded, so a failure after an earlier write names what was saved.
+    """
     query = ops.entity_query(inputs)
     name = ops.file_name_input("file_name", inputs.get("file_name"))
-    reply = context.call("GetAttachedDocument", verb="GET", query=query, mutating=False)
+    user = ops.fin_user_of(context, {}, required=True)
+    if content is None:
+        content = ops.read_input_file(context, inputs.get("document_file"))
+    reply = progress.guard(
+        "Reading the attached files",
+        lambda: context.call("GetAttachedDocument", verb="GET", query=query, mutating=False),
+    )
     if any(f["name"] == name for f in ops.attached_files(reply.data)):
         return {"file_name": name, "stored": False, "attached": False}
-    raw, _ = ops.read_input_file(context, inputs.get("document_file"))
     document_inputs = {"file_name": name}
     if inputs.get("file_description"):
         document_inputs["file_description"] = inputs["file_description"]
-    body = ops.insert_document_params(document_inputs, context, raw)
-    context.call("InsertDocument", verb="POST", body=body, mutating=True)
+    body = ops.insert_document_params(document_inputs, context, content)
+    progress.guard(
+        "Storing the file",
+        lambda: context.call("InsertDocument", verb="POST", body=body, mutating=True),
+    )
     progress.add(f"document {name} in the register")
-    user = ops.fin_user_of(context, {})
-    attach_query = [*query, ("documentId", name)] + ([("finUser", user)] if user else [])
+    attach_query = [*query, ("documentId", name), ("finUser", user)]
     attached = progress.guard(
         "Attaching the document", lambda: ops.attach_document(context, attach_query)
     )
@@ -872,7 +1051,7 @@ def attach_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
 
 def test_connection_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     started = context.clock()
-    rows = describe(context, "Clients", {}, ["code"], limit=1)
+    rows, _more = read_list(context, "Clients", {}, ["code"], limit=1, max_pages=1)
     return {
         "connected": True,
         "company_id": context.connection.company_id or None,
@@ -914,10 +1093,16 @@ def stock_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         "measure_unit",
         "primary_cost",
     ]
-    rows = describe(
-        context, "CurrentStock", conditions, columns, limit=1000, max_pages=limit // 1000 + 1
+    rows, more = read_list(
+        context,
+        "CurrentStock",
+        conditions,
+        columns,
+        limit=1000,
+        max_pages=limit // 1000 + 1,
+        meter=budget.Meter(),
     )
-    has_more = len(rows) > limit
+    has_more = more or len(rows) > limit
     rows = rows[:limit]
     items = [
         {
@@ -963,6 +1148,10 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         client_prices = describe(
             context, "Prices", {"Type": 1, "Client": client, "Codes": codes}, None, limit=1000
         )
+    if len(rows) > len(codes):
+        raise errors.no_effect(
+            errors.RESPONSE_TOO_LARGE, "Finvalda returned more products than were asked for"
+        )
     return {"items": items, "client_prices": client_prices, "count": len(items)}
 
 
@@ -991,8 +1180,11 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         if not isinstance(row, Mapping):
             continue
         remaining = as_decimal(field(row, "likusi_skola"))
-        due = str(field(row, "apmokejimo_data") or "")[:10]
-        late = bool(due and remaining and due < as_of and Decimal(remaining) > 0)
+        due_date = finvalda_date(field(row, "apmokejimo_data"))
+        due = due_date.isoformat() if due_date else None
+        late: bool | None = None
+        if due_date is not None and remaining is not None:
+            late = due_date < Date.fromisoformat(as_of) and Decimal(remaining) > 0
         if remaining:
             unpaid += Decimal(remaining)
             if late:
@@ -1003,8 +1195,8 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
                 "series": field(row, "serija"),
                 "journal": field(row, "zurnalas"),
                 "op_number": field(row, "op_numeris"),
-                "date": str(field(row, "dokumento_data") or "")[:10] or None,
-                "payment_date": due or None,
+                "date": _iso(finvalda_date(field(row, "dokumento_data"))),
+                "payment_date": due,
                 "amount": as_decimal(field(row, "pradine_suma")),
                 "remaining": remaining,
                 "amount_currency": as_decimal(field(row, "pradine_suma_val")),
@@ -1030,6 +1222,29 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
 
 
 CHANGES_MAX_ROWS = 20_000
+_ISO_DATE = re.compile(r"^(\d{4})[-.](\d{2})[-.](\d{2})")
+_DOTNET_DATE = re.compile(r"^/Date\((-?\d+)([+-]\d{4})?\)/$")
+
+
+def finvalda_date(value: Any) -> Date | None:
+    """A date in one of Finvalda's forms: 2026-11-10T00:00:00, 2026.11.10, /Date(ms)/."""
+    text = str(value or "").strip()
+    match = _ISO_DATE.match(text)
+    try:
+        if match:
+            return Date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
+        dotnet = _DOTNET_DATE.match(text)
+        if dotnet:
+            from datetime import datetime, timezone
+
+            return datetime.fromtimestamp(int(dotnet.group(1)) / 1000, tz=timezone.utc).date()
+    except (ValueError, OverflowError, OSError):
+        return None
+    return None
+
+
+def _iso(value: Date | None) -> str | None:
+    return value.isoformat() if value else None
 
 
 def _edited(row: Mapping[str, Any]) -> str:
@@ -1051,9 +1266,13 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     entity = inputs.get("entity")
     if entity not in CHANGE_ENTITIES:
         raise invalid(f"entity must be one of: {', '.join(CHANGE_ENTITIES)}")
-    since = text("since", inputs, 27, required=True)
+    since = text("since", inputs, 27, required=True).replace(" ", "T")
     if not ops._DATE_TIME_RE.fullmatch(since):
         raise invalid("since must be YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS")
+    since = since[:10].replace(".", "-") + since[10:]
+    # Finvalda's filters take a date only (manual: yyyy.MM.dd or yyyy-MM-dd); the time
+    # part of since is applied here, on the rows of that day.
+    day = since[:10]
     limit = (
         ops.whole_input("limit", inputs.get("limit"), default=1000, minimum=1, maximum=5000) or 1000
     )
@@ -1068,7 +1287,7 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             context,
             name,
             DESCRIPTION_TYPES[name]["filters"],
-            {"filter": {"EditedFrom": since}, "columns": columns},
+            {"filter": {"EditedFrom": day}, "columns": columns},
             first_page=1,
             limit=1000,
             max_pages=CHANGES_MAX_ROWS // 1000,
@@ -1082,8 +1301,10 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             )
         rows = read["records"]
     else:
-        rows = operations_of(context, name, {"DateEditedFrom": since}, OPERATION_COLUMNS)
+        rows = operations_of(context, name, {"DateEditedFrom": day}, OPERATION_COLUMNS)
     rows = [r for r in rows if isinstance(r, Mapping)]
+    if len(since) > 10:
+        rows = [r for r in rows if not _ISO_DATE.match(_edited(r)) or _edited(r) >= since]
     rows.sort(key=_change_order)
     has_more = False
     if len(rows) > limit:

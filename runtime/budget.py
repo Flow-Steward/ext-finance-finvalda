@@ -43,7 +43,9 @@ def measure(value: Any) -> tuple[int, int, int, int]:
                 stack.append(nested)
         elif isinstance(node, (list, tuple)):
             stack.extend(node)
-    size = len(json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode("utf-8"))
+    size = len(
+        json.dumps(value, ensure_ascii=False, separators=(",", ":"), default=str).encode("utf-8")
+    )
     return candidates, nodes, codepoints, size
 
 

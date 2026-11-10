@@ -21,15 +21,18 @@ manual's appendix I). Finvalda documents no rate limit and no idempotency key:
 
 from __future__ import annotations
 
+import html
 import http.client
 import json
 import re
+import secrets
 import time
 
 # DTDs and entity declarations are refused before anything is parsed (parse_body).
 import xml.etree.ElementTree as ElementTree  # nosec B405
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Any
 from urllib.error import HTTPError
 from urllib.parse import urlencode
@@ -133,7 +136,7 @@ class FinvaldaTransport:
             raise errors.invalid("Not a Finvalda method name")
         encoded: bytes | None = None
         if body is not None:
-            encoded = json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+            encoded = dumps_json(body).encode("utf-8")
             if len(encoded) > MAX_REQUEST_BODY_BYTES:
                 raise errors.invalid("The request is larger than the 20 MB this extension sends")
         query_list = list(query)
@@ -188,6 +191,7 @@ class FinvaldaTransport:
                     mutating=mutating,
                     expires=self._read_expiry(),
                     clock=self.clock,
+                    per_read=self._call_timeout,
                 )
         except HTTPError as exc:
             try:
@@ -234,7 +238,14 @@ class FinvaldaTransport:
 
     def _redact(self, raw: bytes) -> bytes:
         for secret in self._connection.secret_fragments():
-            for form in {secret, json.dumps(secret, ensure_ascii=False)[1:-1]}:
+            forms = {
+                secret,
+                json.dumps(secret, ensure_ascii=False)[1:-1],
+                html.escape(secret, quote=True),
+                html.escape(secret, quote=True).replace("&#x27;", "&apos;"),
+                html.escape(secret, quote=False),
+            }
+            for form in forms:
                 encoded = form.encode("utf-8")
                 if encoded and encoded in raw:
                     raw = raw.replace(encoded, b"[redacted]")
@@ -277,6 +288,7 @@ class FinvaldaTransport:
             access = field(data, "accessResult")
         text = error_text(data)
         code = result_code(data)
+        nested_code, nested_text = nested_result(data)
         if isinstance(access, str) and access.lower() == "accessdenied":
             raise errors.no_effect(
                 errors.AUTHENTICATION_FAILED,
@@ -286,11 +298,40 @@ class FinvaldaTransport:
                 retryable=False,
                 http_status=status,
             )
+        if nested_code:
+            # The newer methods (manual 3.79-3.84) answer AccessResult "Success" with
+            # their own result object: {"result": {"errorCode", "errorText", ...}}.
+            # Their codes are the method's own, not those of appendix I.
+            raise ExtensionError(
+                errors.UPSTREAM_VALIDATION_FAILED,
+                f"Finvalda refused {method_name} with its error {nested_code}"
+                + (f": {nested_text or text}" if (nested_text or text) else ""),
+                failure_class="provider",
+                retryable=False,
+                definitely_no_external_effect=True,
+                external_effect_status="failed",
+                http_status=status,
+                finvalda_code=nested_code,
+            )
         failed = (isinstance(access, str) and access.lower() == "fail") or (
             code is not None and code != 0
         )
         if not failed:
             return
+        if mutating and code is None:
+            # A refusal without Finvalda's result code says nothing about how far a
+            # multi-step method (copy and delete, move, document register) got.
+            raise ExtensionError(
+                errors.TIMEOUT_UNKNOWN,
+                f"Finvalda answered {method_name} with a failure but no result code"
+                + (f": {text}" if text else "")
+                + "; check in Finvalda whether anything changed before retrying",
+                failure_class="provider",
+                retryable=False,
+                definitely_no_external_effect=False,
+                external_effect_status="timeout_unknown",
+                http_status=status,
+            )
         raise refusal(method_name, code, text, status=status, mutating=mutating)
 
     def _status_error(
@@ -399,6 +440,33 @@ def refusal(
     )
 
 
+def nested_result(data: Mapping[str, Any]) -> tuple[int | None, str]:
+    """``errorCode``/``errorText`` of a newer method's result object (JSON ``result``,
+    or the one ``…Out`` element of the XML form)."""
+    candidates: list[Any] = [field(data, "result")]
+    candidates += [v for k, v in data.items() if str(k).endswith("Out")]
+    for candidate in candidates:
+        if isinstance(candidate, Mapping):
+            code = result_code(candidate, keys=("errorCode",))
+            if code is not None:
+                text = field(candidate, "errorText")
+                return code, errors.safe_text(text, 500) if isinstance(text, str) else ""
+    return None, ""
+
+
+def dumps_json(value: Any) -> str:
+    """JSON with ``Decimal`` written as an exact number (never through float)."""
+    marker = secrets.token_hex(8)
+
+    def default(item: Any) -> str:
+        if isinstance(item, Decimal) and item.is_finite():
+            return f"@{marker}@{item}@{marker}@"
+        raise TypeError(f"{type(item).__name__} is not JSON")
+
+    text = json.dumps(value, ensure_ascii=False, separators=(",", ":"), default=default)
+    return re.sub(rf'"@{marker}@([-+0-9.Ee]+)@{marker}@"', r"\1", text)
+
+
 def error_text(data: Mapping[str, Any]) -> str:
     for key in ("error", "sError", "errorText"):
         value = field(data, key)
@@ -407,8 +475,10 @@ def error_text(data: Mapping[str, Any]) -> str:
     return ""
 
 
-def result_code(data: Mapping[str, Any]) -> int | None:
-    for key in ("nResult", "errorCode"):
+def result_code(
+    data: Mapping[str, Any], keys: tuple[str, ...] = ("nResult", "errorCode")
+) -> int | None:
+    for key in keys:
         value = field(data, key)
         if isinstance(value, bool):
             continue
@@ -440,7 +510,7 @@ def parse_body(raw: bytes) -> dict[str, Any]:
         value = _xml_value(root)
         return value if isinstance(value, dict) else {"value": value}
     try:
-        data = json.loads(stripped)
+        data = json.loads(stripped, parse_float=Decimal)
     except json.JSONDecodeError as exc:
         raise ValueError("bad JSON") from exc
     if not isinstance(data, dict):
@@ -472,26 +542,32 @@ def read_bounded(
     mutating: bool = False,
     expires: float | None = None,
     clock: Callable[[], float] = time.monotonic,
+    per_read: float | None = None,
 ) -> bytes:
-    """Read at most ``limit`` bytes before ``expires``."""
+    """Read at most ``limit`` bytes before ``expires``.
+
+    The socket timeout applies to each receive, so before every receive it is cut to
+    the time left until ``expires``: a server that trickles its answer cannot keep
+    the step past its own time limit.
+    """
     buffer = bytearray()
+    sock = _socket_of(response)
     while True:
+        if expires is not None:
+            left = expires - clock()
+            if left <= 0:
+                _late(mutating)
+            if sock is not None:
+                try:
+                    sock.settimeout(max(0.5, min(left, per_read or left)))
+                except OSError:  # pragma: no cover - a closed socket fails the read below
+                    pass
         chunk = response.read(min(CHUNK_BYTES, limit + 1 - len(buffer)))
         if not chunk:
             break
         buffer.extend(chunk)
         if expires is not None and clock() > expires:
-            if not mutating:
-                raise DeadlineReached
-            raise ExtensionError(
-                errors.TIMEOUT_UNKNOWN,
-                "Finvalda's answer did not arrive in time; check in Finvalda whether the change "
-                "was saved",
-                failure_class="transient",
-                retryable=False,
-                definitely_no_external_effect=False,
-                external_effect_status="timeout_unknown",
-            )
+            _late(mutating)
         if len(buffer) > limit:
             raise ExtensionError(
                 errors.TIMEOUT_UNKNOWN if mutating else errors.RESPONSE_TOO_LARGE,
@@ -505,6 +581,30 @@ def read_bounded(
                 external_effect_status="timeout_unknown" if mutating else "failed",
             )
     return bytes(buffer)
+
+
+def _late(mutating: bool) -> None:
+    if not mutating:
+        raise DeadlineReached
+    raise ExtensionError(
+        errors.TIMEOUT_UNKNOWN,
+        "Finvalda's answer did not arrive in time; check in Finvalda whether the change was saved",
+        failure_class="transient",
+        retryable=False,
+        definitely_no_external_effect=False,
+        external_effect_status="timeout_unknown",
+    )
+
+
+def _socket_of(response: Any) -> Any:
+    """The socket under an http.client response, when it can be reached."""
+    for path in (("fp", "raw", "_sock"), ("fp", "fp", "raw", "_sock"), ("_sock",)):
+        node = response
+        for name in path:
+            node = getattr(node, name, None)
+        if node is not None and hasattr(node, "settimeout"):
+            return node
+    return None
 
 
 def _transport_failure_facts(*, mutating: bool) -> dict[str, Any]:
@@ -521,6 +621,8 @@ __all__ = [
     "DUPLICATE_RESULT_CODES",
     "DeadlineReached",
     "FinvaldaTransport",
+    "dumps_json",
+    "nested_result",
     "Reply",
     "error_text",
     "meaning",

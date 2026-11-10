@@ -344,7 +344,11 @@ def test_attached_documents_listing_and_saving() -> None:
 
 def test_attach_document_already_attached_is_not_an_error() -> None:
     fake = FakeFinvalda(
-        AttachDocument={"AccessResult": "Fail", "errorText": "already", "errorCode": 1}
+        AttachDocument={
+            "AccessResult": "Success",
+            "error": "",
+            "result": {"errorText": "already", "errorCode": 1, "accessResult": 2},
+        }
     )
     response = run(
         fake,
@@ -358,7 +362,7 @@ def test_attach_document_already_attached_is_not_an_error() -> None:
         "external_effect_status": "succeeded",
         "definitely_no_external_effect": False,
     }
-    assert fake.calls[0].query["finUser"] == "WEB"
+    assert fake.calls[0].query["finUser"] == "BUHALT"
 
 
 def test_insert_document_sends_hex() -> None:

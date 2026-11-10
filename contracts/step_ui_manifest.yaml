@@ -230,7 +230,7 @@ forms:
     label: File
     widget_type: artifact_picker
     required: false
-    help_text: A workflow file, e.g. the invoice PDF from an earlier step, up to 10 MB.
+    help_text: A workflow file, e.g. the invoice PDF from an earlier step, up to 8 MB.
 - operation_id: create_purchase_invoice
   title: Create purchase invoice
   fields:
@@ -296,7 +296,7 @@ forms:
     label: File
     widget_type: artifact_picker
     required: false
-    help_text: A workflow file, e.g. the invoice PDF from an earlier step, up to 10 MB.
+    help_text: A workflow file, e.g. the invoice PDF from an earlier step, up to 8 MB.
 - operation_id: register_payment
   title: Register payment
   fields:
@@ -438,7 +438,7 @@ forms:
     label: File
     widget_type: artifact_picker
     required: true
-    help_text: A workflow file, e.g. the invoice PDF from an earlier step, up to 10 MB.
+    help_text: A workflow file, e.g. the invoice PDF from an earlier step, up to 8 MB.
   - name: file_name
     label: File name
     widget_type: text
@@ -4143,7 +4143,7 @@ forms:
     label: File
     widget_type: artifact_picker
     required: true
-    help_text: A workflow file, e.g. the invoice PDF from an earlier step, up to 10 MB.
+    help_text: A workflow file, e.g. the invoice PDF from an earlier step, up to 8 MB.
   - name: file_name
     label: File name
     widget_type: text
@@ -4178,7 +4178,8 @@ forms:
     label: Finvalda employee
     widget_type: text
     required: false
-    help_text: 'The Finvalda employee the change is made as. Default: the connection''s employee.'
+    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
+      Finvalda employee.'
 - operation_id: delete_document
   title: Advanced · Delete a document
   fields:
@@ -4242,7 +4243,8 @@ forms:
     label: Finvalda employee
     widget_type: text
     required: false
-    help_text: 'The Finvalda employee the change is made as. Default: the connection''s employee.'
+    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
+      Finvalda employee.'
 - operation_id: attached_documents
   title: Advanced · Attached documents
   fields:
@@ -4351,7 +4353,8 @@ forms:
     label: Finvalda employee
     widget_type: text
     required: false
-    help_text: 'The Finvalda employee the change is made as. Default: the connection''s employee.'
+    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
+      Finvalda employee.'
 - operation_id: user_permissions
   title: Advanced · Employee permissions
   fields:
@@ -4359,7 +4362,8 @@ forms:
     label: Finvalda employee
     widget_type: text
     required: false
-    help_text: 'The Finvalda employee the change is made as. Default: the connection''s employee.'
+    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
+      Finvalda employee.'
 - operation_id: invoices_related_to_customer
   title: Advanced · Invoices related to a client
   fields:

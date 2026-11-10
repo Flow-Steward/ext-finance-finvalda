@@ -1431,7 +1431,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
     fin_user = text(
         "fin_user",
         "Finvalda employee",
-        "The Finvalda employee the change is made as. Default: the connection's employee.",
+        "The Finvalda employee the change is made as (not the web service user). Default: the connection's Finvalda employee.",
         maxLength=20,
     )
     return [
@@ -1781,7 +1781,8 @@ def file_and_document_specs() -> list[dict[str, Any]]:
             "kind": "source",
             "calls": ["POST GetInvoicesRelatedToCustomer"],
             "description": "The invoices related to a client by debt type (GetInvoicesRelatedToCustomer, "
-            "from the Postman collection).",
+            "from the Postman collection, which shows only nDebtType; the client is sent as "
+            "sKlientoKodas, the name a published client of the web service uses).",
             "inputs": [
                 CONNECTION,
                 text("client_code", "Client code", "The client's code in Finvalda.", maxLength=15),
@@ -1968,7 +1969,7 @@ def invoice_spec(operation_id: str, noun: str, header: str, journal_hint: str) -
             "from quantity, price, discount and VAT percent. The document number makes it safe to run "
             f"again: the step first looks for a {noun} of that client with that number and returns it "
             "instead of a second one, and Finvalda itself refuses a number already used. Can attach "
-            "a file, such as the PDF."
+            "a file, such as the PDF, for which the connection needs a Finvalda employee."
         ),
         "inputs": [
             CONNECTION,
@@ -2224,9 +2225,10 @@ def everyday_specs() -> list[dict[str, Any]]:
             "calls": ["GetOperations (look the payment up)", "InsertNewOperation IplDok / IsmDok"],
             "description": (
                 "Registers money received from a client (inflow) or paid to a supplier (disbursement), "
-                "against one document or as a prepayment. The payment's document number makes it safe "
-                "to run again: an inflow or disbursement with that number for the client is returned "
-                "instead of a second one."
+                "against one document or as a prepayment. Safe to run again: a payment of the client "
+                "with the same document number, amount and paid invoice is returned instead of a "
+                "second one; one bank statement may hold several payments, and a payment that cannot "
+                "be told apart from an earlier one stops the step."
             ),
             "inputs": [
                 CONNECTION,

@@ -8,10 +8,11 @@ version: 0.1.0
 release_stage: active
 billing_mode: free
 display_name: Finvalda
-description: Finvalda accounting through its web service (FvsServicePure) for workflows. Everyday steps
-  — find or create clients, products and services, create sales and purchase invoices, register payments,
-  invoice PDFs, attach files, stock levels, prices, client debt and changes since a date — plus every
-  documented web service method, list and operation class as a typed workflow step.
+description: "Finvalda accounting through its web service (FvsServicePure) for workflows.\
+  \ Everyday steps \u2014 find or create clients, products and services, create sales\
+  \ and purchase invoices, register payments, invoice PDFs, attach files, stock levels,\
+  \ prices, client debt and changes since a date \u2014 plus every documented web\
+  \ service method, list and operation class as a typed workflow step."
 vendor:
   name: Flow Steward
   support_url: https://github.com/Flow-Steward/ext-finance-finvalda/issues
@@ -26,8 +27,8 @@ listing:
   - invoices
   - inventory
   - payments
-  summary: Everyday Finvalda steps — invoices, clients, products, payments, stock, prices, debts — plus
-    every documented web service method.
+  summary: "Everyday Finvalda steps \u2014 invoices, clients, products, payments,\
+    \ stock, prices, debts \u2014 plus every documented web service method."
   categories:
   - finance
   - inventory
@@ -47,8 +48,8 @@ machine_auth:
   - artifact:write
 account_scope:
   scope_type: project
-  description: Each Finvalda web service user and company is a project connection. A project may hold
-    several, for example one per company.
+  description: Each Finvalda web service user and company is a project connection.
+    A project may hold several, for example one per company.
 egress:
   connection_fields:
   - finvalda.base_url

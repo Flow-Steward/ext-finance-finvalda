@@ -52,16 +52,19 @@ BEHAVIOUR = """\
 
 GROUPS = [
     (
+        "operations_lists",
         "List · ",
         "Lists",
         "Clients, products, services, stock, prices and every other list Finvalda's GetDescriptions method reads, with filters, columns and pages.",
     ),
     (
+        "operations_operations",
         "Operations · ",
         "Operations",
         "Sales, purchases, returns, payments, transfers and every other operation class Finvalda's GetOperations method reads.",
     ),
     (
+        "operations_writes_and_files",
         "",
         "Records, operations and files",
         "Creating, changing and deleting records and operations, PDFs, documents, prices and permissions.",
@@ -147,7 +150,7 @@ def api_page(ops: list[dict[str, Any]], specs: list[dict[str, Any]]) -> dict[str
         },
     ]
     remaining = list(advanced)
-    for prefix, title, intro in GROUPS:
+    for component_id, prefix, title, intro in GROUPS:
         chosen = [
             op
             for op in remaining
@@ -166,7 +169,7 @@ def api_page(ops: list[dict[str, Any]], specs: list[dict[str, Any]]) -> dict[str
             body.extend(_section(op, spec_by_id[op["operation_id"]]))
         components.append(
             {
-                "component_id": f"operations_{title.split()[0].lower()}",
+                "component_id": component_id,
                 "type": "markdown",
                 "title": title,
                 "body": "\n".join(body).rstrip() + "\n",
