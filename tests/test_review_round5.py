@@ -232,3 +232,77 @@ def test_refused_store_names_the_way_to_attach() -> None:
         files=Files(),
     )
     assert "attach it with Advanced · Attach a document" in response["error"]
+
+
+# -- P1: a lookup answer of unknown form never leads to a new record ------------------------
+
+
+@pytest.mark.parametrize("row", [None, {}, {"title": "Existing client"}])
+def test_client_lookup_with_a_row_of_unknown_form_writes_nothing(row: Any) -> None:
+    fake = FakeFinvalda(GetDescriptions={**OK, "items": [row]}, InsertNewItem={**OK, "nResult": 0})
+    response = run(fake, "find_or_create_client", {"code": "NEW", "name": "New"})
+    assert response["error_code"] == "invalid_response" and fake.writes() == []
+
+
+@pytest.mark.parametrize(
+    "operation_id, row",
+    [
+        ("find_or_create_product", {"title": "Existing product"}),
+        ("find_or_create_product", None),
+        ("find_or_create_service", {"title": "Existing service"}),
+        ("find_or_create_service", {}),
+    ],
+)
+def test_product_and_service_lookups_check_their_rows(operation_id: str, row: Any) -> None:
+    fake = FakeFinvalda(GetDescriptions={**OK, "items": [row]}, InsertNewItem={**OK, "nResult": 0})
+    response = run(fake, operation_id, {"code": "NEW", "name": "New"})
+    assert response["error_code"] == "invalid_response" and fake.writes() == []
+
+
+def test_operation_lookup_with_a_row_without_its_journal_writes_nothing() -> None:
+    fake = FakeFinvalda(GetOperations=items({"order_number": "S-1", "client": "K1"}))
+    response = run(
+        fake,
+        "create_sales_invoice",
+        {
+            "client_code": "K1",
+            "document": "S-1",
+            "warehouse": "W",
+            "lines": [{"code": "P1", "quantity": "1", "price": "1"}],
+        },
+    )
+    assert response["error_code"] == "invalid_response" and fake.writes() == []
+
+
+# -- P2: an attached file of the same name is the same file only with the same content ------
+
+_ATTACH = {
+    "entity_type": 3,
+    "entity_id1": "PARD",
+    "entity_id2": "1",
+    "file_name": "a.pdf",
+    "document_file": "art_1",
+}
+
+
+def _attached(data: str) -> dict[str, Any]:
+    return {**OK, "result": {"errorCode": 0, "enitityDocs": [{"name": "a.pdf", "data": data}]}}
+
+
+def test_same_name_and_same_bytes_is_already_attached() -> None:
+    fake = FakeFinvalda(GetAttachedDocument=_attached(b"%PDF".hex().upper()))
+    result = run(fake, "attach_file", _ATTACH, files=Files(b"%PDF"))["result"]
+    assert (result["file_name"], result["stored"], result["attached"]) == ("a.pdf", False, False)
+    assert fake.writes() == []
+
+
+def test_same_name_and_other_bytes_is_a_conflict() -> None:
+    fake = FakeFinvalda(GetAttachedDocument=_attached(b"%PDF old".hex()))
+    response = run(fake, "attach_file", _ATTACH, files=Files(b"%PDF new"))
+    assert response["error_code"] == "conflict" and fake.writes() == []
+
+
+def test_attached_file_with_broken_hex_is_invalid() -> None:
+    fake = FakeFinvalda(GetAttachedDocument=_attached("not hex"))
+    response = run(fake, "attach_file", _ATTACH, files=Files(b"%PDF"))
+    assert response["error_code"] == "invalid_response" and fake.writes() == []

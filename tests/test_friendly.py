@@ -406,7 +406,10 @@ def test_payment_inputs_checked() -> None:
 
 def test_attach_file_already_attached_is_not_stored_again() -> None:
     fake = FakeFinvalda(
-        GetAttachedDocument={**OK, "enitityDocs": [{"docs": [{"name": "S-1.pdf", "data": "00"}]}]}
+        GetAttachedDocument={
+            **OK,
+            "enitityDocs": [{"docs": [{"name": "S-1.pdf", "data": Files().content.hex()}]}],
+        }
     )
     response = run(
         fake,

@@ -14,6 +14,7 @@ from ..advanced.files import (
     make_invoice_pdf,
     read_input_file,
 )
+from .. import errors
 from ..errors import ExtensionError
 from ..inputs import file_name_input
 from .common import Progress
@@ -35,7 +36,8 @@ def store_and_attach(
     *,
     content: bytes | None = None,
 ) -> dict[str, Any]:
-    """Store a workflow file in the register and attach it, unless it is already attached.
+    """Store a workflow file in the register and attach it, unless the same file (same
+    name, same content) is already attached; another file of that name is a conflict.
 
     Every call is guarded, so a failure after an earlier write names what was saved.
     InsertDocument documents no "already stored" code (manual 3.80: 1 no name,
@@ -50,10 +52,27 @@ def store_and_attach(
         "Reading the attached files",
         lambda: context.call("GetAttachedDocument", verb="GET", query=query, mutating=False),
     )
-    if any(f["name"] == name for f in attached_files(reply.data)):
-        return {"file_name": name, "stored": False, "attached": False}
     if content is None:
         content = read_input_file(context, inputs.get("document_file"))
+    same_name = [f for f in attached_files(reply.data) if f["name"] == name]
+    if same_name:
+        # Already attached only when the content is the same, byte for byte.
+        for attached in same_name:
+            try:
+                stored = bytes.fromhex(attached["data"])
+            except ValueError as exc:
+                raise errors.no_effect(
+                    errors.INVALID_RESPONSE,
+                    f"The content of the attached file {name} in Finvalda's answer is not hex; "
+                    "nothing was written",
+                ) from exc
+            if stored == content:
+                return {"file_name": name, "stored": False, "attached": False}
+        raise errors.no_effect(
+            errors.CONFLICT,
+            f"A different file named {name} is already attached there; nothing was written. "
+            "Give the new file another name, or replace the attached one in Finvalda",
+        )
     document_inputs = {"file_name": name}
     if inputs.get("file_description"):
         document_inputs["file_description"] = inputs["file_description"]

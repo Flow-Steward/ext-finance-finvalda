@@ -157,6 +157,40 @@ def today() -> str:
     return lithuanian_today().isoformat()
 
 
+#: The columns that identify a row of a list (any one of them must hold a value):
+#: a row without them cannot be told apart from "no such record".
+_IDENTITY: dict[str, tuple[str, ...]] = {
+    "Clients": ("code",),
+    "Products": ("product", "code"),
+    "Services": ("code",),
+    "Prices": ("code",),
+}
+
+
+def checked_rows(rows: Any, what: str, identity: tuple[str, ...] = ()) -> list[dict[str, Any]]:
+    """Every row an object, with its identifying value; else invalid_response.
+
+    A lookup that finds "nothing" decides whether a step creates a record, so a
+    row of unknown form (null, {}, a row without its code) is an error, never
+    skipped.
+    """
+    out: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, Mapping):
+            raise errors.no_effect(
+                errors.INVALID_RESPONSE,
+                f"Finvalda's {what} answer holds a row that is not a record; nothing was written",
+            )
+        if identity and all(field(row, c) in (None, "") for c in identity):
+            raise errors.no_effect(
+                errors.INVALID_RESPONSE,
+                f"Finvalda's {what} answer holds a row without its {' or '.join(identity)}; "
+                "nothing was written",
+            )
+        out.append(dict(row))
+    return out
+
+
 def read_list(
     context: Any,
     kind: str,
@@ -184,7 +218,7 @@ def read_list(
     if read["timed_out"]:
         # Rows cut short by the clock are no answer: report the timeout, not "more".
         raise DeadlineReached
-    rows = [dict(row) for row in read["records"] if isinstance(row, Mapping)]
+    rows = checked_rows(read["records"], kind, _IDENTITY.get(kind, ()))
     return rows, bool(read["has_more"])
 
 
@@ -217,7 +251,12 @@ def operations_of(
     reply = context.call(
         "GetOperations", verb="POST", body={"opReadParams": params}, mutating=False
     )
-    return [dict(row) for row in rows_of(reply.data) if isinstance(row, Mapping)]
+    # Operations are told apart by journal and number (every lookup asks for both).
+    identity = ("journal",) if columns and "journal" in columns else ()
+    rows = checked_rows(rows_of(reply.data), op_class, identity)
+    if columns and "op_number" in columns:
+        checked_rows(rows, op_class, ("op_number",))
+    return rows
 
 
 def _same(a: Any, b: Any) -> bool:

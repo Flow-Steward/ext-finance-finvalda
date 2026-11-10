@@ -969,11 +969,12 @@ def test_attach_file_keeps_the_refusals_facts() -> None:
     assert not [c for c in fake.calls if c.method == "AttachDocument"]
 
 
-def test_payment_conflict_text_without_numbers() -> None:
+def test_payment_lookup_row_without_its_numbers_is_invalid() -> None:
     fake = FakeFinvalda(GetOperations=items({"order_number": "B", "client": "K1"}))
     response = run(
         fake,
         "register_payment",
         {"direction": "incoming", "client_code": "K1", "document": "B", "amount": 1},
     )
-    assert "? #?" in response["error"] and "None" not in response["error"]
+    assert response["error_code"] == "invalid_response" and fake.writes() == []
+    assert "None" not in response["error"]
