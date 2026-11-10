@@ -2230,7 +2230,9 @@ def everyday_specs() -> list[dict[str, Any]]:
                 "against one document or as a prepayment. Safe to run again: a payment of the client "
                 "with the same document number, amount and paid invoice is returned instead of a "
                 "second one; one bank statement may hold several payments, and a payment that cannot "
-                "be told apart from an earlier one stops the step."
+                "be told apart from an earlier one stops the step. Two real payments of the same "
+                "client and amount on one statement, without an invoice, count as one: give the "
+                "invoice, or a document number of its own for each payment."
             ),
             "inputs": [
                 CONNECTION,

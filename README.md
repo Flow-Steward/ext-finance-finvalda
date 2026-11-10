@@ -83,6 +83,11 @@ against a live Finvalda. Where a published client of the same web service report
 name that differs from the manual (`sSandKod` for `sSanKod`; `tDataNuo`/`tDataIki` for
 `tNuo`/`tIki`), the step sends both names.
 
+Register payment treats a payment as made before when the client, the statement number and
+the amount match (and, when an invoice is given, a line names it). Two real payments of the same
+client and amount on one statement without an invoice therefore count as one: give the invoice,
+or a document number of its own for each payment.
+
 What to check first on a live server:
 
 - the operation lists' `client` column is the client's code (the Postman example of Sales shows
