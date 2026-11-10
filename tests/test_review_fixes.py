@@ -868,7 +868,7 @@ def test_invoice_rerun_does_not_take_a_refused_store_for_its_file() -> None:
     }
     response = run(fake, "create_sales_invoice", inputs, files=Files(b"%PDF"))
     assert response["ok"] is False
-    assert "Advanced · Attach a document" in response["error"]
+    assert "the Attach a document step" in response["error"]
     assert not [c for c in fake.calls if c.method == "AttachDocument"]
 
 

@@ -172,7 +172,7 @@ def test_attach_file_refused_store_is_reported(code: int) -> None:
         files=Files(),
     )
     assert response["error_code"] == "upstream_validation_failed"
-    assert "Advanced · Attach a document" in response["error"]
+    assert "the Attach a document step" in response["error"]
     assert [c.method for c in fake.calls] == ["GetAttachedDocument", "InsertDocument"]
 
 

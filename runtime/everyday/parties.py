@@ -52,6 +52,10 @@ def _read_back(
     (no row of its code, several) never turns the step into a failure: the record
     is null and a warning says why (as for every read after a write).
     """
+    if rows is not None and not rows:
+        # The read worked but shows nothing: said so, like a read that failed.
+        warnings.append(f"{kind} {code} was saved, but reading it back found no record")
+        return None
     found = _best_effort(lambda: the_row(rows, code, name), warnings, f"{kind} {code}")
     return shape(kind, found) if found else None
 
@@ -87,11 +91,16 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
         if value is None:
             continue
         wanted = value[0] if isinstance(value, list) else value
-        rows = [
-            r
-            for r in describe(context, "Clients", {key: value}, CLIENT_COLUMNS)
-            if _same(field(r, column), wanted)
-        ]
+        answer = describe(context, "Clients", {key: value}, CLIENT_COLUMNS)
+        rows = [r for r in answer if _same(field(r, column), wanted)]
+        if answer and not rows:
+            # Rows, but none with the value asked for: the filter was not applied, so
+            # "no such client" cannot be told — as for products and services.
+            raise errors.no_effect(
+                errors.INVALID_RESPONSE,
+                f"Finvalda's Clients answer for {matched_by} {wanted} holds {len(answer)} "
+                "row(s), none with that value",
+            )
         if len(rows) > 1:
             raise errors.no_effect(
                 errors.CONFLICT,

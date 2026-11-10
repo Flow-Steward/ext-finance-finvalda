@@ -1,7 +1,7 @@
 """Render the UI pages that restate the operation registry, so they cannot drift.
 
 * ``ui/pages/finvalda-api.yaml`` — the everyday steps in full, how steps behave, and
-  every Advanced step grouped by kind
+  every other step grouped by subject, in picker order
 * ``ui/pages/coverage.yaml`` — what of Finvalda's documented web service is offered,
   and why the few names that are not have no step of their own
 * ``ui/pages/changelog.yaml`` — ``CHANGELOG.md``
@@ -18,8 +18,9 @@ from typing import Any
 
 import yaml
 
+import step_names
+
 ROOT = Path(__file__).resolve().parents[2]
-ADVANCED_PREFIX = "Advanced · "
 POSTMAN_DOCS = "https://documenter.getpostman.com/view/7208231/2s8YmRMLvd"
 HIDDEN_RESULTS = frozenset({"external_effect_status", "definitely_no_external_effect"})
 
@@ -50,27 +51,6 @@ BEHAVIOUR = """\
 - Operation steps read everything the filter matches in one answer: give a date range or a journal.
 - Files travel as workflow files: invoice and report PDFs, product pictures, documents attached to operations.
 """
-
-GROUPS = [
-    (
-        "operations_lists",
-        "List · ",
-        "Lists",
-        "Clients, products, services, stock, prices and every other list Finvalda's GetDescriptions method reads, with filters, columns and pages.",
-    ),
-    (
-        "operations_operations",
-        "Operations · ",
-        "Operations",
-        "Sales, purchases, returns, payments, transfers and every other operation class Finvalda's GetOperations method reads.",
-    ),
-    (
-        "operations_writes_and_files",
-        "",
-        "Records, operations and files",
-        "Creating, changing and deleting records and operations, PDFs, documents, prices and permissions.",
-    ),
-]
 
 
 class _PageDumper(yaml.SafeDumper):
@@ -157,7 +137,7 @@ def _results(op: dict[str, Any]) -> list[str]:
 
 
 def _section(op: dict[str, Any], spec: dict[str, Any], *, title: str | None = None) -> list[str]:
-    heading = title or str(op["display_name"]).removeprefix(ADVANCED_PREFIX)
+    heading = title or str(op["display_name"])
     kind = "changes data in Finvalda" if op["operation_kind"] == "action" else "reads only"
     lines = [f"### {heading}", "", str(op["description"]), ""]
     lines.append(
@@ -169,16 +149,17 @@ def _section(op: dict[str, Any], spec: dict[str, Any], *, title: str | None = No
 
 
 def api_page(ops: list[dict[str, Any]], specs: list[dict[str, Any]]) -> dict[str, Any]:
+    """The steps in picker order: the everyday steps, then one section per subject."""
     spec_by_id = {s["operation_id"]: s for s in specs}
-    everyday = [op for op in ops if not str(op["display_name"]).startswith(ADVANCED_PREFIX)]
-    advanced = [op for op in ops if str(op["display_name"]).startswith(ADVANCED_PREFIX)]
+    op_by_id = {op["operation_id"]: op for op in ops}
     lines = [
         "These steps take plain inputs and make the Finvalda calls for you. Every documented "
-        "method of the web service also has its own step, named **Advanced · …** in the step picker.",
+        "method of the web service also has its own step; they follow, by subject, in the "
+        "order of the step picker.",
         "",
     ]
-    for op in everyday:
-        lines.extend(_section(op, spec_by_id[op["operation_id"]]))
+    for oid, _title in step_names.EVERYDAY:
+        lines.extend(_section(op_by_id[oid], spec_by_id[oid]))
     components: list[dict[str, Any]] = [
         {
             "component_id": "operations_everyday",
@@ -193,24 +174,10 @@ def api_page(ops: list[dict[str, Any]], specs: list[dict[str, Any]]) -> dict[str
             "body": BEHAVIOUR,
         },
     ]
-    remaining = list(advanced)
-    for component_id, prefix, title, intro in GROUPS:
-        chosen = [
-            op
-            for op in remaining
-            if str(op["display_name"]).removeprefix(ADVANCED_PREFIX).startswith(prefix)
-        ]
-        if prefix == "":
-            older = [
-                op
-                for op in chosen
-                if spec_by_id[op["operation_id"]]["runtime"]["runner"] == "method_read"
-            ]
-            chosen = [op for op in chosen if op not in older]
-        remaining = [op for op in remaining if op not in chosen]
+    for component_id, title, intro, steps in step_names.GROUPS:
         body = [intro, ""]
-        for op in chosen:
-            body.extend(_section(op, spec_by_id[op["operation_id"]]))
+        for oid, _title in steps:
+            body.extend(_section(op_by_id[oid], spec_by_id[oid]))
         components.append(
             {
                 "component_id": component_id,
@@ -219,21 +186,6 @@ def api_page(ops: list[dict[str, Any]], specs: list[dict[str, Any]]) -> dict[str
                 "body": "\n".join(body).rstrip() + "\n",
             }
         )
-    body = [
-        "Finvalda's older read methods, one step each, with the manual's parameters. They answer "
-        "with Lithuanian column names unless the connection's language is English.",
-        "",
-    ]
-    for op in remaining:
-        body.extend(_section(op, spec_by_id[op["operation_id"]]))
-    components.append(
-        {
-            "component_id": "operations_older",
-            "type": "markdown",
-            "title": "Older read methods",
-            "body": "\n".join(body).rstrip() + "\n",
-        }
-    )
     return {
         "page_id": "finvalda-api",
         "title": "Finvalda API",

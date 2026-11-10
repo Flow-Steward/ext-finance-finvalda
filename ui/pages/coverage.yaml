@@ -18,22 +18,22 @@ components:
 
     ### Names with a note
 
-    - **TagsAndTypes** → Advanced · List · Types and tags. The manual's section heading; the type it describes is TypesAndTags.
-    - **WareHouseGroups** → Advanced · List · Warehouse groups. The manual's section heading; the type it describes is WarehouseGroups.
-    - **Fvs.KlientoIndividKort** → Advanced · Create a record. Field names come from the Postman example only.
-    - **TrumpasUVMPardRezDok** → Advanced · Create an operation. The method's class list name; its fields are those of TrumpasUVMPardRDok.
-    - **DeleteDokumentas** → Advanced · Delete a document. The revision history's name of DeleteDocument.
-    - **EditItemsProps** → Advanced · Update many records. The method list's spelling of EditItemProps.
-    - **GetAttachedDocument** → Advanced · Attached documents. The Pure interface's name of GetAttachedDocuments.
-    - **GetEinamiejiLikuciaiSandelyje** → Advanced · Current stock. Removed by the manual's revision 4; GetEinamiejiLikuciai takes the warehouse instead.
+    - **TagsAndTypes** → Get types and tags. The manual's section heading; the type it describes is TypesAndTags.
+    - **WareHouseGroups** → Get warehouse groups. The manual's section heading; the type it describes is WarehouseGroups.
+    - **Fvs.KlientoIndividKort** → Create a record. Field names come from the Postman example only.
+    - **TrumpasUVMPardRezDok** → Create an operation. The method's class list name; its fields are those of TrumpasUVMPardRDok.
+    - **DeleteDokumentas** → Delete a document. The revision history's name of DeleteDocument.
+    - **EditItemsProps** → Update many records. The method list's spelling of EditItemProps.
+    - **GetAttachedDocument** → Get attached documents. The Pure interface's name of GetAttachedDocuments.
+    - **GetEinamiejiLikuciaiSandelyje** → Get current stock (older method). Removed by the manual's revision 4; GetEinamiejiLikuciai takes the warehouse instead.
     - **GetFvsUser** → no step. Not offered: it takes another Finvalda user's name and password as parameters, and a workflow input is no place for a password. The connection's own user is checked by Test the connection.
-    - **GetKlientuSet** → Advanced · Clients. A misspelling of GetKlientusSet in the revision history.
-    - **GetMokeciai** → Advanced · Taxes. A misspelling of GetMokesciai in a signature.
-    - **GetPalsaugosSet** → Advanced · Services. A misspelling of GetPaslaugosSet in a signature.
-    - **GetUzsakytasPrekes** → Advanced · Call a Finvalda method. Named only in the manual's revision history (revision 13), with no section and no parameters: reachable through Call a Finvalda method.
-    - **InsertNew** → Advanced · Create an operation. Short for InsertNewOperation in the revision history.
-    - **IsLocked** → Advanced · Is an operation locked. The answer field of IsOperationLocked, not a method.
-    - **IsOperatonLocked** → Advanced · Is an operation locked. A misspelling of IsOperationLocked in the revision history.
+    - **GetKlientuSet** → Get clients (older method). A misspelling of GetKlientusSet in the revision history.
+    - **GetMokeciai** → Get taxes. A misspelling of GetMokesciai in a signature.
+    - **GetPalsaugosSet** → Get services (older method). A misspelling of GetPaslaugosSet in a signature.
+    - **GetUzsakytasPrekes** → Call a Finvalda method. Named only in the manual's revision history (revision 13), with no section and no parameters: reachable through Call a Finvalda method.
+    - **InsertNew** → Create an operation. Short for InsertNewOperation in the revision history.
+    - **IsLocked** → Check if an operation is locked. The answer field of IsOperationLocked, not a method.
+    - **IsOperatonLocked** → Check if an operation is locked. A misspelling of IsOperationLocked in the revision history.
 
     ### Not verified on a live server
 

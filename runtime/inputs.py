@@ -109,10 +109,18 @@ def decimal_input(
     if isinstance(value, float):
         if not math.isfinite(value):
             raise invalid(f"{name} must be a finite number")
-        value = repr(value)
+        value = Decimal(repr(value))
     if isinstance(value, Decimal):
         if not value.is_finite():
             raise invalid(f"{name} must be a finite number")
+        # 0E-45 is 0; 1e-45 has too many decimal places; 1E+50 is too large — each
+        # said so, never "not a number".
+        if value.is_zero():
+            value = Decimal(0)
+        elif value.adjusted() < -places:
+            raise invalid(f"{name} may have at most {places} decimal places")
+        elif value.adjusted() >= 15:
+            raise invalid(f"{name} is too large")
         value = plain(value)
     text = str(value).strip().replace(" ", "")
     if not _NUMBER_RE.fullmatch(text):

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from collections import Counter
+from itertools import groupby
 from collections.abc import Callable, Mapping
 from datetime import date as Date
 from datetime import datetime
@@ -297,17 +298,11 @@ def _fixed_order(rows: list[dict[str, Any]], name: str) -> list[dict[str, Any]]:
     rows equal in it (no code, the same number) by their canonical JSON, which is
     computed only for them."""
     key = _change_key(name)
-    ordered = sorted(rows, key=key)
+    keyed = sorted(((key(row), row) for row in rows), key=lambda pair: pair[0])
     out: list[dict[str, Any]] = []
-    i = 0
-    while i < len(ordered):
-        j = i + 1
-        first = key(ordered[i])
-        while j < len(ordered) and key(ordered[j]) == first:
-            j += 1
-        group = ordered[i:j]
+    for _key, pairs in groupby(keyed, key=lambda pair: pair[0]):
+        group = [row for _k, row in pairs]
         out += sorted(group, key=_canonical) if len(group) > 1 else group
-        i = j
     return out
 
 

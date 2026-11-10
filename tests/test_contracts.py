@@ -13,10 +13,12 @@ import yaml
 BUNDLE_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BUNDLE_ROOT / "tests" / "reference"))
 
-import build_contracts
+# The generator and the runtime are imported after their folders are put on
+# sys.path above, so these imports cannot be at the top of the module.
+import build_contracts  # noqa: E402
 
-from runtime import advanced, catalog, limits
-from runtime.operations import neutral_result
+from runtime import advanced, catalog, limits  # noqa: E402
+from runtime.operations import neutral_result  # noqa: E402
 
 
 def _load(relative: str) -> Any:
@@ -143,10 +145,39 @@ def test_help_texts_are_sentences(built) -> None:
             )
 
 
-def test_advanced_steps_are_named_so(built) -> None:
-    everyday = catalog.FRIENDLY_IDS
-    for op in built["operations"]:
-        assert op["display_name"].startswith("Advanced · ") == (op["operation_id"] not in everyday)
+def test_step_titles_say_what_the_step_does(built) -> None:
+    import step_names
+
+    titles = [op["display_name"] for op in built["operations"]]
+    # The picker is flat and searchable: no kind prefixes, a verb first, no two alike.
+    for title in titles:
+        assert "·" not in title and not title.startswith(("Advanced", "List", "Operations")), title
+        assert title.split()[0] in step_names.VERBS, title
+        assert not any(
+            w.startswith(("Get", "Insert", "Edit")) and w[3:4].isupper() for w in title.split()[1:]
+        ), title
+    lowered = [t.lower() for t in titles]
+    assert len(lowered) == len(set(lowered)), sorted(t for t in lowered if lowered.count(t) > 1)
+
+
+def test_steps_come_in_picker_order(built) -> None:
+    import step_names
+
+    ids = [op["operation_id"] for op in built["operations"]]
+    assert ids == step_names.order()
+    assert ids[:13] == [oid for oid, _ in step_names.EVERYDAY]
+    assert set(ids[:13]) == set(catalog.FRIENDLY_IDS)
+    assert ids[-2:] == ["export_list", "call_method"]
+    for oid in ("get_klientas", "get_klientas_e_mail", "get_klientus", "descriptions_clients"):
+        assert ids.index(oid) < ids.index("descriptions_products"), oid
+
+
+def test_operation_ids_did_not_change(built) -> None:
+    """Workflows refer to steps by operation id: renaming the titles keeps every id."""
+    coverage = json.loads((BUNDLE_ROOT / "tests" / "reference" / "coverage.json").read_text())
+    named = {e["operation"] for e in coverage["entries"].values() if e.get("operation")}
+    assert named <= {op["operation_id"] for op in built["operations"]}
+    assert len(built["operations"]) == 173
 
 
 def test_every_shipped_page_is_in_the_ui_manifest() -> None:
@@ -187,7 +218,7 @@ def test_connection_page_matches_the_connection_type() -> None:
 
 def test_manifest_basics() -> None:
     manifest = _load("extension.yaml")
-    assert manifest["extension_id"] == "flowsteward.finvalda" and manifest["version"] == "0.1.2"
+    assert manifest["extension_id"] == "flowsteward.finvalda" and manifest["version"] == "0.1.3"
     assert manifest["egress"] == {"connection_fields": ["finvalda.base_url"]}
     assert (
         manifest["vendor"]["website_url"] == "https://github.com/Flow-Steward/ext-finance-finvalda"

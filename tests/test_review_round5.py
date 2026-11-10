@@ -204,7 +204,7 @@ def test_password_is_removed_however_it_is_written(secret: str, body: bytes) -> 
 
 # -- G7: the hint for a file stored by an earlier run ---------------------------------------
 
-HINT = "If an earlier run already stored the file in the register, attach it with Advanced · Attach a document."
+HINT = "If an earlier run already stored the file in the register, attach it with the Attach a document step."
 
 
 @pytest.mark.parametrize(
@@ -231,7 +231,7 @@ def test_refused_store_names_the_way_to_attach() -> None:
         },
         files=Files(),
     )
-    assert "attach it with Advanced · Attach a document" in response["error"]
+    assert "attach it with the Attach a document step" in response["error"]
 
 
 # -- P1: a lookup answer of unknown form never leads to a new record ------------------------

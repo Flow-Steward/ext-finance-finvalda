@@ -4,7 +4,7 @@ lifecycle:
   data_migrations: []
 extension_id: flowsteward.finvalda
 kind: tool_provider
-version: 0.1.2
+version: 0.1.3
 release_stage: active
 billing_mode: free
 display_name: Finvalda
@@ -110,6 +110,21 @@ external_effects:
   channel: finvalda_web_service
   idempotency: required
   test_mode_behavior: suppress
+- operation_id: insert_document
+  effect_kind: finvalda_insert_document
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: attach_document
+  effect_kind: finvalda_attach_document
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
+- operation_id: delete_document
+  effect_kind: finvalda_delete_document
+  channel: finvalda_web_service
+  idempotency: required
+  test_mode_behavior: suppress
 - operation_id: insert_item
   effect_kind: finvalda_insert_item
   channel: finvalda_web_service
@@ -125,13 +140,13 @@ external_effects:
   channel: finvalda_web_service
   idempotency: required
   test_mode_behavior: suppress
-- operation_id: delete_item
-  effect_kind: finvalda_delete_item
+- operation_id: append_group
+  effect_kind: finvalda_append_group
   channel: finvalda_web_service
   idempotency: required
   test_mode_behavior: suppress
-- operation_id: append_group
-  effect_kind: finvalda_append_group
+- operation_id: delete_item
+  effect_kind: finvalda_delete_item
   channel: finvalda_web_service
   idempotency: required
   test_mode_behavior: suppress
@@ -167,21 +182,6 @@ external_effects:
   test_mode_behavior: suppress
 - operation_id: copy_operation
   effect_kind: finvalda_copy_operation
-  channel: finvalda_web_service
-  idempotency: required
-  test_mode_behavior: suppress
-- operation_id: insert_document
-  effect_kind: finvalda_insert_document
-  channel: finvalda_web_service
-  idempotency: required
-  test_mode_behavior: suppress
-- operation_id: delete_document
-  effect_kind: finvalda_delete_document
-  channel: finvalda_web_service
-  idempotency: required
-  test_mode_behavior: suppress
-- operation_id: attach_document
-  effect_kind: finvalda_attach_document
   channel: finvalda_web_service
   idempotency: required
   test_mode_behavior: suppress

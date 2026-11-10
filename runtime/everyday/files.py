@@ -66,7 +66,7 @@ def store_and_attach(
             return {"file_name": name, "stored": False, "attached": False}
         hint = (
             "replace it in Finvalda by hand, or attach the new file under another name with "
-            "Advanced · Attach a document"
+            "the Attach a document step"
             if generated_name
             else "give the new file another name, or replace the attached one in Finvalda"
         )
@@ -96,7 +96,7 @@ def store_and_attach(
         raise ExtensionError(
             refused.code,
             f"{refused.message}. If an earlier run already stored {name} in the register, "
-            "attach it with Advanced · Attach a document",
+            "attach it with the Attach a document step",
             failure_class=refused.failure_class,
             retryable=refused.retryable,
             definitely_no_external_effect=refused.definitely_no_external_effect,

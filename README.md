@@ -30,13 +30,14 @@ Typical jobs it automates:
 ## How it fits into Flow Steward
 
 - **Install** it as an extension: from the catalog, or with
-  `./flow-steward extensions install --archive flowsteward.finvalda-0.1.2.zip`.
+  `./flow-steward extensions install --archive flowsteward.finvalda-0.1.3.zip`.
 - **Connect**: on the extension's Connection page a project adds a Finvalda connection — the web
   service address, the web service user and password, the company, the two import parameters and
   the Finvalda employee. One project can hold several connections, for example one per company.
-- **Build workflows**: the Finvalda steps appear in the workflow editor — the everyday steps first,
-  then the `Advanced · …` steps. Each step's results (codes, records, totals, files) are inputs for
-  the next steps.
+- **Build workflows**: the Finvalda steps appear in the workflow editor, each named by what it
+  does ("Find sales", "Get currency rates", "Create an operation") — the everyday steps first, then
+  the others by subject. Each step's results (codes, records, totals, files) are inputs for the
+  next steps.
 - **Files** (invoice PDFs, attachments, exports) travel through Flow Steward's file storage: a step
   takes a workflow file as input or returns one.
 - **Writes** to Finvalda are declared external effects: Flow Steward suppresses them in test runs,
@@ -84,11 +85,14 @@ Everyday steps:
 - **Read records changed since a date** — clients, products, services, sales, purchases or payments created or edited
   on or after a date, page by page.
 
-Every documented method of the web service also has its own step, **160 `Advanced · …` steps** in
-all: every list of GetDescriptions, every operation class of GetOperations, every older read
-method, record and operation writes (create, change, delete, lock, copy, move to another journal),
-invoice and report PDFs, the document register, recommended prices and employee permissions, an
-export of any list to a file, and a call of any documented method. The **Coverage** page names
+Every documented method of the web service also has its own step — **160 more steps**, each named
+by what it does and listed by subject after the everyday ones: clients ("Get clients", "Get a
+client by code"), products and services, prices and discounts, stock and warehouses, sales ("Find
+sales", "Find sales lines"), purchases, payments ("Find incoming payments", "Get payment terms"),
+other operations, files and documents ("Print an invoice form to PDF", "Store a document"),
+reference data ("Get currency rates", "Get chart of accounts"), records and operations ("Create a
+record", "Change an operation", "Lock an operation"), and at the end "Export a list to a file" and
+"Call a Finvalda method". The **Coverage** page names
 every method and list of Finvalda's documents and the step that offers it, or the reason there is
 none; the **Finvalda API** page lists each step's inputs and results with their types.
 
@@ -123,7 +127,7 @@ folder that contains it:
 ./flow-steward extensions validate flowsteward.finvalda --root "$ROOT" --health --marketplace
 ./flow-steward extensions test flowsteward.finvalda --root "$ROOT"
 ./flow-steward extensions bundle flowsteward.finvalda --root "$ROOT" --with-wheels --confirm
-./flow-steward extensions install --archive dist/extensions/flowsteward.finvalda-0.1.2.zip --confirm
+./flow-steward extensions install --archive dist/extensions/flowsteward.finvalda-0.1.3.zip --confirm
 ```
 
 The contracts, the Coverage and Finvalda API pages and `runtime/registry.json` are generated from

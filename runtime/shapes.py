@@ -299,7 +299,7 @@ def manual_kind(manual_type: str) -> str:
 
 _TYPED: dict[str, dict[str, Any]] = {
     "text": {"type": ["string", "null"]},
-    "decimal": {"type": ["string", "null"], "pattern": r"^-?\d+(\.\d+)?$"},
+    "decimal": {"type": ["string", "null"], "pattern": r"^-?\d+(\.\d+)?(E[+-]\d+)?$"},
     "integer": {"type": ["integer", "null"]},
     "boolean": {"type": ["boolean", "null"]},
     "date": {"type": ["string", "null"], "pattern": r"^\d{4}-\d{2}-\d{2}$"},

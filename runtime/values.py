@@ -6,7 +6,7 @@ import re
 from collections.abc import Mapping
 from datetime import date as Date
 from datetime import datetime, timedelta, timezone
-from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation, localcontext
 from functools import lru_cache
 from typing import Any
 
@@ -21,13 +21,6 @@ def plain(number: Decimal) -> str:
     form when it is too large or too small to write out."""
     if abs(number.adjusted()) > MAX_PLAIN_EXPONENT:
         return str(number)
-    return format(number, "f")
-
-
-def plain_decimal(number: Decimal) -> str | None:
-    """Plain digits of a number that has them within bounds, else None."""
-    if abs(number.adjusted()) > MAX_PLAIN_EXPONENT:
-        return None
     return format(number, "f")
 
 
@@ -77,13 +70,20 @@ CENT = Decimal("0.01")
 
 
 def cents(value: Decimal) -> Decimal:
-    return value.quantize(CENT, rounding=ROUND_HALF_UP)
+    """``value`` rounded to cents, with enough precision for any amount up to
+    10^MAX_PLAIN_EXPONENT; a number beyond that has no cents to round and is kept."""
+    if value.is_finite() and value.adjusted() > MAX_PLAIN_EXPONENT:
+        return value
+    with localcontext() as context:
+        context.prec = MAX_PLAIN_EXPONENT + 10
+        return value.quantize(CENT, rounding=ROUND_HALF_UP)
 
 
 def as_decimal(value: Any) -> str | None:
-    """An amount from Finvalda (a JSON number or text) as an exact decimal string."""
+    """An amount from Finvalda (a JSON number or text) as an exact decimal string:
+    plain digits, or the exact scientific form beyond 10^±40 (``plain``)."""
     number = decimal_of(value)
-    return None if number is None else plain_decimal(number)
+    return None if number is None else plain(number)
 
 
 _DOTNET_DATE = re.compile(r"^/Date\((-?\d+)([+-]\d{4})?\)/$")

@@ -409,8 +409,9 @@ def same_content(attached: Mapping[str, Any], content: bytes) -> bool:
 
 
 def attached_size(attached: Mapping[str, Any]) -> int:
-    """An attached file's size in bytes, from its hex without spaces."""
-    return len("".join(str(attached["data"]).split())) // 2
+    """An attached file's size in bytes, from its hex without spaces (invalid_response
+    when it is not hex)."""
+    return len(_compact_hex(attached)) // 2
 
 
 def run_attached_documents(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:
@@ -434,9 +435,10 @@ def run_attached_documents(context: Context, spec: Mapping[str, Any]) -> dict[st
         match = next((f for f in files if f["name"] == wanted), None)
         if match is None:
             raise errors.no_effect(errors.NOT_FOUND, f"No attached file is named {wanted}")
-        raw = attached_content(match)
-        if len(raw) > MAX_DOWNLOAD_BYTES:
+        compact = _compact_hex(match)
+        if len(compact) // 2 > MAX_DOWNLOAD_BYTES:
             raise errors.no_effect(errors.RESPONSE_TOO_LARGE, "The file is larger than 40 MB")
+        raw = bytes.fromhex(compact)
         result.update(save_file(context, raw, wanted, what="The attached file"))
     return result
 

@@ -38,7 +38,7 @@ def test_huge_result_code_does_not_hang() -> None:
     from runtime.transport import result_code
 
     started = time.monotonic()
-    assert result_code({"nResult": "9" * 5000}) is None
+    assert result_code({"nResult": "9" * 5000}) == -1
     assert time.monotonic() - started < 1
 
 
@@ -203,7 +203,7 @@ def test_huge_number_in_an_answer_or_an_input_returns_at_once() -> None:
         )
     )
     result = run(fake, "get_klientus_set")["result"]
-    assert result["records"][0]["skola"] == "1E+50000000" and result["warnings"]
+    assert result["records"][0]["skola"] == "1E+50000000"
     assert exact(Decimal("1E+50000000")) == "1E+50000000"
     with pytest.raises(ExtensionError):
         decimal_input("amount", Decimal("1E+50000000"))

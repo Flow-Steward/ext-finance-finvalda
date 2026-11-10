@@ -609,6 +609,11 @@ def error_text(data: Mapping[str, Any]) -> str:
     return ""
 
 
+_CODE_TEXT = re.compile(r"-?[0-9]+(\.0+)?", re.ASCII)
+#: The code given for a result code that cannot be read as a number: never 0.
+UNREADABLE_CODE = -1
+
+
 def result_code(
     data: Mapping[str, Any], keys: tuple[str, ...] = ("nResult", "errorCode")
 ) -> int | None:
@@ -618,8 +623,13 @@ def result_code(
             continue
         if isinstance(value, int):
             return value
-        if isinstance(value, str) and value.strip().lstrip("-").isdigit():
-            return whole_of(value)
+        if isinstance(value, Decimal) or (
+            isinstance(value, str) and _CODE_TEXT.fullmatch(value.strip())
+        ):
+            # A code too long to read is still a code, and not 0: a failure.
+            whole = whole_of(value)
+            return whole if whole is not None else UNREADABLE_CODE
+        # Anything else is no code (Unicode digits, text): the next key is read.
     return None
 
 

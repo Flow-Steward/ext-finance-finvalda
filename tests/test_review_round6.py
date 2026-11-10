@@ -72,7 +72,7 @@ def test_conflict_hint_of_an_invoice_file_needs_no_name_of_its_own() -> None:
         files=Files(b"new"),
     )
     assert "replace it in Finvalda by hand" in response["error"]
-    assert "Advanced · Attach a document" in response["error"]
+    assert "the Attach a document step" in response["error"]
     assert "give the new file another name" not in response["error"]
 
 

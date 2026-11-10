@@ -25,7 +25,8 @@ if str(BUNDLE) not in sys.path:
 
 from runtime import shapes  # noqa: E402  (the records' single source)
 
-ADVANCED = "Advanced · "
+import step_names  # noqa: E402  (the step titles and their order)
+
 
 CONNECTION = {"name": "connection_ref", "value_type": "connection_ref", "required": True}
 #: A date input: YYYY-MM-DD, or an ISO 8601 time whose date is taken.
@@ -803,7 +804,7 @@ def legacy_read_specs() -> list[dict[str, Any]]:
         specs.append(
             {
                 "operation_id": snake(method),
-                "display_name": f"{ADVANCED}{title}",
+                "display_name": f"{title}",
                 "kind": "source",
                 "calls": [f"GET {method}"],
                 "description": f"{description} Finvalda method {method} (manual section "
@@ -966,7 +967,7 @@ def description_specs() -> list[dict[str, Any]]:
         specs.append(
             {
                 "operation_id": f"descriptions_{snake(kind)}",
-                "display_name": f"{ADVANCED}List · {title}",
+                "display_name": f"List · {title}",
                 "kind": "source",
                 "calls": [f"POST GetDescriptions type={kind}"],
                 "description": f"{title}, read with Finvalda's GetDescriptions method, type {kind} "
@@ -1112,7 +1113,7 @@ def operation_read_specs() -> list[dict[str, Any]]:
         specs.append(
             {
                 "operation_id": f"operations_{snake(op_class)}",
-                "display_name": f"{ADVANCED}Operations · {title}",
+                "display_name": f"Operations · {title}",
                 "kind": "source",
                 "calls": [f"POST GetOperations OpClass={op_class}"],
                 "description": f"{title}, read with Finvalda's GetOperations method, class "
@@ -1274,7 +1275,7 @@ def write_specs() -> list[dict[str, Any]]:
     return [
         {
             "operation_id": "insert_item",
-            "display_name": f"{ADVANCED}Create a record",
+            "display_name": "Create a record",
             "kind": "action",
             "calls": ["POST InsertNewItem"],
             "description": "Creates a client, product, service, address, object, bank, warehouse, "
@@ -1313,7 +1314,7 @@ def write_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "edit_item",
-            "display_name": f"{ADVANCED}Update a record",
+            "display_name": "Update a record",
             "kind": "action",
             "calls": ["POST EditItem"],
             "description": "Changes fields of an existing client, product, service or other record "
@@ -1355,7 +1356,7 @@ def write_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "edit_item_props",
-            "display_name": f"{ADVANCED}Update many records",
+            "display_name": "Update many records",
             "kind": "action",
             "calls": ["POST EditItemProps"],
             "description": "Sets the same values on many products, services or clients at once "
@@ -1380,7 +1381,7 @@ def write_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "delete_item",
-            "display_name": f"{ADVANCED}Delete a record",
+            "display_name": "Delete a record",
             "kind": "action",
             "calls": ["POST DeleteItem"],
             "description": "Deletes a client, product, service or other record by code (DeleteItem, "
@@ -1410,7 +1411,7 @@ def write_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "append_group",
-            "display_name": f"{ADVANCED}Add a record to a group",
+            "display_name": "Add a record to a group",
             "kind": "action",
             "calls": ["POST AppendGroup"],
             "description": "Adds a product, service, client, address, object or warehouse to a group "
@@ -1450,7 +1451,7 @@ def write_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "insert_operation",
-            "display_name": f"{ADVANCED}Create an operation",
+            "display_name": "Create an operation",
             "kind": "action",
             "calls": ["POST InsertNewOperation"],
             "description": "Creates any operation the manual documents — sale, purchase, return, "
@@ -1488,7 +1489,7 @@ def write_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "update_operation",
-            "display_name": f"{ADVANCED}Change an operation",
+            "display_name": "Change an operation",
             "kind": "action",
             "calls": ["POST UpdateOperation"],
             "description": "Changes a sale, purchase, reservation, return, order or internal transfer: "
@@ -1522,7 +1523,7 @@ def write_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "delete_operation",
-            "display_name": f"{ADVANCED}Delete an operation",
+            "display_name": "Delete an operation",
             "kind": "action",
             "calls": ["POST DeleteOperation"],
             "description": "Deletes a purchase, sale, reservation, return, order, internal transfer, "
@@ -1558,7 +1559,7 @@ def write_specs() -> list[dict[str, Any]]:
         ),
         {
             "operation_id": "is_operation_locked",
-            "display_name": f"{ADVANCED}Is an operation locked",
+            "display_name": "Is an operation locked",
             "kind": "source",
             "calls": ["POST IsOperationLocked"],
             "description": "Whether an operation is locked: 0 not locked, 1 locked by an employee, 2 "
@@ -1572,7 +1573,7 @@ def write_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "change_journal",
-            "display_name": f"{ADVANCED}Move an operation to another journal",
+            "display_name": "Move an operation to another journal",
             "kind": "action",
             "calls": ["POST ChangeJournal"],
             "description": "Moves an operation to another journal (ChangeJournal, from the Postman collection).",
@@ -1593,7 +1594,7 @@ def write_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "copy_operation",
-            "display_name": f"{ADVANCED}Copy an operation",
+            "display_name": "Copy an operation",
             "kind": "action",
             "calls": ["POST CopyOperation"],
             "description": "Copies an operation into another journal, optionally deleting the source "
@@ -1636,7 +1637,7 @@ def write_specs() -> list[dict[str, Any]]:
 def lock_spec(operation_id: str, method: str, title: str, description: str) -> dict[str, Any]:
     return {
         "operation_id": operation_id,
-        "display_name": f"{ADVANCED}{title}",
+        "display_name": f"{title}",
         "kind": "action",
         "calls": [f"POST {method}"],
         "description": description,
@@ -1714,7 +1715,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
     return [
         {
             "operation_id": "make_invoice",
-            "display_name": f"{ADVANCED}Invoice PDF",
+            "display_name": "Invoice PDF",
             "kind": "source",
             "calls": ["GET MakeInvoice"],
             "description": "Prints an operation with one of Finvalda's invoice forms to a PDF workflow "
@@ -1745,7 +1746,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "make_report",
-            "display_name": f"{ADVANCED}Report PDF",
+            "display_name": "Report PDF",
             "kind": "source",
             "calls": ["GET MakeReport"],
             "description": "Runs one of Finvalda's reports to a PDF workflow file (MakeReport, manual "
@@ -1777,7 +1778,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "auto_reports_list",
-            "display_name": f"{ADVANCED}Automatic reports",
+            "display_name": "Automatic reports",
             "kind": "source",
             "calls": ["GET GetAutoReportsList"],
             "description": "The names of the reports Finvalda prepares automatically (GetAutoReportsList, "
@@ -1803,7 +1804,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "auto_report",
-            "display_name": f"{ADVANCED}Automatic report file",
+            "display_name": "Automatic report file",
             "kind": "source",
             "calls": ["GET GetAutoReport"],
             "description": "Downloads one automatically prepared report as a workflow file "
@@ -1823,7 +1824,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "product_image",
-            "display_name": f"{ADVANCED}Product image",
+            "display_name": "Product image",
             "kind": "source",
             "calls": ["GET GetPrekesImage"],
             "description": "Downloads a product's picture as a workflow file (GetPrekesImage, manual 3.45).",
@@ -1852,7 +1853,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "insert_document",
-            "display_name": f"{ADVANCED}Upload a document",
+            "display_name": "Upload a document",
             "kind": "action",
             "calls": ["POST InsertDocument"],
             "description": "Stores a workflow file in Finvalda's document register (InsertDocument, "
@@ -1906,7 +1907,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "delete_document",
-            "display_name": f"{ADVANCED}Delete a document",
+            "display_name": "Delete a document",
             "kind": "action",
             "calls": ["POST DeleteDocument"],
             "description": "Removes a document from Finvalda's register by its file name "
@@ -1926,7 +1927,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "attach_document",
-            "display_name": f"{ADVANCED}Attach a document",
+            "display_name": "Attach a document",
             "kind": "action",
             "calls": ["GET AttachDocument"],
             "description": "Attaches a document already in the register to an operation or a record "
@@ -1954,7 +1955,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "attached_documents",
-            "display_name": f"{ADVANCED}Attached documents",
+            "display_name": "Attached documents",
             "kind": "source",
             "calls": ["GET GetAttachedDocument"],
             "description": "Lists the files attached to an operation or a record, and can save one of "
@@ -2004,7 +2005,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "recommended_price",
-            "display_name": f"{ADVANCED}Recommended price",
+            "display_name": "Recommended price",
             "kind": "source",
             "calls": ["POST GetRecommendedPrice"],
             "description": "The price, VAT and discount Finvalda would suggest for a line of a sale or a "
@@ -2063,7 +2064,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "user_permissions",
-            "display_name": f"{ADVANCED}Employee permissions",
+            "display_name": "Employee permissions",
             "kind": "source",
             "calls": ["GET GetUserPermissions"],
             "description": "The warehouses, clients, operation types and journals a Finvalda employee "
@@ -2106,7 +2107,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "invoices_related_to_customer",
-            "display_name": f"{ADVANCED}Invoices related to a client",
+            "display_name": "Invoices related to a client",
             "kind": "source",
             "calls": ["POST GetInvoicesRelatedToCustomer"],
             "description": "The invoices related to a client by debt type (GetInvoicesRelatedToCustomer, "
@@ -2131,7 +2132,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "export_list",
-            "display_name": f"{ADVANCED}Export a list to a file",
+            "display_name": "Export a list to a file",
             "kind": "source",
             "calls": ["POST GetDescriptions (every page)"],
             "description": "Saves a whole GetDescriptions list — clients, products, stock, prices … — as a "
@@ -2187,7 +2188,7 @@ def file_and_document_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "call_method",
-            "display_name": f"{ADVANCED}Call a Finvalda method",
+            "display_name": "Call a Finvalda method",
             "kind": "action",
             "calls": ["any documented method"],
             "description": "Calls any method of the Finvalda web service by name, with query parameters "
@@ -2441,7 +2442,7 @@ def invoice_spec(operation_id: str, noun: str, header: str, journal_hint: str) -
             f"again: the step first looks for a {noun} of that client with that number and returns it "
             "instead of a second one, and Finvalda itself refuses a number already used. Can attach "
             "a file, such as the PDF, for which the connection needs a Finvalda employee. "
-            "If an earlier run already stored the file in the register, attach it with Advanced · Attach a document."
+            "If an earlier run already stored the file in the register, attach it with the Attach a document step."
         ),
         "inputs": [
             CONNECTION,
@@ -2733,7 +2734,7 @@ def everyday_specs() -> list[dict[str, Any]]:
             "display_name": "Attach file",
             "kind": "action",
             "calls": ["GetAttachedDocument", "InsertDocument", "AttachDocument"],
-            "description": "Stores a workflow file in Finvalda and attaches it to a sale, a purchase or another operation, or to a client or product. A file of the same name already attached there is not attached twice. If an earlier run already stored the file in the register, attach it with Advanced · Attach a document.",
+            "description": "Stores a workflow file in Finvalda and attaches it to a sale, a purchase or another operation, or to a client or product. A file of the same name already attached there is not attached twice. If an earlier run already stored the file in the register, attach it with the Attach a document step.",
             "inputs": [
                 CONNECTION,
                 choice(
@@ -2909,8 +2910,9 @@ CHANGE_ENTITIES: dict[str, tuple[str, str, str]] = {
 
 
 def operations() -> list[dict[str, Any]]:
-    """Everyday operations first, then every documented method (named Advanced · …)."""
-    return [
+    """Every step with its title, in picker order (``step_names``): the everyday
+    steps first, then the documented methods by subject."""
+    specs = [
         *everyday_specs(),
         *description_specs(),
         *operation_read_specs(),
@@ -2918,6 +2920,14 @@ def operations() -> list[dict[str, Any]]:
         *write_specs(),
         *file_and_document_specs(),
     ]
+    by_id = {spec["operation_id"]: spec for spec in specs}
+    order = step_names.order()
+    titles = step_names.titles()
+    if sorted(order) != sorted(by_id) or len(order) != len(set(order)):
+        missing = sorted(set(by_id) - set(order))
+        extra = sorted(set(order) - set(by_id))
+        raise SystemExit(f"step_names.py does not list every step once: {missing} {extra}")
+    return [{**by_id[oid], "display_name": titles[oid]} for oid in order]
 
 
-__all__ = ["ADVANCED", "CHANGE_ENTITIES", "OPTION_LABELS", "operations", "reference"]
+__all__ = ["CHANGE_ENTITIES", "OPTION_LABELS", "operations", "reference"]

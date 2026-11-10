@@ -546,206 +546,8 @@ forms:
     widget_type: number
     required: false
     help_text: Rows per page, 1 to 300. Default 200.
-- operation_id: descriptions_accounts
-  title: Advanced · List · Chart of accounts
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Codes, CreatedFrom, EditedFrom, Group. Lists (Codes)
-      are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_address
-  title: Advanced · List · Client addresses
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'One object per filter group — Clients: {Codes, CompanyCode, VatCode, Tag1, Tag2, Tag3,
-      Tag4, Tag5}; Address: {Codes, Tag1, Tag2, Tag3, Tag4, Tag5}.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_bar_codes
-  title: Advanced · List · Product barcodes
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Codes, BarCodes, CreatedFrom, EditedFrom. Lists (Codes)
-      are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_calendar_events
-  title: Advanced · List · Calendar events
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: UserName, CreatedFrom, CreatedTo, ModifiedFrom, ModifiedTo,
-      StartFrom, StartTo, EndFrom, EndTo. Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_client_groups
-  title: Advanced · List · Client groups
-  fields:
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_client_individual_cards
-  title: Advanced · List · Client individual cards
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Code, Client, CompanyCode, VatCode, Email. Lists
-      (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
 - operation_id: descriptions_clients
-  title: Advanced · List · Clients
+  title: Get clients
   fields:
   - name: filter
     label: Filter
@@ -778,14 +580,67 @@ forms:
     widget_type: number
     required: false
     help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_company_work_start
-  title: Advanced · List · Company start date
+- operation_id: get_klientas
+  title: Get a client by code
   fields:
+  - name: client_code
+    label: Client code
+    widget_type: text
+    required: false
+    help_text: The client's code in Finvalda.
+- operation_id: get_klientas_e_mail
+  title: Get a client by e-mail
+  fields:
+  - name: email
+    label: E-mail
+    widget_type: text
+    required: false
+    help_text: The e-mail address to look for.
+- operation_id: get_klientus
+  title: Get clients changed since a date
+  fields:
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: get_klientus_set
+  title: Get clients (older method)
+  fields:
+  - name: client_code
+    label: Client code
+    widget_type: text
+    required: false
+    help_text: The client's code in Finvalda.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: descriptions_address
+  title: Get client addresses
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'One object per filter group — Clients: {Codes, CompanyCode, VatCode, Tag1, Tag2, Tag3,
+      Tag4, Tag5}; Address: {Codes, Tag1, Tag2, Tag3, Tag4, Tag5}.'
   - name: columns
     label: Columns
     widget_type: json
     required: false
-    help_text: The columns to return; default all.
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
   - name: page
     label: Page
     widget_type: number
@@ -806,8 +661,81 @@ forms:
     widget_type: number
     required: false
     help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_client_groups
+  title: Get client groups
+  fields:
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_client_individual_cards
+  title: Get client individual cards
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Code, Client, CompanyCode, VatCode, Email. Lists
+      (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: get_klientu_rusis_pozymius
+  title: Get client types and tags
+  fields: []
+- operation_id: get_klientus_rusies_sudeti
+  title: Get clients of a type
+  fields:
+  - name: type_code
+    label: Type
+    widget_type: text
+    required: false
+    help_text: The code of the type.
 - operation_id: descriptions_count_clients
-  title: Advanced · List · Number of clients
+  title: Get the number of clients
   fields:
   - name: filter
     label: Filter
@@ -839,534 +767,77 @@ forms:
     widget_type: number
     required: false
     help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_count_sales
-  title: Advanced · List · Sales totals
+- operation_id: get_neapmoketi_kli_dok
+  title: Get unpaid sales documents
   fields:
-  - name: filter
-    label: Filter
-    widget_type: json
+  - name: client_code
+    label: Client code
+    widget_type: text
     required: false
-    help_text: 'Conditions as an object with any of: DateFrom, DateTo, Client, Paid. Lists (Codes) are
-      arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_currency_rates
-  title: Advanced · List · Currency rates
+    help_text: The client's code in Finvalda.
+- operation_id: get_kliento_saskaitas
+  title: Get a client's invoices and payments
   fields:
-  - name: filter
-    label: Filter
-    widget_type: json
+  - name: client_code
+    label: Client code
+    widget_type: text
     required: false
-    help_text: 'Conditions as an object with any of: DateFrom, DateTo, Codes. Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
+    help_text: The client's code in Finvalda.
+  - name: client_company_code
+    label: Client company code
+    widget_type: text
     required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
+    help_text: The client's company code.
+  - name: client_group
+    label: Client group
+    widget_type: text
+    required: false
+    help_text: The client group code.
+  - name: debt_type
+    label: Debt type
     widget_type: number
     required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
+    help_text: 2 = only unsettled, 1 = only settled, anything else = all.
+  - name: journal_group
+    label: Journal group
+    widget_type: text
+    required: false
+    help_text: The journal group code.
+  - name: series
+    label: Series
+    widget_type: text
+    required: false
+    help_text: The operation's document series.
+  - name: operation_type
+    label: Operation type
     widget_type: number
     required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
+    help_text: 0 inflows, 1 disbursements, 2 purchases, 3 sales, 4 purchase returns, 5 sales returns.
+  - name: document_date_from
+    label: Document date from
+    widget_type: text
     required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
+    help_text: The first document date, YYYY-MM-DD.
+  - name: document_date_to
+    label: Document date to
+    widget_type: text
     required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_current_stock
-  title: Advanced · List · Current stock
+    help_text: The last document date, YYYY-MM-DD.
+- operation_id: invoices_related_to_customer
+  title: Get invoices related to a client
   fields:
-  - name: filter
-    label: Filter
-    widget_type: json
+  - name: client_code
+    label: Client code
+    widget_type: text
     required: false
-    help_text: 'Conditions as an object with any of: Codes, Warehouse, WarehouseGroup, Type, Tag1, Tag2,
-      Tag3, Tag4, Tag5, Tag6, Tag7, Tag8, Tag9, Tag10, Tag11, Tag12, Tag13, Tag14, Tag15, Tag16, Tag17,
-      Tag18, Tag19, Tag20, Supplier1, Supplier2, Supplier3, Object1, Object2, Object3, Object4, Object5,
-      Object6, CreatedFrom, EditedFrom, Group. Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
+    help_text: The client's code in Finvalda.
+  - name: debt_type
+    label: Debt type
     widget_type: number
     required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_current_stock_det
-  title: Advanced · List · Current stock by receipt
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Client, Supplier, Logbook, OpType, Location, Codes,
-      Warehouse, WarehouseGroup, Type, Tag1, Tag2, Tag3, Tag4, Tag5, Tag6, Tag7, Tag8, Tag9, Tag10, Tag11,
-      Tag12, Tag13, Tag14, Tag15, Tag16, Tag17, Tag18, Tag19, Tag20, Supplier1, Supplier2, Supplier3,
-      Object1, Object2, Object3, Object4, Object5, Object6, CreatedFrom, EditedFrom, Group. Lists (Codes)
-      are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_document_series
-  title: Advanced · List · Document series
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Type, UserName. Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_fixed_asset
-  title: Advanced · List · Fixed assets
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Codes. Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_invoice_list
-  title: Advanced · List · Invoice forms
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: OpClass. Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_logbook_groups
-  title: Advanced · List · Journal groups
-  fields:
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_op_type_groups
-  title: Advanced · List · Operation type groups
-  fields:
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_operation_statuses
-  title: Advanced · List · Operation statuses
-  fields:
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_partner_products
-  title: Advanced · List · Partner product catalogues
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Products, Client. Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_prices
-  title: Advanced · List · Client prices
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Type, Client, Codes, CreatedFrom, EditedFrom. Lists
-      (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_prices_by_client_and_item_types
-  title: Advanced · List · Prices by client type and item type
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Type, ClientType, ItemType, CreatedFrom, EditedFrom.
-      Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_prices_by_client_type
-  title: Advanced · List · Prices by client type
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Type, ClientType, Codes, CreatedFrom, EditedFrom.
-      Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_prices_by_item_type
-  title: Advanced · List · Prices by item type
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Type, Client, ItemType, CreatedFrom, EditedFrom.
-      Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_production_item
-  title: Advanced · List · Production items
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Codes, EditedFrom, CreatedFrom. Lists (Codes) are
-      arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+    help_text: The collection's nDebtType, for example 0.
 - operation_id: descriptions_products
-  title: Advanced · List · Products
+  title: Get products
   fields:
   - name: filter
     label: Filter
@@ -1401,821 +872,17 @@ forms:
     widget_type: number
     required: false
     help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_report_list
-  title: Advanced · List · Reports
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Class. Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_services
-  title: Advanced · List · Services
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Codes, Type, Tag1, Tag2, Tag3, CreatedFrom, EditedFrom.
-      Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_stock_on_date
-  title: Advanced · List · Stock on a date
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Date, Code, Group, Type, TypeGroup, Supplier, Warehouse,
-      WarehouseGroup, Account, HasQuantity. Lists (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_types_and_tags
-  title: Advanced · List · Types and tags
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Type, Number, CreatedFrom, CreatedTill, Codes. Lists
-      (Codes) are arrays.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_vehicles
-  title: Advanced · List · Vehicles
-  fields:
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: descriptions_warehouse_groups
-  title: Advanced · List · Warehouse groups
-  fields:
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
-  - name: page
-    label: Page
-    widget_type: number
-    required: false
-    help_text: The page to read, from 1. Default 1.
-  - name: limit
-    label: Rows per page
-    widget_type: number
-    required: false
-    help_text: Rows per page, 1 to 1000. Default 500.
-  - name: fetch_all_pages
-    label: Read every page
-    widget_type: boolean
-    required: false
-    help_text: Read page after page up to max_pages.
-  - name: max_pages
-    label: Max pages
-    widget_type: number
-    required: false
-    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
-- operation_id: operations_sales
-  title: Advanced · Operations · Sales
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_sales_det
-  title: Advanced · Operations · Sales lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_sales_returns
-  title: Advanced · Operations · Sales returns
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_sales_returns_det
-  title: Advanced · Operations · Sales return lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_purchases
-  title: Advanced · Operations · Purchases
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_purchases_det
-  title: Advanced · Operations · Purchase lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_purchases_returns
-  title: Advanced · Operations · Purchase returns
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_purchases_returns_det
-  title: Advanced · Operations · Purchase return lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_gen_leadger
-  title: Advanced · Operations · Other non-analytical operations
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_gen_leadger_det
-  title: Advanced · Operations · Other non-analytical operation lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_capitalization
-  title: Advanced · Operations · Receipts (capitalization)
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_capitalization_det
-  title: Advanced · Operations · Receipt lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_write_off
-  title: Advanced · Operations · Write-offs
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_write_off_det
-  title: Advanced · Operations · Write-off lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_inflows
-  title: Advanced · Operations · Inflows (incoming payments)
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, AdvancePaymentSettled, NotCreatedByUser,
-      NotEditedByUser, NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_inflows_det
-  title: Advanced · Operations · Inflow lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_disbursement
-  title: Advanced · Operations · Disbursements (outgoing payments)
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_disbursement_det
-  title: Advanced · Operations · Disbursement lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_clearing_off
-  title: Advanced · Operations · Offsets
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientDeb, ClientCred, ClientGroup,
-      OpType, OpTypeGroup, Description, Description2, Description3, Description4, Description5, NotCreatedByUser,
-      NotEditedByUser, NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_clearing_off_det
-  title: Advanced · Operations · Offset lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientDeb, ClientCred, ClientGroup,
-      OpType, OpTypeGroup, Description, Description2, Description3, Description4, Description5, NotCreatedByUser,
-      NotEditedByUser, Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChan'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_sales_reservations
-  title: Advanced · Operations · Sales reservations
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_sales_reservations_det
-  title: Advanced · Operations · Sales reservation lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_purchase_orders
-  title: Advanced · Operations · Purchase orders
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_purchase_orders_det
-  title: Advanced · Operations · Purchase order lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_internal_transactions
-  title: Advanced · Operations · Internal transfers
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: operations_internal_transactions_det
-  title: Advanced · Operations · Internal transfer lines
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
-      are YY'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-- operation_id: operations_production
-  title: Advanced · Operations · Production
-  fields:
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
-      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
-      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
-      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
-  - name: columns
-    label: Columns
-    widget_type: json
-    required: false
-    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
-      op_date, series, order_number, client, amount, …).
-  - name: full_op
-    label: With lines
-    widget_type: boolean
-    required: false
-    help_text: Return each operation with its lines.
-  - name: columns_det
-    label: Line columns
-    widget_type: json
-    required: false
-    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
-- operation_id: get_einamieji_likuciai
-  title: Advanced · Current stock
+- operation_id: get_preke
+  title: Get a product by code
   fields:
   - name: product_code
     label: Product code
     widget_type: text
     required: false
     help_text: The product's code in Finvalda.
-  - name: warehouse_code
-    label: Warehouse
-    widget_type: text
-    required: false
-    help_text: The code of the warehouse.
+- operation_id: get_prekes
+  title: Get products changed since a date
+  fields:
   - name: edited_since
     label: Edited since
     widget_type: text
@@ -2226,232 +893,8 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_einamieji_likuciai_ext
-  title: Advanced · Current stock, extended
-  fields:
-  - name: product_code
-    label: Product code
-    widget_type: text
-    required: false
-    help_text: The product's code in Finvalda.
-  - name: warehouse_code
-    label: Warehouse
-    widget_type: text
-    required: false
-    help_text: The code of the warehouse.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_einamieji_likuciai_ext_su_kainom
-  title: Advanced · Current stock with prices
-  fields:
-  - name: product_code
-    label: Product code
-    widget_type: text
-    required: false
-    help_text: The product's code in Finvalda.
-  - name: warehouse_code
-    label: Warehouse
-    widget_type: text
-    required: false
-    help_text: The code of the warehouse.
-  - name: include_zero_stock
-    label: Include zero stock
-    widget_type: boolean
-    required: false
-    help_text: Also return products whose stock is zero.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_einamieji_likuciai_grp
-  title: Advanced · Current stock by warehouse group
-  fields:
-  - name: product_code
-    label: Product code
-    widget_type: text
-    required: false
-    help_text: The product's code in Finvalda.
-  - name: warehouse_group
-    label: Warehouse group
-    widget_type: text
-    required: false
-    help_text: The warehouse group code.
-- operation_id: get_klientu_rusis_pozymius
-  title: Advanced · Client types and tags
-  fields: []
-- operation_id: get_klientus_set
-  title: Advanced · Clients
-  fields:
-  - name: client_code
-    label: Client code
-    widget_type: text
-    required: false
-    help_text: The client's code in Finvalda.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_matavimo_vienetus
-  title: Advanced · Units of measure
-  fields: []
-- operation_id: get_neapmoketi_kli_dok
-  title: Advanced · Unpaid sales documents
-  fields:
-  - name: client_code
-    label: Client code
-    widget_type: text
-    required: false
-    help_text: The client's code in Finvalda.
-- operation_id: get_atsiskaitymai_uz_dok
-  title: Advanced · Settlements for a document
-  fields:
-  - name: series
-    label: Series
-    widget_type: text
-    required: false
-    help_text: The operation's document series.
-  - name: document
-    label: Document
-    widget_type: text
-    required: false
-    help_text: The operation's document number.
-  - name: journal
-    label: Journal
-    widget_type: text
-    required: false
-    help_text: The operation's journal code.
-  - name: op_number
-    label: Operation number
-    widget_type: number
-    required: false
-    help_text: The operation's number in its journal.
-- operation_id: get_atsiskaitymai_uz_dok_det
-  title: Advanced · Settlements for a document, detailed
-  fields:
-  - name: series
-    label: Series
-    widget_type: text
-    required: false
-    help_text: The operation's document series.
-  - name: document
-    label: Document
-    widget_type: text
-    required: false
-    help_text: The operation's document number.
-  - name: journal
-    label: Journal
-    widget_type: text
-    required: false
-    help_text: The operation's journal code.
-  - name: op_number
-    label: Operation number
-    widget_type: number
-    required: false
-    help_text: The operation's number in its journal.
-  - name: operation_row_id
-    label: Operation row id
-    widget_type: number
-    required: false
-    help_text: Finvalda's internal operation id.
-  - name: operation_class
-    label: Operation class
-    widget_type: number
-    required: false
-    help_text: Finvalda's operation class number.
-- operation_id: get_atsiskaitymai_uz_dok_data_nuo_det
-  title: Advanced · Settlements for a document since a date
-  fields:
-  - name: series
-    label: Series
-    widget_type: text
-    required: false
-    help_text: The operation's document series.
-  - name: document
-    label: Document
-    widget_type: text
-    required: false
-    help_text: The operation's document number.
-  - name: journal
-    label: Journal
-    widget_type: text
-    required: false
-    help_text: The operation's journal code.
-  - name: op_number
-    label: Operation number
-    widget_type: number
-    required: false
-    help_text: The operation's number in its journal.
-  - name: operation_row_id
-    label: Operation row id
-    widget_type: number
-    required: false
-    help_text: Finvalda's internal operation id.
-  - name: operation_class
-    label: Operation class
-    widget_type: number
-    required: false
-    help_text: Finvalda's operation class number.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-- operation_id: get_atsiskaitymai_uz_dok_data_nuo_det_param
-  title: Advanced · Settlements with parameters
-  fields:
-  - name: params
-    label: Parameters
-    widget_type: json
-    required: true
-    help_text: The method's parameter object, as the manual describes it.
-- operation_id: get_paslaugos_set
-  title: Advanced · Services
-  fields:
-  - name: service_code
-    label: Service code
-    widget_type: text
-    required: false
-    help_text: The service's code in Finvalda.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_paslaugu_rusis_pozymius
-  title: Advanced · Service types and tags
-  fields: []
 - operation_id: get_prekes_set
-  title: Advanced · Products
+  title: Get products (older method)
   fields:
   - name: product_code
     label: Product code
@@ -2469,7 +912,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_prekes_set_ext
-  title: Advanced · Products by type and tags
+  title: Get products by type and tags
   fields:
   - name: product_code
     label: Product code
@@ -2571,28 +1014,191 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: descriptions_bar_codes
+  title: Get product barcodes
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Codes, BarCodes, CreatedFrom, EditedFrom. Lists (Codes)
+      are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
 - operation_id: get_prekiu_rusis_pozymius
-  title: Advanced · Product types and tags
+  title: Get product types and tags
   fields: []
 - operation_id: get_prekiu_rusiu_grupes
-  title: Advanced · Product type groups
+  title: Get product type groups
   fields: []
 - operation_id: get_prekiu_rusiu_grupes_sudeti
-  title: Advanced · Product type group members
+  title: Get product types in a group
   fields:
   - name: product_type_group
     label: Product type group
     widget_type: text
     required: false
     help_text: The product type group code.
-- operation_id: get_sandelius
-  title: Advanced · Warehouses
-  fields: []
-- operation_id: get_kli_prek_pas_nuol_pap_kain
-  title: Advanced · Client discounts and prices (client × item)
-  fields: []
-- operation_id: get_kli_rus_prek_pas_nuol_pap_kain
-  title: Advanced · Client type discounts and prices (client type × item)
+- operation_id: get_prekiu_rusies_sudeti
+  title: Get products of a type
+  fields:
+  - name: type_code
+    label: Type
+    widget_type: text
+    required: false
+    help_text: The code of the type.
+- operation_id: get_prekes_istorija
+  title: Get product history
+  fields:
+  - name: product_code
+    label: Product code
+    widget_type: text
+    required: false
+    help_text: The product's code in Finvalda.
+  - name: warehouse_code
+    label: Warehouse
+    widget_type: text
+    required: false
+    help_text: The code of the warehouse.
+  - name: date_from
+    label: From
+    widget_type: text
+    required: false
+    help_text: The first date, YYYY-MM-DD.
+- operation_id: descriptions_partner_products
+  title: Get partner product catalogues
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Products, Client. Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_production_item
+  title: Get production items
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Codes, EditedFrom, CreatedFrom. Lists (Codes) are
+      arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_services
+  title: Get services
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Codes, Type, Tag1, Tag2, Tag3, CreatedFrom, EditedFrom.
+      Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: get_paslauga
+  title: Get a service by code
+  fields:
+  - name: service_code
+    label: Service code
+    widget_type: text
+    required: false
+    help_text: The service's code in Finvalda.
+- operation_id: get_paslaugos
+  title: Get services changed since a date
   fields:
   - name: edited_since
     label: Edited since
@@ -2604,8 +1210,251 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: get_paslaugos_set
+  title: Get services (older method)
+  fields:
+  - name: service_code
+    label: Service code
+    widget_type: text
+    required: false
+    help_text: The service's code in Finvalda.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: get_paslaugu_rusis_pozymius
+  title: Get service types and tags
+  fields: []
+- operation_id: get_paslaugu_rusies_sudeti
+  title: Get services of a type
+  fields:
+  - name: type_code
+    label: Type
+    widget_type: text
+    required: false
+    help_text: The code of the type.
+- operation_id: get_matavimo_vienetus
+  title: Get units of measure
+  fields: []
+- operation_id: descriptions_prices
+  title: Get client prices
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Type, Client, Codes, CreatedFrom, EditedFrom. Lists
+      (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_prices_by_client_type
+  title: Get prices by client type
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Type, ClientType, Codes, CreatedFrom, EditedFrom.
+      Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_prices_by_item_type
+  title: Get prices by item type
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Type, Client, ItemType, CreatedFrom, EditedFrom.
+      Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_prices_by_client_and_item_types
+  title: Get prices by client type and item type
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Type, ClientType, ItemType, CreatedFrom, EditedFrom.
+      Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: recommended_price
+  title: Get recommended price
+  fields:
+  - name: invoice_type
+    label: Operation group
+    widget_type: select
+    required: true
+    help_text: The sales or the purchases group.
+    options:
+    - label: Sales
+      value: 0
+    - label: Purchases
+      value: 1
+  - name: invoice_date
+    label: Date
+    widget_type: text
+    required: true
+    help_text: The operation date, YYYY-MM-DD.
+  - name: item_type
+    label: Line type
+    widget_type: select
+    required: true
+    help_text: A product or a service.
+    options:
+    - label: Product
+      value: 1
+    - label: Service
+      value: 2
+  - name: item_code
+    label: Code
+    widget_type: text
+    required: true
+    help_text: The product's or service's code.
+  - name: quantity
+    label: Quantity
+    widget_type: text
+    required: true
+    help_text: The quantity of the line.
+  - name: warehouse_code
+    label: Warehouse
+    widget_type: text
+    required: false
+    help_text: The warehouse of the line.
+  - name: client_code
+    label: Client
+    widget_type: text
+    required: false
+    help_text: The client of the operation.
+  - name: client_address_code
+    label: Client address
+    widget_type: text
+    required: false
+    help_text: The address of the operation.
+  - name: fin_user
+    label: Finvalda employee
+    widget_type: text
+    required: false
+    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
+      Finvalda employee.'
+- operation_id: get_kli_prek_pas_nuol_pap_kain
+  title: Get client discounts and prices by item
+  fields: []
 - operation_id: get_kli_prek_pas_rus_nuol_pap_kain
-  title: Advanced · Client discounts and prices (client × item type)
+  title: Get client discounts and prices by item type
+  fields:
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: get_kli_rus_prek_pas_nuol_pap_kain
+  title: Get client type discounts and prices by item
   fields:
   - name: edited_since
     label: Edited since
@@ -2618,83 +1467,8 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_kli_rus_prek_pas_rus_nuol_pap_kain
-  title: Advanced · Client type discounts and prices (client type × item type)
+  title: Get client type discounts and prices by item type
   fields:
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_mokesciai
-  title: Advanced · Taxes
-  fields: []
-- operation_id: get_klientu_paslaugu_nuol
-  title: Advanced · Client service discounts
-  fields:
-  - name: client_code
-    label: Client code
-    widget_type: text
-    required: false
-    help_text: The client's code in Finvalda.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_klientu_paslaugu_pap_kainas
-  title: Advanced · Client service prices
-  fields:
-  - name: client_code
-    label: Client code
-    widget_type: text
-    required: false
-    help_text: The client's code in Finvalda.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_klientu_paslaugu_rus_nuol
-  title: Advanced · Client service type discounts
-  fields:
-  - name: client_code
-    label: Client code
-    widget_type: text
-    required: false
-    help_text: The client's code in Finvalda.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_klientu_paslaugu_rus_pap_kainas
-  title: Advanced · Client service type prices
-  fields:
-  - name: client_code
-    label: Client code
-    widget_type: text
-    required: false
-    help_text: The client's code in Finvalda.
   - name: edited_since
     label: Edited since
     widget_type: text
@@ -2706,7 +1480,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_klientu_prekiu_nuol
-  title: Advanced · Client product discounts
+  title: Get client discounts by product
   fields:
   - name: client_code
     label: Client code
@@ -2724,7 +1498,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_klientu_prekiu_pap_kainas
-  title: Advanced · Client product prices
+  title: Get client prices by product
   fields:
   - name: client_code
     label: Client code
@@ -2742,7 +1516,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_klientu_prekiu_rus_nuol
-  title: Advanced · Client product type discounts
+  title: Get client discounts by product type
   fields:
   - name: client_code
     label: Client code
@@ -2760,7 +1534,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_klientu_prekiu_rus_pap_kainas
-  title: Advanced · Client product type prices
+  title: Get client prices by product type
   fields:
   - name: client_code
     label: Client code
@@ -2777,14 +1551,14 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_klientu_rus_paslaugu_nuol
-  title: Advanced · Client type service discounts
+- operation_id: get_klientu_paslaugu_nuol
+  title: Get client discounts by service
   fields:
-  - name: client_type_code
-    label: Client type
+  - name: client_code
+    label: Client code
     widget_type: text
     required: false
-    help_text: The client type code.
+    help_text: The client's code in Finvalda.
   - name: edited_since
     label: Edited since
     widget_type: text
@@ -2795,14 +1569,14 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_klientu_rus_paslaugu_pap_kainas
-  title: Advanced · Client type service prices
+- operation_id: get_klientu_paslaugu_pap_kainas
+  title: Get client prices by service
   fields:
-  - name: client_type_code
-    label: Client type
+  - name: client_code
+    label: Client code
     widget_type: text
     required: false
-    help_text: The client type code.
+    help_text: The client's code in Finvalda.
   - name: edited_since
     label: Edited since
     widget_type: text
@@ -2813,14 +1587,14 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_klientu_rus_paslaugu_rus_nuol
-  title: Advanced · Client type service type discounts
+- operation_id: get_klientu_paslaugu_rus_nuol
+  title: Get client discounts by service type
   fields:
-  - name: client_type_code
-    label: Client type
+  - name: client_code
+    label: Client code
     widget_type: text
     required: false
-    help_text: The client type code.
+    help_text: The client's code in Finvalda.
   - name: edited_since
     label: Edited since
     widget_type: text
@@ -2831,14 +1605,14 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_klientu_rus_paslaugu_rus_pap_kainas
-  title: Advanced · Client type service type prices
+- operation_id: get_klientu_paslaugu_rus_pap_kainas
+  title: Get client prices by service type
   fields:
-  - name: client_type_code
-    label: Client type
+  - name: client_code
+    label: Client code
     widget_type: text
     required: false
-    help_text: The client type code.
+    help_text: The client's code in Finvalda.
   - name: edited_since
     label: Edited since
     widget_type: text
@@ -2850,7 +1624,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_klientu_rus_prekiu_nuol
-  title: Advanced · Client type product discounts
+  title: Get client type discounts by product
   fields:
   - name: client_type_code
     label: Client type
@@ -2868,7 +1642,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_klientu_rus_prekiu_pap_kainas
-  title: Advanced · Client type product prices
+  title: Get client type prices by product
   fields:
   - name: client_type_code
     label: Client type
@@ -2886,7 +1660,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_klientu_rus_prekiu_rus_nuol
-  title: Advanced · Client type product type discounts
+  title: Get client type discounts by product type
   fields:
   - name: client_type_code
     label: Client type
@@ -2904,7 +1678,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_klientu_rus_prekiu_rus_pap_kainas
-  title: Advanced · Client type product type prices
+  title: Get client type prices by product type
   fields:
   - name: client_type_code
     label: Client type
@@ -2921,73 +1695,14 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_objektas1
-  title: Advanced · Object (level 1)
+- operation_id: get_klientu_rus_paslaugu_nuol
+  title: Get client type discounts by service
   fields:
-  - name: object_code
-    label: Object code
+  - name: client_type_code
+    label: Client type
     widget_type: text
     required: false
-    help_text: The code of the object.
-- operation_id: get_objektas2
-  title: Advanced · Object (level 2)
-  fields:
-  - name: object_code
-    label: Object code
-    widget_type: text
-    required: false
-    help_text: The code of the object.
-- operation_id: get_objektas3
-  title: Advanced · Object (level 3)
-  fields:
-  - name: object_code
-    label: Object code
-    widget_type: text
-    required: false
-    help_text: The code of the object.
-- operation_id: get_objektas4
-  title: Advanced · Object (level 4)
-  fields:
-  - name: object_code
-    label: Object code
-    widget_type: text
-    required: false
-    help_text: The code of the object.
-- operation_id: get_objektas5
-  title: Advanced · Object (level 5)
-  fields:
-  - name: object_code
-    label: Object code
-    widget_type: text
-    required: false
-    help_text: The code of the object.
-- operation_id: get_objektas6
-  title: Advanced · Object (level 6)
-  fields:
-  - name: object_code
-    label: Object code
-    widget_type: text
-    required: false
-    help_text: The code of the object.
-- operation_id: get_klientas
-  title: Advanced · Client
-  fields:
-  - name: client_code
-    label: Client code
-    widget_type: text
-    required: false
-    help_text: The client's code in Finvalda.
-- operation_id: get_klientas_e_mail
-  title: Advanced · Client by e-mail
-  fields:
-  - name: email
-    label: E-mail
-    widget_type: text
-    required: false
-    help_text: The e-mail address to look for.
-- operation_id: get_klientus
-  title: Advanced · Clients created or edited since
-  fields:
+    help_text: The client type code.
   - name: edited_since
     label: Edited since
     widget_type: text
@@ -2998,17 +1713,14 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_paslauga
-  title: Advanced · Service
+- operation_id: get_klientu_rus_paslaugu_pap_kainas
+  title: Get client type prices by service
   fields:
-  - name: service_code
-    label: Service code
+  - name: client_type_code
+    label: Client type
     widget_type: text
     required: false
-    help_text: The service's code in Finvalda.
-- operation_id: get_paslaugos
-  title: Advanced · Services created or edited since
-  fields:
+    help_text: The client type code.
   - name: edited_since
     label: Edited since
     widget_type: text
@@ -3019,17 +1731,162 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_preke
-  title: Advanced · Product
+- operation_id: get_klientu_rus_paslaugu_rus_nuol
+  title: Get client type discounts by service type
+  fields:
+  - name: client_type_code
+    label: Client type
+    widget_type: text
+    required: false
+    help_text: The client type code.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: get_klientu_rus_paslaugu_rus_pap_kainas
+  title: Get client type prices by service type
+  fields:
+  - name: client_type_code
+    label: Client type
+    widget_type: text
+    required: false
+    help_text: The client type code.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: descriptions_current_stock
+  title: Get current stock
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Codes, Warehouse, WarehouseGroup, Type, Tag1, Tag2,
+      Tag3, Tag4, Tag5, Tag6, Tag7, Tag8, Tag9, Tag10, Tag11, Tag12, Tag13, Tag14, Tag15, Tag16, Tag17,
+      Tag18, Tag19, Tag20, Supplier1, Supplier2, Supplier3, Object1, Object2, Object3, Object4, Object5,
+      Object6, CreatedFrom, EditedFrom, Group. Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_current_stock_det
+  title: Get current stock by receipt
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Client, Supplier, Logbook, OpType, Location, Codes,
+      Warehouse, WarehouseGroup, Type, Tag1, Tag2, Tag3, Tag4, Tag5, Tag6, Tag7, Tag8, Tag9, Tag10, Tag11,
+      Tag12, Tag13, Tag14, Tag15, Tag16, Tag17, Tag18, Tag19, Tag20, Supplier1, Supplier2, Supplier3,
+      Object1, Object2, Object3, Object4, Object5, Object6, CreatedFrom, EditedFrom, Group. Lists (Codes)
+      are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_stock_on_date
+  title: Get stock on a date
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Date, Code, Group, Type, TypeGroup, Supplier, Warehouse,
+      WarehouseGroup, Account, HasQuantity. Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: get_einamieji_likuciai
+  title: Get current stock (older method)
   fields:
   - name: product_code
     label: Product code
     widget_type: text
     required: false
     help_text: The product's code in Finvalda.
-- operation_id: get_prekes
-  title: Advanced · Products created or edited since
-  fields:
+  - name: warehouse_code
+    label: Warehouse
+    widget_type: text
+    required: false
+    help_text: The code of the warehouse.
   - name: edited_since
     label: Edited since
     widget_type: text
@@ -3040,8 +1897,72 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: get_einamieji_likuciai_ext
+  title: Get current stock with types and tags
+  fields:
+  - name: product_code
+    label: Product code
+    widget_type: text
+    required: false
+    help_text: The product's code in Finvalda.
+  - name: warehouse_code
+    label: Warehouse
+    widget_type: text
+    required: false
+    help_text: The code of the warehouse.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: get_einamieji_likuciai_ext_su_kainom
+  title: Get current stock with prices
+  fields:
+  - name: product_code
+    label: Product code
+    widget_type: text
+    required: false
+    help_text: The product's code in Finvalda.
+  - name: warehouse_code
+    label: Warehouse
+    widget_type: text
+    required: false
+    help_text: The code of the warehouse.
+  - name: include_zero_stock
+    label: Include zero stock
+    widget_type: boolean
+    required: false
+    help_text: Also return products whose stock is zero.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: get_einamieji_likuciai_grp
+  title: Get current stock by warehouse group
+  fields:
+  - name: product_code
+    label: Product code
+    widget_type: text
+    required: false
+    help_text: The product's code in Finvalda.
+  - name: warehouse_group
+    label: Warehouse group
+    widget_type: text
+    required: false
+    help_text: The warehouse group code.
 - operation_id: get_prekes_sandelyje
-  title: Advanced · Products in a warehouse
+  title: Get products in a warehouse
   fields:
   - name: warehouse_code
     label: Warehouse
@@ -3059,7 +1980,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_prekes_sandelyje_order
-  title: Advanced · Products in a warehouse, sorted
+  title: Get products in a warehouse, sorted
   fields:
   - name: warehouse_code
     label: Warehouse
@@ -3081,16 +2002,271 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_prekiu_rusies_sudeti
-  title: Advanced · Products of a type
+- operation_id: get_sandelius
+  title: Get warehouses
+  fields: []
+- operation_id: descriptions_warehouse_groups
+  title: Get warehouse groups
   fields:
-  - name: type_code
-    label: Type
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: operations_sales
+  title: Find sales
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_sales_det
+  title: Find sales lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: operations_sales_returns
+  title: Find sales returns
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_sales_returns_det
+  title: Find sales return lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: operations_sales_reservations
+  title: Find sales reservations
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_sales_reservations_det
+  title: Find sales reservation lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: get_uvm_pard_r_busena
+  title: Get order reservation status
+  fields:
+  - name: journal
+    label: Journal
     widget_type: text
     required: false
-    help_text: The code of the type.
+    help_text: The operation's journal code.
+  - name: op_number
+    label: Operation number
+    widget_type: number
+    required: false
+    help_text: The operation's number in its journal.
+- operation_id: get_uvm_pard_r_anuliuoti
+  title: Get cancelled order reservations
+  fields:
+  - name: journal_group
+    label: Journal group
+    widget_type: text
+    required: false
+    help_text: The journal group code.
+  - name: date_from
+    label: From
+    widget_type: text
+    required: false
+    help_text: The first date, YYYY-MM-DD.
+  - name: date_to
+    label: To
+    widget_type: text
+    required: false
+    help_text: The last date, YYYY-MM-DD.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: get_uvm_pard_r_ivykdyti
+  title: Get fulfilled order reservations
+  fields:
+  - name: journal_group
+    label: Journal group
+    widget_type: text
+    required: false
+    help_text: The journal group code.
+  - name: date_from
+    label: From
+    widget_type: text
+    required: false
+    help_text: The first date, YYYY-MM-DD.
+  - name: date_to
+    label: To
+    widget_type: text
+    required: false
+    help_text: The last date, YYYY-MM-DD.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+- operation_id: get_uvm_pard_r_neivykdyti
+  title: Get open order reservations
+  fields:
+  - name: journal_group
+    label: Journal group
+    widget_type: text
+    required: false
+    help_text: The journal group code.
+  - name: date_from
+    label: From
+    widget_type: text
+    required: false
+    help_text: The first date, YYYY-MM-DD.
+  - name: date_to
+    label: To
+    widget_type: text
+    required: false
+    help_text: The last date, YYYY-MM-DD.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_pard_prek_per_perioda
-  title: Advanced · Products sold in a period
+  title: Get products sold in a period
   fields:
   - name: product_code
     label: Product code
@@ -3122,27 +2298,1290 @@ forms:
     widget_type: boolean
     required: false
     help_text: Also list products that were not sold.
-- operation_id: get_paslaugu_rusies_sudeti
-  title: Advanced · Services of a type
+- operation_id: descriptions_count_sales
+  title: Get sales totals
   fields:
-  - name: type_code
-    label: Type
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: DateFrom, DateTo, Client, Paid. Lists (Codes) are
+      arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: operations_purchases
+  title: Find purchases
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_purchases_det
+  title: Find purchase lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: operations_purchases_returns
+  title: Find purchase returns
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_purchases_returns_det
+  title: Find purchase return lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: operations_purchase_orders
+  title: Find purchase orders
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_purchase_orders_det
+  title: Find purchase order lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: operations_inflows
+  title: Find incoming payments
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, AdvancePaymentSettled, NotCreatedByUser,
+      NotEditedByUser, NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_inflows_det
+  title: Find incoming payment lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: operations_disbursement
+  title: Find outgoing payments
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_disbursement_det
+  title: Find outgoing payment lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: operations_clearing_off
+  title: Find offsets
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientDeb, ClientCred, ClientGroup,
+      OpType, OpTypeGroup, Description, Description2, Description3, Description4, Description5, NotCreatedByUser,
+      NotEditedByUser, NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_clearing_off_det
+  title: Find offset lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientDeb, ClientCred, ClientGroup,
+      OpType, OpTypeGroup, Description, Description2, Description3, Description4, Description5, NotCreatedByUser,
+      NotEditedByUser, Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChan'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: get_atsiskaitymai_uz_dok
+  title: Get settlements of a document
+  fields:
+  - name: series
+    label: Series
     widget_type: text
     required: false
-    help_text: The code of the type.
-- operation_id: get_klientus_rusies_sudeti
-  title: Advanced · Clients of a type
-  fields:
-  - name: type_code
-    label: Type
+    help_text: The operation's document series.
+  - name: document
+    label: Document
     widget_type: text
     required: false
-    help_text: The code of the type.
+    help_text: The operation's document number.
+  - name: journal
+    label: Journal
+    widget_type: text
+    required: false
+    help_text: The operation's journal code.
+  - name: op_number
+    label: Operation number
+    widget_type: number
+    required: false
+    help_text: The operation's number in its journal.
+- operation_id: get_atsiskaitymai_uz_dok_det
+  title: Get settlement lines of a document
+  fields:
+  - name: series
+    label: Series
+    widget_type: text
+    required: false
+    help_text: The operation's document series.
+  - name: document
+    label: Document
+    widget_type: text
+    required: false
+    help_text: The operation's document number.
+  - name: journal
+    label: Journal
+    widget_type: text
+    required: false
+    help_text: The operation's journal code.
+  - name: op_number
+    label: Operation number
+    widget_type: number
+    required: false
+    help_text: The operation's number in its journal.
+  - name: operation_row_id
+    label: Operation row id
+    widget_type: number
+    required: false
+    help_text: Finvalda's internal operation id.
+  - name: operation_class
+    label: Operation class
+    widget_type: number
+    required: false
+    help_text: Finvalda's operation class number.
+- operation_id: get_atsiskaitymai_uz_dok_data_nuo_det
+  title: Get settlement lines of a document since a date
+  fields:
+  - name: series
+    label: Series
+    widget_type: text
+    required: false
+    help_text: The operation's document series.
+  - name: document
+    label: Document
+    widget_type: text
+    required: false
+    help_text: The operation's document number.
+  - name: journal
+    label: Journal
+    widget_type: text
+    required: false
+    help_text: The operation's journal code.
+  - name: op_number
+    label: Operation number
+    widget_type: number
+    required: false
+    help_text: The operation's number in its journal.
+  - name: operation_row_id
+    label: Operation row id
+    widget_type: number
+    required: false
+    help_text: Finvalda's internal operation id.
+  - name: operation_class
+    label: Operation class
+    widget_type: number
+    required: false
+    help_text: Finvalda's operation class number.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only records created on or after this date, YYYY-MM-DD.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only records edited on or after this date, YYYY-MM-DD.
+- operation_id: get_atsiskaitymai_uz_dok_data_nuo_det_param
+  title: Get settlement lines by parameters
+  fields:
+  - name: params
+    label: Parameters
+    widget_type: json
+    required: true
+    help_text: The method's parameter object, as the manual describes it.
 - operation_id: get_atsiskaitymo_term
-  title: Advanced · Payment terms
+  title: Get payment terms
   fields: []
+- operation_id: operations_internal_transactions
+  title: Find internal transfers
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_internal_transactions_det
+  title: Find internal transfer lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: operations_capitalization
+  title: Find receipts
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_capitalization_det
+  title: Find receipt lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: operations_write_off
+  title: Find write-offs
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_write_off_det
+  title: Find write-off lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: operations_production
+  title: Find production operations
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_gen_leadger
+  title: Find other non-analytical operations
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      NotChangedByUser. Dates are YYYY-MM-DD; Description fields accept * as a wildcard.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+  - name: full_op
+    label: With lines
+    widget_type: boolean
+    required: false
+    help_text: Return each operation with its lines.
+  - name: columns_det
+    label: Line columns
+    widget_type: json
+    required: false
+    help_text: 'With lines: the line columns to return, for example code, title, quantity, amount.'
+- operation_id: operations_gen_leadger_det
+  title: Find other non-analytical operation lines
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Journal, JournalGroup, OpNumber, Series, OrderNumber,
+      OpDateFrom, OpDateTill, DateEditedFrom, DateCreatedFrom, Client, ClientGroup, OpType, OpTypeGroup,
+      Description, Description2, Description3, Description4, Description5, NotCreatedByUser, NotEditedByUser,
+      Warehouse, GoodsCode, Object2, Object3, Object4, Object5, Object6, Object1, NotChangedByUser. Dates
+      are YY'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all (for example date_created, date_edited, op_number, journal,
+      op_date, series, order_number, client, amount, …).
+- operation_id: get_veikla_pagal_objektus
+  title: Get activity by objects
+  fields:
+  - name: params
+    label: Parameters
+    widget_type: json
+    required: true
+    help_text: The method's parameter object, as the manual describes it.
+- operation_id: is_operation_locked
+  title: Check if an operation is locked
+  fields:
+  - name: journal
+    label: Journal
+    widget_type: text
+    required: true
+    help_text: The operation's journal code, for example PARD.
+  - name: op_number
+    label: Operation number
+    widget_type: number
+    required: true
+    help_text: The operation's number in its journal.
+- operation_id: make_invoice
+  title: Print an invoice form to PDF
+  fields:
+  - name: invoice_form
+    label: Invoice form
+    widget_type: text
+    required: true
+    help_text: The form's code, for example PARD_01.
+  - name: journal
+    label: Journal
+    widget_type: text
+    required: false
+    help_text: The operation's journal; with op_number.
+  - name: op_number
+    label: Operation number
+    widget_type: number
+    required: false
+    help_text: The operation's number; with journal.
+  - name: series
+    label: Series
+    widget_type: text
+    required: false
+    help_text: The document series; with document.
+  - name: document
+    label: Document
+    widget_type: text
+    required: false
+    help_text: The document number; with series.
+- operation_id: descriptions_invoice_list
+  title: Get invoice forms
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: OpClass. Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: make_report
+  title: Download report PDF
+  fields:
+  - name: report_code
+    label: Report
+    widget_type: text
+    required: true
+    help_text: The report's code, for example BALANSAS_01.
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'The report''s filter, with any of: Warehouse, WarehouseGroup, Goods, Client, DateFrom,
+      DateTo, Logbook, LogbookGroup, OpType, OpTypeGroup, IncludeReturns. Dates are YYYY.MM.DD.'
+- operation_id: descriptions_report_list
+  title: Get reports
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Class. Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: auto_reports_list
+  title: Get automatic reports
+  fields: []
+- operation_id: auto_report
+  title: Download an automatic report
+  fields:
+  - name: report_name
+    label: Report file
+    widget_type: text
+    required: true
+    help_text: The name from Automatic reports.
+- operation_id: product_image
+  title: Download product image
+  fields:
+  - name: product_code
+    label: Product code
+    widget_type: text
+    required: true
+    help_text: The product's code in Finvalda.
+  - name: edited_since
+    label: Edited since
+    widget_type: text
+    required: false
+    help_text: Only when the picture changed on or after this date, YYYY-MM-DD.
+  - name: created_since
+    label: Created since
+    widget_type: text
+    required: false
+    help_text: Only when the product was created on or after this date.
+- operation_id: insert_document
+  title: Store a document
+  fields:
+  - name: document_file
+    label: File
+    widget_type: artifact_picker
+    required: true
+    help_text: A workflow file, e.g. the invoice PDF from an earlier step, up to 8 MB.
+  - name: file_name
+    label: File name
+    widget_type: text
+    required: true
+    help_text: The name to store it under, with its extension, for example S-1.pdf.
+  - name: file_description
+    label: Description
+    widget_type: textarea
+    required: false
+    help_text: A description of the document.
+  - name: registration_number
+    label: Registration number
+    widget_type: text
+    required: false
+    help_text: The document's registration number.
+  - name: composition_date
+    label: Date
+    widget_type: text
+    required: false
+    help_text: 'The document''s date, YYYY-MM-DD. Default: today.'
+  - name: search_phrase
+    label: Search phrase
+    widget_type: text
+    required: false
+    help_text: Words to find the document by.
+  - name: info
+    label: Information
+    widget_type: json
+    required: false
+    help_text: Up to three lines of information.
+  - name: fin_user
+    label: Finvalda employee
+    widget_type: text
+    required: false
+    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
+      Finvalda employee.'
+- operation_id: attach_document
+  title: Attach a document
+  fields:
+  - name: entity_type
+    label: Attached to
+    widget_type: select
+    required: true
+    help_text: 'What the file belongs to: an operation (sale, purchase …) or a record (client, product
+      …).'
+    options:
+    - label: Account
+      value: 1
+    - label: Client
+      value: 2
+    - label: Sale
+      value: 3
+    - label: Purchase
+      value: 7
+    - label: Product
+      value: 8
+    - label: Service
+      value: 16
+    - label: Sales return
+      value: 74
+    - label: Sales reservation
+      value: 75
+    - label: Purchase return
+      value: 76
+    - label: Purchase order
+      value: 77
+    - label: Internal transfer
+      value: 78
+    - label: Write-off
+      value: 97
+    - label: Receipt
+      value: 98
+  - name: entity_id1
+    label: Record code or journal
+    widget_type: text
+    required: true
+    help_text: A record's code, or an operation's journal code.
+  - name: entity_id2
+    label: Second code or number
+    widget_type: text
+    required: false
+    help_text: An operation's number, or an address's code; empty for one-code records.
+  - name: file_name
+    label: File name
+    widget_type: text
+    required: true
+    help_text: The stored file name, with its extension.
+  - name: fin_user
+    label: Finvalda employee
+    widget_type: text
+    required: false
+    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
+      Finvalda employee.'
+- operation_id: attached_documents
+  title: Get attached documents
+  fields:
+  - name: entity_type
+    label: Attached to
+    widget_type: select
+    required: true
+    help_text: 'What the file belongs to: an operation (sale, purchase …) or a record (client, product
+      …).'
+    options:
+    - label: Account
+      value: 1
+    - label: Client
+      value: 2
+    - label: Sale
+      value: 3
+    - label: Purchase
+      value: 7
+    - label: Product
+      value: 8
+    - label: Service
+      value: 16
+    - label: Sales return
+      value: 74
+    - label: Sales reservation
+      value: 75
+    - label: Purchase return
+      value: 76
+    - label: Purchase order
+      value: 77
+    - label: Internal transfer
+      value: 78
+    - label: Write-off
+      value: 97
+    - label: Receipt
+      value: 98
+  - name: entity_id1
+    label: Record code or journal
+    widget_type: text
+    required: true
+    help_text: A record's code, or an operation's journal code.
+  - name: entity_id2
+    label: Second code or number
+    widget_type: text
+    required: false
+    help_text: An operation's number, or an address's code; empty for one-code records.
+  - name: file_name
+    label: Save file
+    widget_type: text
+    required: false
+    help_text: Save the attached file with this name as a workflow file.
+- operation_id: delete_document
+  title: Delete a document
+  fields:
+  - name: file_name
+    label: File name
+    widget_type: text
+    required: true
+    help_text: The stored file name, with its extension.
+- operation_id: descriptions_accounts
+  title: Get chart of accounts
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Codes, CreatedFrom, EditedFrom, Group. Lists (Codes)
+      are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_currency_rates
+  title: Get currency rates
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: DateFrom, DateTo, Codes. Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_document_series
+  title: Get document series
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Type, UserName. Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_logbook_groups
+  title: Get journal groups
+  fields:
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_op_type_groups
+  title: Get operation type groups
+  fields:
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_operation_statuses
+  title: Get operation statuses
+  fields:
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_types_and_tags
+  title: Get types and tags
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Type, Number, CreatedFrom, CreatedTill, Codes. Lists
+      (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: get_mokesciai
+  title: Get taxes
+  fields: []
+- operation_id: descriptions_fixed_asset
+  title: Get fixed assets
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: Codes. Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_vehicles
+  title: Get vehicles
+  fields:
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_calendar_events
+  title: Get calendar events
+  fields:
+  - name: filter
+    label: Filter
+    widget_type: json
+    required: false
+    help_text: 'Conditions as an object with any of: UserName, CreatedFrom, CreatedTo, ModifiedFrom, ModifiedTo,
+      StartFrom, StartTo, EndFrom, EndTo. Lists (Codes) are arrays.'
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all. Only the columns Finvalda documents for this list.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
+- operation_id: descriptions_company_work_start
+  title: Get company start date
+  fields:
+  - name: columns
+    label: Columns
+    widget_type: json
+    required: false
+    help_text: The columns to return; default all.
+  - name: page
+    label: Page
+    widget_type: number
+    required: false
+    help_text: The page to read, from 1. Default 1.
+  - name: limit
+    label: Rows per page
+    widget_type: number
+    required: false
+    help_text: Rows per page, 1 to 1000. Default 500.
+  - name: fetch_all_pages
+    label: Read every page
+    widget_type: boolean
+    required: false
+    help_text: Read page after page up to max_pages.
+  - name: max_pages
+    label: Max pages
+    widget_type: number
+    required: false
+    help_text: 'With fetch_all_pages: at most this many pages, 1 to 100.'
 - operation_id: get_objektai1_set
-  title: Advanced · Objects (level 1)
+  title: Get level 1 objects
   fields:
   - name: object_code
     label: Object code
@@ -3160,7 +3599,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_objektai2_set
-  title: Advanced · Objects (level 2)
+  title: Get level 2 objects
   fields:
   - name: object_code
     label: Object code
@@ -3178,7 +3617,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_objektai3_set
-  title: Advanced · Objects (level 3)
+  title: Get level 3 objects
   fields:
   - name: object_code
     label: Object code
@@ -3196,7 +3635,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_objektai4_set
-  title: Advanced · Objects (level 4)
+  title: Get level 4 objects
   fields:
   - name: object_code
     label: Object code
@@ -3214,7 +3653,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_objektai5_set
-  title: Advanced · Objects (level 5)
+  title: Get level 5 objects
   fields:
   - name: object_code
     label: Object code
@@ -3232,7 +3671,7 @@ forms:
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
 - operation_id: get_objektai6_set
-  title: Advanced · Objects (level 6)
+  title: Get level 6 objects
   fields:
   - name: object_code
     label: Object code
@@ -3249,179 +3688,65 @@ forms:
     widget_type: text
     required: false
     help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_uvm_pard_r_busena
-  title: 'Advanced · Order management: reservation status'
+- operation_id: get_objektas1
+  title: Get a level 1 object by code
   fields:
-  - name: journal
-    label: Journal
+  - name: object_code
+    label: Object code
     widget_type: text
     required: false
-    help_text: The operation's journal code.
-  - name: op_number
-    label: Operation number
-    widget_type: number
-    required: false
-    help_text: The operation's number in its journal.
-- operation_id: get_uvm_pard_r_anuliuoti
-  title: 'Advanced · Order management: cancelled reservations'
+    help_text: The code of the object.
+- operation_id: get_objektas2
+  title: Get a level 2 object by code
   fields:
-  - name: journal_group
-    label: Journal group
+  - name: object_code
+    label: Object code
     widget_type: text
     required: false
-    help_text: The journal group code.
-  - name: date_from
-    label: From
-    widget_type: text
-    required: false
-    help_text: The first date, YYYY-MM-DD.
-  - name: date_to
-    label: To
-    widget_type: text
-    required: false
-    help_text: The last date, YYYY-MM-DD.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_uvm_pard_r_ivykdyti
-  title: 'Advanced · Order management: fulfilled reservations'
+    help_text: The code of the object.
+- operation_id: get_objektas3
+  title: Get a level 3 object by code
   fields:
-  - name: journal_group
-    label: Journal group
+  - name: object_code
+    label: Object code
     widget_type: text
     required: false
-    help_text: The journal group code.
-  - name: date_from
-    label: From
-    widget_type: text
-    required: false
-    help_text: The first date, YYYY-MM-DD.
-  - name: date_to
-    label: To
-    widget_type: text
-    required: false
-    help_text: The last date, YYYY-MM-DD.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_uvm_pard_r_neivykdyti
-  title: 'Advanced · Order management: open reservations'
+    help_text: The code of the object.
+- operation_id: get_objektas4
+  title: Get a level 4 object by code
   fields:
-  - name: journal_group
-    label: Journal group
+  - name: object_code
+    label: Object code
     widget_type: text
     required: false
-    help_text: The journal group code.
-  - name: date_from
-    label: From
-    widget_type: text
-    required: false
-    help_text: The first date, YYYY-MM-DD.
-  - name: date_to
-    label: To
-    widget_type: text
-    required: false
-    help_text: The last date, YYYY-MM-DD.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only records edited on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only records created on or after this date, YYYY-MM-DD.
-- operation_id: get_kliento_saskaitas
-  title: Advanced · Client documents
+    help_text: The code of the object.
+- operation_id: get_objektas5
+  title: Get a level 5 object by code
   fields:
-  - name: client_code
-    label: Client code
+  - name: object_code
+    label: Object code
     widget_type: text
     required: false
-    help_text: The client's code in Finvalda.
-  - name: client_company_code
-    label: Client company code
-    widget_type: text
-    required: false
-    help_text: The client's company code.
-  - name: client_group
-    label: Client group
-    widget_type: text
-    required: false
-    help_text: The client group code.
-  - name: debt_type
-    label: Debt type
-    widget_type: number
-    required: false
-    help_text: 2 = only unsettled, 1 = only settled, anything else = all.
-  - name: journal_group
-    label: Journal group
-    widget_type: text
-    required: false
-    help_text: The journal group code.
-  - name: series
-    label: Series
-    widget_type: text
-    required: false
-    help_text: The operation's document series.
-  - name: operation_type
-    label: Operation type
-    widget_type: number
-    required: false
-    help_text: 0 inflows, 1 disbursements, 2 purchases, 3 sales, 4 purchase returns, 5 sales returns.
-  - name: document_date_from
-    label: Document date from
-    widget_type: text
-    required: false
-    help_text: The first document date, YYYY-MM-DD.
-  - name: document_date_to
-    label: Document date to
-    widget_type: text
-    required: false
-    help_text: The last document date, YYYY-MM-DD.
-- operation_id: get_prekes_istorija
-  title: Advanced · Product history
+    help_text: The code of the object.
+- operation_id: get_objektas6
+  title: Get a level 6 object by code
   fields:
-  - name: product_code
-    label: Product code
+  - name: object_code
+    label: Object code
     widget_type: text
     required: false
-    help_text: The product's code in Finvalda.
-  - name: warehouse_code
-    label: Warehouse
-    widget_type: text
-    required: false
-    help_text: The code of the warehouse.
-  - name: date_from
-    label: From
-    widget_type: text
-    required: false
-    help_text: The first date, YYYY-MM-DD.
-- operation_id: get_veikla_pagal_objektus
-  title: Advanced · Activity by objects
+    help_text: The code of the object.
+- operation_id: user_permissions
+  title: Get employee permissions
   fields:
-  - name: params
-    label: Parameters
-    widget_type: json
-    required: true
-    help_text: The method's parameter object, as the manual describes it.
+  - name: fin_user
+    label: Finvalda employee
+    widget_type: text
+    required: false
+    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
+      Finvalda employee.'
 - operation_id: insert_item
-  title: Advanced · Create a record
+  title: Create a record
   fields:
   - name: item_class
     label: Record class
@@ -3520,7 +3845,7 @@ forms:
     help_text: 'The Finvalda import parameter for new records (sFvsImportoParametras), which fills accounts,
       VAT and unit. Default: the connection''s item import parameter.'
 - operation_id: edit_item
-  title: Advanced · Update a record
+  title: Update a record
   fields:
   - name: item_class
     label: Record class
@@ -3623,7 +3948,7 @@ forms:
     help_text: 'The Finvalda import parameter for new records (sFvsImportoParametras), which fills accounts,
       VAT and unit. Default: the connection''s item import parameter.'
 - operation_id: edit_item_props
-  title: Advanced · Update many records
+  title: Update many records
   fields:
   - name: changes
     label: Changes
@@ -3631,8 +3956,54 @@ forms:
     required: true
     help_text: 'One entry per group: {"Fvs.Prekes": {"Kodas": ["P1", "P2"], "pardKaina1": 13.1}}. Groups:
       Fvs.Prekes, Fvs.Paslaugos, Fvs.Klientas; values by the manual''s names.'
+- operation_id: append_group
+  title: Add a record to a group
+  fields:
+  - name: item_class
+    label: Group class
+    widget_type: select
+    required: true
+    help_text: The kind of group, for example Fvs.Preke for a product group.
+    options:
+    - label: Fvs.Preke
+      value: Fvs.Preke
+    - label: Fvs.Paslauga
+      value: Fvs.Paslauga
+    - label: Fvs.Klientas
+      value: Fvs.Klientas
+    - label: Fvs.Adresas
+      value: Fvs.Adresas
+    - label: Fvs.ObjektasI
+      value: Fvs.ObjektasI
+    - label: Fvs.ObjektasII
+      value: Fvs.ObjektasII
+    - label: Fvs.ObjektasIII
+      value: Fvs.ObjektasIII
+    - label: Fvs.ObjektasIV
+      value: Fvs.ObjektasIV
+    - label: Fvs.ObjektasV
+      value: Fvs.ObjektasV
+    - label: Fvs.ObjektasVI
+      value: Fvs.ObjektasVI
+    - label: Fvs.Sandelis
+      value: Fvs.Sandelis
+  - name: group_code
+    label: Group
+    widget_type: text
+    required: true
+    help_text: The code of the group.
+  - name: item_code
+    label: Code
+    widget_type: text
+    required: true
+    help_text: The code of the record.
+  - name: item_code2
+    label: Client code
+    widget_type: text
+    required: false
+    help_text: 'For an address group: the address''s client code.'
 - operation_id: delete_item
-  title: Advanced · Delete a record
+  title: Delete a record
   fields:
   - name: item_class
     label: Record class
@@ -3723,54 +4094,8 @@ forms:
     widget_type: text
     required: true
     help_text: The code of the record.
-- operation_id: append_group
-  title: Advanced · Add a record to a group
-  fields:
-  - name: item_class
-    label: Group class
-    widget_type: select
-    required: true
-    help_text: The kind of group, for example Fvs.Preke for a product group.
-    options:
-    - label: Fvs.Preke
-      value: Fvs.Preke
-    - label: Fvs.Paslauga
-      value: Fvs.Paslauga
-    - label: Fvs.Klientas
-      value: Fvs.Klientas
-    - label: Fvs.Adresas
-      value: Fvs.Adresas
-    - label: Fvs.ObjektasI
-      value: Fvs.ObjektasI
-    - label: Fvs.ObjektasII
-      value: Fvs.ObjektasII
-    - label: Fvs.ObjektasIII
-      value: Fvs.ObjektasIII
-    - label: Fvs.ObjektasIV
-      value: Fvs.ObjektasIV
-    - label: Fvs.ObjektasV
-      value: Fvs.ObjektasV
-    - label: Fvs.ObjektasVI
-      value: Fvs.ObjektasVI
-    - label: Fvs.Sandelis
-      value: Fvs.Sandelis
-  - name: group_code
-    label: Group
-    widget_type: text
-    required: true
-    help_text: The code of the group.
-  - name: item_code
-    label: Code
-    widget_type: text
-    required: true
-    help_text: The code of the record.
-  - name: item_code2
-    label: Client code
-    widget_type: text
-    required: false
-    help_text: 'For an address group: the address''s client code.'
 - operation_id: insert_operation
-  title: Advanced · Create an operation
+  title: Create an operation
   fields:
   - name: op_class
     label: Operation class
@@ -3845,7 +4170,7 @@ forms:
     help_text: 'The Finvalda import parameter (sParametras) that sets the journal, operation type, series
       and accounts. Default: the connection''s operation import parameter.'
 - operation_id: update_operation
-  title: Advanced · Change an operation
+  title: Change an operation
   fields:
   - name: op_class
     label: Change class
@@ -3880,7 +4205,7 @@ forms:
     help_text: 'The Finvalda import parameter (sParametras) that sets the journal, operation type, series
       and accounts. Default: the connection''s operation import parameter.'
 - operation_id: delete_operation
-  title: Advanced · Delete an operation
+  title: Delete an operation
   fields:
   - name: op_class
     label: Delete class
@@ -3925,7 +4250,7 @@ forms:
     help_text: 'The Finvalda import parameter (sParametras) that sets the journal, operation type, series
       and accounts. Default: the connection''s operation import parameter.'
 - operation_id: lock_operation
-  title: Advanced · Lock an operation
+  title: Lock an operation
   fields:
   - name: journal
     label: Journal
@@ -3944,7 +4269,7 @@ forms:
     help_text: 'The Finvalda import parameter (sParametras) that sets the journal, operation type, series
       and accounts. Default: the connection''s operation import parameter.'
 - operation_id: unlock_operation
-  title: Advanced · Unlock an operation
+  title: Unlock an operation
   fields:
   - name: journal
     label: Journal
@@ -3962,21 +4287,8 @@ forms:
     required: false
     help_text: 'The Finvalda import parameter (sParametras) that sets the journal, operation type, series
       and accounts. Default: the connection''s operation import parameter.'
-- operation_id: is_operation_locked
-  title: Advanced · Is an operation locked
-  fields:
-  - name: journal
-    label: Journal
-    widget_type: text
-    required: true
-    help_text: The operation's journal code, for example PARD.
-  - name: op_number
-    label: Operation number
-    widget_type: number
-    required: true
-    help_text: The operation's number in its journal.
 - operation_id: change_journal
-  title: Advanced · Move an operation to another journal
+  title: Move an operation to another journal
   fields:
   - name: journal
     label: Journal
@@ -3994,7 +4306,7 @@ forms:
     required: true
     help_text: The journal to move it to.
 - operation_id: copy_operation
-  title: Advanced · Copy an operation
+  title: Copy an operation
   fields:
   - name: journal
     label: Journal
@@ -4042,320 +4354,8 @@ forms:
     required: false
     help_text: 'The Finvalda import parameter (sParametras) that sets the journal, operation type, series
       and accounts. Default: the connection''s operation import parameter.'
-- operation_id: make_invoice
-  title: Advanced · Invoice PDF
-  fields:
-  - name: invoice_form
-    label: Invoice form
-    widget_type: text
-    required: true
-    help_text: The form's code, for example PARD_01.
-  - name: journal
-    label: Journal
-    widget_type: text
-    required: false
-    help_text: The operation's journal; with op_number.
-  - name: op_number
-    label: Operation number
-    widget_type: number
-    required: false
-    help_text: The operation's number; with journal.
-  - name: series
-    label: Series
-    widget_type: text
-    required: false
-    help_text: The document series; with document.
-  - name: document
-    label: Document
-    widget_type: text
-    required: false
-    help_text: The document number; with series.
-- operation_id: make_report
-  title: Advanced · Report PDF
-  fields:
-  - name: report_code
-    label: Report
-    widget_type: text
-    required: true
-    help_text: The report's code, for example BALANSAS_01.
-  - name: filter
-    label: Filter
-    widget_type: json
-    required: false
-    help_text: 'The report''s filter, with any of: Warehouse, WarehouseGroup, Goods, Client, DateFrom,
-      DateTo, Logbook, LogbookGroup, OpType, OpTypeGroup, IncludeReturns. Dates are YYYY.MM.DD.'
-- operation_id: auto_reports_list
-  title: Advanced · Automatic reports
-  fields: []
-- operation_id: auto_report
-  title: Advanced · Automatic report file
-  fields:
-  - name: report_name
-    label: Report file
-    widget_type: text
-    required: true
-    help_text: The name from Automatic reports.
-- operation_id: product_image
-  title: Advanced · Product image
-  fields:
-  - name: product_code
-    label: Product code
-    widget_type: text
-    required: true
-    help_text: The product's code in Finvalda.
-  - name: edited_since
-    label: Edited since
-    widget_type: text
-    required: false
-    help_text: Only when the picture changed on or after this date, YYYY-MM-DD.
-  - name: created_since
-    label: Created since
-    widget_type: text
-    required: false
-    help_text: Only when the product was created on or after this date.
-- operation_id: insert_document
-  title: Advanced · Upload a document
-  fields:
-  - name: document_file
-    label: File
-    widget_type: artifact_picker
-    required: true
-    help_text: A workflow file, e.g. the invoice PDF from an earlier step, up to 8 MB.
-  - name: file_name
-    label: File name
-    widget_type: text
-    required: true
-    help_text: The name to store it under, with its extension, for example S-1.pdf.
-  - name: file_description
-    label: Description
-    widget_type: textarea
-    required: false
-    help_text: A description of the document.
-  - name: registration_number
-    label: Registration number
-    widget_type: text
-    required: false
-    help_text: The document's registration number.
-  - name: composition_date
-    label: Date
-    widget_type: text
-    required: false
-    help_text: 'The document''s date, YYYY-MM-DD. Default: today.'
-  - name: search_phrase
-    label: Search phrase
-    widget_type: text
-    required: false
-    help_text: Words to find the document by.
-  - name: info
-    label: Information
-    widget_type: json
-    required: false
-    help_text: Up to three lines of information.
-  - name: fin_user
-    label: Finvalda employee
-    widget_type: text
-    required: false
-    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
-      Finvalda employee.'
-- operation_id: delete_document
-  title: Advanced · Delete a document
-  fields:
-  - name: file_name
-    label: File name
-    widget_type: text
-    required: true
-    help_text: The stored file name, with its extension.
-- operation_id: attach_document
-  title: Advanced · Attach a document
-  fields:
-  - name: entity_type
-    label: Attached to
-    widget_type: select
-    required: true
-    help_text: 'What the file belongs to: an operation (sale, purchase …) or a record (client, product
-      …).'
-    options:
-    - label: Account
-      value: 1
-    - label: Client
-      value: 2
-    - label: Sale
-      value: 3
-    - label: Purchase
-      value: 7
-    - label: Product
-      value: 8
-    - label: Service
-      value: 16
-    - label: Sales return
-      value: 74
-    - label: Sales reservation
-      value: 75
-    - label: Purchase return
-      value: 76
-    - label: Purchase order
-      value: 77
-    - label: Internal transfer
-      value: 78
-    - label: Write-off
-      value: 97
-    - label: Receipt
-      value: 98
-  - name: entity_id1
-    label: Record code or journal
-    widget_type: text
-    required: true
-    help_text: A record's code, or an operation's journal code.
-  - name: entity_id2
-    label: Second code or number
-    widget_type: text
-    required: false
-    help_text: An operation's number, or an address's code; empty for one-code records.
-  - name: file_name
-    label: File name
-    widget_type: text
-    required: true
-    help_text: The stored file name, with its extension.
-  - name: fin_user
-    label: Finvalda employee
-    widget_type: text
-    required: false
-    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
-      Finvalda employee.'
-- operation_id: attached_documents
-  title: Advanced · Attached documents
-  fields:
-  - name: entity_type
-    label: Attached to
-    widget_type: select
-    required: true
-    help_text: 'What the file belongs to: an operation (sale, purchase …) or a record (client, product
-      …).'
-    options:
-    - label: Account
-      value: 1
-    - label: Client
-      value: 2
-    - label: Sale
-      value: 3
-    - label: Purchase
-      value: 7
-    - label: Product
-      value: 8
-    - label: Service
-      value: 16
-    - label: Sales return
-      value: 74
-    - label: Sales reservation
-      value: 75
-    - label: Purchase return
-      value: 76
-    - label: Purchase order
-      value: 77
-    - label: Internal transfer
-      value: 78
-    - label: Write-off
-      value: 97
-    - label: Receipt
-      value: 98
-  - name: entity_id1
-    label: Record code or journal
-    widget_type: text
-    required: true
-    help_text: A record's code, or an operation's journal code.
-  - name: entity_id2
-    label: Second code or number
-    widget_type: text
-    required: false
-    help_text: An operation's number, or an address's code; empty for one-code records.
-  - name: file_name
-    label: Save file
-    widget_type: text
-    required: false
-    help_text: Save the attached file with this name as a workflow file.
-- operation_id: recommended_price
-  title: Advanced · Recommended price
-  fields:
-  - name: invoice_type
-    label: Operation group
-    widget_type: select
-    required: true
-    help_text: The sales or the purchases group.
-    options:
-    - label: Sales
-      value: 0
-    - label: Purchases
-      value: 1
-  - name: invoice_date
-    label: Date
-    widget_type: text
-    required: true
-    help_text: The operation date, YYYY-MM-DD.
-  - name: item_type
-    label: Line type
-    widget_type: select
-    required: true
-    help_text: A product or a service.
-    options:
-    - label: Product
-      value: 1
-    - label: Service
-      value: 2
-  - name: item_code
-    label: Code
-    widget_type: text
-    required: true
-    help_text: The product's or service's code.
-  - name: quantity
-    label: Quantity
-    widget_type: text
-    required: true
-    help_text: The quantity of the line.
-  - name: warehouse_code
-    label: Warehouse
-    widget_type: text
-    required: false
-    help_text: The warehouse of the line.
-  - name: client_code
-    label: Client
-    widget_type: text
-    required: false
-    help_text: The client of the operation.
-  - name: client_address_code
-    label: Client address
-    widget_type: text
-    required: false
-    help_text: The address of the operation.
-  - name: fin_user
-    label: Finvalda employee
-    widget_type: text
-    required: false
-    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
-      Finvalda employee.'
-- operation_id: user_permissions
-  title: Advanced · Employee permissions
-  fields:
-  - name: fin_user
-    label: Finvalda employee
-    widget_type: text
-    required: false
-    help_text: 'The Finvalda employee the change is made as (not the web service user). Default: the connection''s
-      Finvalda employee.'
-- operation_id: invoices_related_to_customer
-  title: Advanced · Invoices related to a client
-  fields:
-  - name: client_code
-    label: Client code
-    widget_type: text
-    required: false
-    help_text: The client's code in Finvalda.
-  - name: debt_type
-    label: Debt type
-    widget_type: number
-    required: false
-    help_text: The collection's nDebtType, for example 0.
 - operation_id: export_list
-  title: Advanced · Export a list to a file
+  title: Export a list to a file
   fields:
   - name: list_type
     label: List
@@ -4448,7 +4448,7 @@ forms:
     required: false
     help_text: At most this many pages of 1000 rows, 1 to 2000.
 - operation_id: call_method
-  title: Advanced · Call a Finvalda method
+  title: Call a Finvalda method
   fields:
   - name: method
     label: Method
