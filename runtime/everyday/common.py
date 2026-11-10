@@ -18,7 +18,7 @@ from ..reference_data import DESCRIPTION_TYPES
 from ..rows import rows_of
 from ..transport import DeadlineReached
 from ..shapes import warn
-from ..values import decimal_of, lithuanian_today, safe_name
+from ..values import lithuanian_today, safe_name, whole_of
 
 MAX_AMOUNT = Decimal("9999999999.99")
 
@@ -450,22 +450,24 @@ def operation_identity(record: Mapping[str, Any], document: str) -> dict[str, An
 
 def _op_number(record: Mapping[str, Any]) -> int | None:
     """The operation's number when it is a whole number; never truncated (12.5 is None)."""
-    value = field(record, "op_number")
-    number = decimal_of(value)
-    if number is None or number != number.to_integral_value():
-        return None
-    return int(number)
+    return whole_of(field(record, "op_number"))
 
 
 def the_row(rows: list[dict[str, Any]] | None, code: str, kind: str) -> dict[str, Any] | None:
     """The one row of ``rows`` whose code is ``code``; None when there are no rows.
 
-    Rows of other codes, or several of this code, are invalid_response: the step
-    never returns another record under the code asked for.
+    No row of this code, or several, is invalid_response: the step never returns
+    another record under the code asked for. Rows of other codes next to exactly
+    one of this code are left out, with one warning.
     """
     if not rows:
         return None
     matches = [r for r in rows if _same(row_code(r, kind), code)]
+    if len(matches) == 1 and len(rows) > 1:
+        warn(
+            f"Finvalda's {kind} answer for {code} holds {len(rows) - 1} row(s) of other "
+            "codes; they are left out"
+        )
     if len(matches) != 1:
         raise errors.no_effect(
             errors.INVALID_RESPONSE,

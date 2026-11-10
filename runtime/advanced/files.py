@@ -381,36 +381,36 @@ def attached_files(data: Mapping[str, Any]) -> list[dict[str, Any]]:
 _HEX = re.compile(r"[0-9A-Fa-f]*")
 
 
-def attached_content(attached: Mapping[str, Any]) -> bytes:
-    """The bytes of an attached file (hex in GetAttachedDocument's answer)."""
-    try:
-        return bytes.fromhex(attached["data"])
-    except ValueError as exc:
+def _compact_hex(attached: Mapping[str, Any]) -> str:
+    """An attached file's hex without spaces or line breaks; invalid_response when it
+    is not hex. One reading for its content, its size and the comparison."""
+    compact = "".join(str(attached["data"]).split())
+    if len(compact) % 2 or not _HEX.fullmatch(compact):
         raise errors.no_effect(
             errors.INVALID_RESPONSE,
             f"The content of the attached file {errors.safe_text(attached['name'], 200)} in "
             "Finvalda's answer is not hex",
-        ) from exc
+        )
+    return compact
+
+
+def attached_content(attached: Mapping[str, Any]) -> bytes:
+    """The bytes of an attached file (hex in GetAttachedDocument's answer)."""
+    return bytes.fromhex(_compact_hex(attached))
 
 
 def same_content(attached: Mapping[str, Any], content: bytes) -> bool:
-    """Whether an attached file holds exactly ``content``.
-
-    The hex is read as Finvalda sends it, spaces and line breaks included; content
-    that is not hex is invalid_response; sizes are compared before anything is
-    decoded.
-    """
-    compact = "".join(attached["data"].split())
-    if len(compact) % 2 or not _HEX.fullmatch(compact):
-        attached_content(attached)  # raises invalid_response
+    """Whether an attached file holds exactly ``content``; sizes are compared before
+    anything is decoded."""
+    compact = _compact_hex(attached)
     if len(compact) // 2 != len(content):
         return False
-    return attached_content(attached) == content
+    return bytes.fromhex(compact) == content
 
 
 def attached_size(attached: Mapping[str, Any]) -> int:
     """An attached file's size in bytes, from its hex without spaces."""
-    return len("".join(attached["data"].split())) // 2
+    return len("".join(str(attached["data"]).split())) // 2
 
 
 def run_attached_documents(context: Context, spec: Mapping[str, Any]) -> dict[str, Any]:

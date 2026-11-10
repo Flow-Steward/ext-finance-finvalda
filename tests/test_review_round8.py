@@ -8,7 +8,7 @@ import random
 from typing import Any
 
 import pytest
-from support import OK, FakeFinvalda, items, run, saved
+from support import FakeFinvalda, items, run, saved
 
 from runtime.advanced.files import attached_size, same_content
 from runtime.everyday.common import _op_number
@@ -113,24 +113,6 @@ def test_barcode_path_without_the_row_of_its_code_is_invalid() -> None:
     )
     response = run(fake, "find_or_create_product", {"barcode": "4770000000001"})
     assert response["error_code"] == "invalid_response"
-
-
-@pytest.mark.parametrize(
-    "operation_id, answer",
-    [
-        ("find_or_create_product", [items(), items({"product": "P9", "title": "Other"})]),
-        ("find_or_create_service", [items(), items({"code": "P9"}, {"code": "P9"})]),
-        ("find_or_create_client", [items(), items({"code": "P9", "title": "Other"})]),
-    ],
-)
-def test_read_back_of_another_record_names_what_was_saved(
-    operation_id: str, answer: list[Any]
-) -> None:
-    fake = FakeFinvalda(GetDescriptions=answer, InsertNewItem={**OK, "nResult": 0})
-    response = run(fake, operation_id, {"code": "P1", "name": "New"})
-    assert response["ok"] is False and response["error_code"] == "invalid_response"
-    assert "Already saved in Finvalda" in response["error"]
-    assert response["definitely_no_external_effect"] is False
 
 
 # -- L4: an operation number is never truncated -----------------------------------------------

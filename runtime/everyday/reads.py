@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
+from collections import Counter
 from collections.abc import Callable, Mapping
 from datetime import date as Date
 from datetime import datetime
@@ -136,14 +136,17 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     # A row without its code (warned by checked_rows) or of a product not asked for
     # is no price of these products: left out, with one warning. Two rows for one
     # code asked for cannot be told apart: an error.
-    rows = [r for code, r in found if code in wanted]
-    other = sum(1 for code, _r in found if code and code not in wanted)
+    rows: list[dict[str, Any]] = []
+    per_code: Counter[str] = Counter()
+    other = 0
+    for code, row in found:
+        if code in wanted:
+            rows.append(row)
+            per_code[code] += 1
+        elif code:
+            other += 1
     if other:
         warn(f"Finvalda returned {other} row(s) of products not asked for; they are left out")
-    per_code: dict[str, int] = {}
-    for code, _r in found:
-        if code in wanted:
-            per_code[code] = per_code.get(code, 0) + 1
     doubled = sorted(c for c, n in per_code.items() if n > 1)
     if doubled:
         raise errors.no_effect(
@@ -169,12 +172,19 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         # Only the prices of the codes asked for and of this client, by the row's own
         # client column: a row without it, or of another client, is no special price
         # of this client — left out, with one warning.
-        client_prices = [
-            r for code, r in prices if code in wanted and _same(field(r, "client"), client)
-        ]
-        dropped = sum(
-            1 for code, r in prices if code in wanted and not _same(field(r, "client"), client)
-        )
+        dropped = unasked = 0
+        for code, row in prices:
+            if code and code not in wanted:
+                unasked += 1
+            elif code in wanted and _same(field(row, "client"), client):
+                client_prices.append(row)
+            elif code in wanted:
+                dropped += 1
+        if unasked:
+            warn(
+                f"Finvalda returned {unasked} price row(s) of products not asked for; "
+                "they are left out"
+            )
         if dropped:
             warn(
                 f"Finvalda returned {dropped} price row(s) without client {client}; "
@@ -265,23 +275,40 @@ CHANGES_MAX_LIMIT = 300
 
 
 def _change_key(name: str) -> Callable[[Mapping[str, Any]], tuple[Any, ...]]:
-    """A fully fixed order for the pages, whatever order Finvalda answers in.
-
-    By the entity's own code, or by journal and number (the number as sent when it
-    is not whole), then by a hash of the whole row, so rows without a code or with
-    the same number still have one place.
-    """
+    """The order of the pages: by the entity's own code, or by journal and number
+    (the number as sent when it is not whole). Rows equal in it are ordered by
+    their canonical JSON (``_fixed_order``)."""
 
     def key(row: Mapping[str, Any]) -> tuple[Any, ...]:
         number = _op_number(row)
         raw = field(row, "op_number")
         whole = (0, number, "") if number is not None else (1, 0, "" if raw is None else str(raw))
-        digest = hashlib.sha256(
-            json.dumps(row, sort_keys=True, default=str, ensure_ascii=False).encode()
-        ).hexdigest()
-        return (row_code(row, name), str(field(row, "journal") or ""), whole, digest)
+        return (row_code(row, name), str(field(row, "journal") or ""), whole)
 
     return key
+
+
+def _canonical(row: Mapping[str, Any]) -> str:
+    return json.dumps(row, sort_keys=True, default=str, ensure_ascii=False)
+
+
+def _fixed_order(rows: list[dict[str, Any]], name: str) -> list[dict[str, Any]]:
+    """Every row in one place whatever order Finvalda answers in: by the key, and
+    rows equal in it (no code, the same number) by their canonical JSON, which is
+    computed only for them."""
+    key = _change_key(name)
+    ordered = sorted(rows, key=key)
+    out: list[dict[str, Any]] = []
+    i = 0
+    while i < len(ordered):
+        j = i + 1
+        first = key(ordered[i])
+        while j < len(ordered) and key(ordered[j]) == first:
+            j += 1
+        group = ordered[i:j]
+        out += sorted(group, key=_canonical) if len(group) > 1 else group
+        i = j
+    return out
 
 
 def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
@@ -328,7 +355,7 @@ def changes_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         rows = operations_of(
             context, name, {"DateEditedFrom": day}, OPERATION_COLUMNS, strict=False
         )
-    ordered = sorted(rows, key=_change_key(name))
+    ordered = _fixed_order(rows, name)
     start = (page - 1) * limit
     chosen = ordered[start : start + limit]
     has_more = start + limit < len(ordered)

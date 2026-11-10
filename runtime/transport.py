@@ -43,6 +43,7 @@ from flowsteward_extension_sdk import PinnedPeerError, open_pinned_url
 
 from . import errors
 from .connection import LANGUAGES, Connection
+from .values import whole_of
 from .errors import ExtensionError
 from .fields import field
 from .reference_data import ERROR_MEANINGS
@@ -618,7 +619,7 @@ def result_code(
         if isinstance(value, int):
             return value
         if isinstance(value, str) and value.strip().lstrip("-").isdigit():
-            return int(value.strip())
+            return whole_of(value)
     return None
 
 

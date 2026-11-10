@@ -25,7 +25,7 @@ from decimal import Decimal
 from typing import Any, overload
 
 from .fields import field
-from .values import as_decimal, decimal_of, finvalda_datetime, iso_date, iso_moment
+from .values import as_decimal, finvalda_datetime, iso_date, iso_moment, plain, whole_of
 
 
 @dataclass(frozen=True)
@@ -183,10 +183,8 @@ def _convert(kind: str, value: Any) -> Any:
         exact_text = as_decimal(value)
         return _UNFIT if exact_text is None else exact_text
     if kind == "integer":
-        number = decimal_of(value)
-        if number is None or number != number.to_integral_value():
-            return _UNFIT
-        return int(number)
+        whole = whole_of(value)
+        return _UNFIT if whole is None else whole
     if kind == "boolean":
         if isinstance(value, bool):
             return value
@@ -213,7 +211,7 @@ def to_kind(kind: str, value: Any, *, warnings: list[str] | None = None, where: 
     converted = _convert(kind, value)
     if converted is not _UNFIT:
         return converted
-    text = format(value, "f") if isinstance(value, Decimal) else str(value)
+    text = plain(value) if isinstance(value, Decimal) and value.is_finite() else str(value)
     if warnings is None:
         warnings = _SINK.get()
     if warnings is not None and len(warnings) < MAX_WARNINGS:

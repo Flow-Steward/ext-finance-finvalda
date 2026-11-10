@@ -11,6 +11,26 @@ from functools import lru_cache
 from typing import Any
 
 
+#: Plain notation is used up to this order of magnitude; beyond it (1E+50000000
+#: would be fifty million digits) a number keeps its exact scientific form.
+MAX_PLAIN_EXPONENT = 40
+
+
+def plain(number: Decimal) -> str:
+    """A finite Decimal as exact text: plain digits ("1234.50"), or its scientific
+    form when it is too large or too small to write out."""
+    if abs(number.adjusted()) > MAX_PLAIN_EXPONENT:
+        return str(number)
+    return format(number, "f")
+
+
+def plain_decimal(number: Decimal) -> str | None:
+    """Plain digits of a number that has them within bounds, else None."""
+    if abs(number.adjusted()) > MAX_PLAIN_EXPONENT:
+        return None
+    return format(number, "f")
+
+
 def decimal_of(value: Any) -> Decimal | None:
     """A number from Finvalda (JSON number, Decimal or text) as a Decimal, or None."""
     if value is None or isinstance(value, bool) or value == "":
@@ -22,10 +42,26 @@ def decimal_of(value: Any) -> Decimal | None:
     return number if number.is_finite() else None
 
 
+#: Whole numbers of more digits than this are not read as numbers (1E+50000000 would
+#: take minutes to turn into an int): Finvalda's own are Integer or Numeric(18,0).
+MAX_WHOLE_DIGITS = 19
+
+
+def whole_of(value: Any) -> int | None:
+    """A whole number (12, "12", 12.0, Decimal("12")) as an int; None for anything
+    else — a fraction (12.5), text ("12/A"), or a number of more than 19 digits."""
+    number = decimal_of(value)
+    if number is None or number.adjusted() >= MAX_WHOLE_DIGITS:
+        return None
+    if number != number.to_integral_value():
+        return None
+    return int(number)
+
+
 def exact(value: Any) -> Any:
     """Finvalda's numbers are read as Decimal; a result carries them as exact text."""
     if isinstance(value, Decimal):
-        return format(value, "f") if value.is_finite() else None
+        return plain(value) if value.is_finite() else None
     if isinstance(value, Mapping):
         return {k: exact(v) for k, v in value.items()}
     if isinstance(value, list):
@@ -47,7 +83,7 @@ def cents(value: Decimal) -> Decimal:
 def as_decimal(value: Any) -> str | None:
     """An amount from Finvalda (a JSON number or text) as an exact decimal string."""
     number = decimal_of(value)
-    return None if number is None else format(number, "f")
+    return None if number is None else plain_decimal(number)
 
 
 _DOTNET_DATE = re.compile(r"^/Date\((-?\d+)([+-]\d{4})?\)/$")

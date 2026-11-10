@@ -15,6 +15,7 @@ from ..limits import MAX_LIST_ITEMS
 from ..records import check_fields
 from ..reference_data import CALLABLE_METHODS, CLASSES
 from ..rows import op_result
+from ..values import plain
 from ..transport import WRITE_METHODS, dumps_json
 
 
@@ -425,7 +426,7 @@ def call_request(
         elif isinstance(value, bool):
             rendered = "true" if value else "false"
         elif isinstance(value, Decimal):
-            rendered = format(value, "f")
+            rendered = plain(value) if value.is_finite() else str(value)
         elif isinstance(value, (int, float, str)):
             rendered = str(value)
         else:

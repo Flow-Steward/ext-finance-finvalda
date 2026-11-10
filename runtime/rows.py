@@ -8,6 +8,7 @@ from typing import Any
 
 from . import errors
 from .fields import field
+from .values import whole_of
 
 
 def rows_of(data: Mapping[str, Any], *, strict: bool = True) -> list[Any]:
@@ -110,10 +111,8 @@ def op_result(data: Mapping[str, Any]) -> dict[str, Any]:
                 if match:
                     info[tag] = match.group(1).strip()
     number = field(info, "NUMERIS")
-    try:
-        op_number = int(str(number).strip()) if number not in (None, "") else None
-    except ValueError:
-        op_number = None
+    # The same reading of a whole number as everywhere else ("61.0" is 61).
+    op_number = whole_of(number)
     return {
         "journal": errors.safe_text(field(info, "ZURNALAS"), 20) or None,
         "op_number": op_number,

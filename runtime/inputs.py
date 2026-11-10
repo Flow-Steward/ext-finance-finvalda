@@ -10,7 +10,7 @@ from decimal import Decimal
 from typing import Any
 
 from .errors import invalid
-from .values import finvalda_datetime
+from .values import finvalda_datetime, plain, whole_of
 
 _DIGITS = re.compile(r"-?[0-9]{1,10}")
 
@@ -60,8 +60,10 @@ def whole_input(
         return default
     if isinstance(value, str) and _DIGITS.fullmatch(value.strip()):
         value = int(value.strip())
-    if isinstance(value, Decimal) and value.is_finite() and value == value.to_integral_value():
-        value = int(value)
+    if isinstance(value, Decimal):
+        whole = whole_of(value)
+        if whole is not None:
+            value = whole
     if isinstance(value, bool) or not isinstance(value, int) or not minimum <= value <= maximum:
         raise invalid(f"{name} must be a whole number from {minimum} to {maximum}")
     return value
@@ -111,7 +113,7 @@ def decimal_input(
     if isinstance(value, Decimal):
         if not value.is_finite():
             raise invalid(f"{name} must be a finite number")
-        value = format(value, "f")
+        value = plain(value)
     text = str(value).strip().replace(" ", "")
     if not _NUMBER_RE.fullmatch(text):
         raise invalid(f"{name} must be a number with '.' as the decimal point")

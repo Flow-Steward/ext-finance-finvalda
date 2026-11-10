@@ -44,11 +44,15 @@ CLIENT_INPUTS = {
 
 
 def _read_back(
-    progress: Progress, kind: str, rows: list[dict[str, Any]] | None, code: str, name: str
+    warnings: list[str], kind: str, rows: list[dict[str, Any]] | None, code: str, name: str
 ) -> dict[str, Any] | None:
-    """The created record read back: the row of its code, or None when the read
-    failed (warned). Rows of other codes are an error that names what was saved."""
-    found = progress.guard(f"Reading the {kind} back", lambda: the_row(rows, code, name))
+    """The created record read back: the row of its code, or None.
+
+    The create was confirmed, so a read-back that fails or does not show the record
+    (no row of its code, several) never turns the step into a failure: the record
+    is null and a warning says why (as for every read after a write).
+    """
+    found = _best_effort(lambda: the_row(rows, code, name), warnings, f"{kind} {code}")
     return shape(kind, found) if found else None
 
 
@@ -151,7 +155,7 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
         "client_code": values["code"],
         "created": True,
         "matched_by": None,
-        "client": _read_back(progress, "client", record, values["code"], "Clients"),
+        "client": _read_back(warnings, "client", record, values["code"], "Clients"),
         "warnings": warnings,
     }
 
@@ -200,18 +204,17 @@ def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     code = code_input("code", inputs, 20)
     barcode = text("barcode", inputs, 13)
     if code:
-        rows = [
-            r
-            for r in describe(context, "Products", {"Codes": [code]}, PRODUCT_COLUMNS)
-            # The code from the same columns its presence was checked in.
-            if _same(row_code(r, "Products"), code)
-        ]
-        if rows:
+        # The row of this code (rows of others warned; none of it among rows is
+        # invalid_response); None when Finvalda has no such product.
+        found = the_row(
+            describe(context, "Products", {"Codes": [code]}, PRODUCT_COLUMNS), code, "Products"
+        )
+        if found is not None:
             return {
                 "product_code": code,
                 "created": False,
                 "matched_by": "code",
-                "product": shape("product", the_row(rows, code, "Products") or {}),
+                "product": shape("product", found),
                 "warnings": [],
             }
     if barcode:
@@ -263,7 +266,7 @@ def product_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
         "product_code": code,
         "created": True,
         "matched_by": None,
-        "product": _read_back(progress, "product", rows, code, "Products"),
+        "product": _read_back(warnings, "product", rows, code, "Products"),
         "warnings": warnings,
     }
 
@@ -282,16 +285,14 @@ SERVICE_INPUTS = {
 
 def service_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> dict[str, Any]:
     code = code_input("code", inputs, 13, required=True)
-    rows = [
-        r
-        for r in describe(context, "Services", {"Codes": [code]}, SERVICE_COLUMNS)
-        if _same(row_code(r, "Services"), code)
-    ]
-    if rows:
+    found = the_row(
+        describe(context, "Services", {"Codes": [code]}, SERVICE_COLUMNS), code, "Services"
+    )
+    if found is not None:
         return {
             "service_code": code,
             "created": False,
-            "service": shape("service", the_row(rows, code, "Services") or {}),
+            "service": shape("service", found),
             "warnings": [],
         }
     name = text("name", inputs, 50)
@@ -321,6 +322,6 @@ def service_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> d
     return {
         "service_code": code,
         "created": True,
-        "service": _read_back(progress, "service", rows, code, "Services"),
+        "service": _read_back(warnings, "service", rows, code, "Services"),
         "warnings": warnings,
     }
