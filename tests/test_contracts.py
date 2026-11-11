@@ -13,10 +13,10 @@ import yaml
 BUNDLE_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BUNDLE_ROOT / "tests" / "reference"))
 
-import build_contracts  # noqa: E402
+import build_contracts
 
-from runtime import advanced, catalog, limits  # noqa: E402
-from runtime.operations import neutral_result  # noqa: E402
+from runtime import advanced, catalog, limits
+from runtime.operations import neutral_result
 
 
 def _load(relative: str) -> Any:
@@ -187,7 +187,7 @@ def test_connection_page_matches_the_connection_type() -> None:
 
 def test_manifest_basics() -> None:
     manifest = _load("extension.yaml")
-    assert manifest["extension_id"] == "flowsteward.finvalda" and manifest["version"] == "0.1.0"
+    assert manifest["extension_id"] == "flowsteward.finvalda" and manifest["version"] == "0.1.1"
     assert manifest["egress"] == {"connection_fields": ["finvalda.base_url"]}
     assert (
         manifest["vendor"]["website_url"] == "https://github.com/Flow-Steward/ext-finance-finvalda"

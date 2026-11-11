@@ -1,10 +1,12 @@
 # Finvalda for Flow Steward
 
-`flowsteward.finvalda` is a Flow Steward extension that connects **Finvalda**, the Lithuanian
-accounting and business management system, to Flow Steward workflows. It talks to Finvalda's own
-web service (the REST interface `FvsServicePure` that Finvalda installs on the company's server),
-so a workflow can find and create clients, products and services, create invoices and payments,
-attach files and read stock, prices, debts and changes — as ordinary workflow steps.
+Bring Finvalda accounting and business records into Flow Steward through the FvsServicePure web service. Everyday steps find or create clients, products and services, prepare sales and purchase invoices, register incoming or outgoing payments and work with invoice PDFs and attachments. Client searches can use business identifiers or email, while product searches can use codes or barcodes.
+
+Read warehouse stock, reserved quantities, costs, sales and purchase prices, client-specific prices and outstanding debt. Date-based change reads expose clients, products, services, sales, purchases and payments for incremental exchange with other systems. Files move through Flow Steward storage, so a workflow can pass an invoice PDF to another document, email or archival step.
+
+For more detailed integrations, the release includes 160 advanced operations derived from its pinned Finvalda reference. These cover description lists, operation classes, older record readers, record and document changes, locking, copying, journal moves, invoice and report generation and list exports. Combine these steps to turn shop orders into accounting documents, feed warehouse availability to a storefront or check unpaid invoices before processing a new order. Each connection carries its company and import settings; the configured Finvalda user and employee permissions control access.
+
+Have your Finvalda administrator enable FvsServicePure on a publicly reachable HTTPS host and create a web-service user. Configure the company, Finvalda employee and separate operation and record import parameters in the project connection, then run the connection test.
 
 ## Why use it
 
@@ -25,7 +27,7 @@ Typical jobs it automates:
 ## How it fits into Flow Steward
 
 - **Install** it as an extension: from the catalog, or with
-  `./flow-steward extensions install --archive flowsteward.finvalda-0.1.0.zip`.
+  `./flow-steward extensions install --archive flowsteward.finvalda-0.1.1.zip`.
 - **Connect**: on the extension's Connection page a project adds a Finvalda connection — the web
   service address, the web service user and password, the company, the two import parameters and
   the Finvalda employee. One project can hold several connections, for example one per company.
@@ -118,7 +120,7 @@ folder that contains it:
 ./flow-steward extensions validate flowsteward.finvalda --root "$ROOT" --health --marketplace
 ./flow-steward extensions test flowsteward.finvalda --root "$ROOT"
 ./flow-steward extensions bundle flowsteward.finvalda --root "$ROOT" --with-wheels --confirm
-./flow-steward extensions install --archive dist/extensions/flowsteward.finvalda-0.1.0.zip --confirm
+./flow-steward extensions install --archive dist/extensions/flowsteward.finvalda-0.1.1.zip --confirm
 ```
 
 The contracts, the Coverage and Finvalda API pages and `runtime/registry.json` are generated from

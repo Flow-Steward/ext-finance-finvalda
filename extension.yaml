@@ -4,15 +4,16 @@ lifecycle:
   data_migrations: []
 extension_id: flowsteward.finvalda
 kind: tool_provider
-version: 0.1.0
+version: 0.1.1
 release_stage: active
 billing_mode: free
 display_name: Finvalda
-description: "Finvalda accounting through its web service (FvsServicePure) for workflows.\
-  \ Everyday steps \u2014 find or create clients, products and services, create sales\
-  \ and purchase invoices, register payments, invoice PDFs, attach files, stock levels,\
-  \ prices, client debt and changes since a date \u2014 plus every documented web\
-  \ service method, list and operation class as a typed workflow step."
+description: |-
+  Bring Finvalda accounting and business records into Flow Steward through the FvsServicePure web service. Everyday steps find or create clients, products and services, prepare sales and purchase invoices, register incoming or outgoing payments and work with invoice PDFs and attachments. Client searches can use business identifiers or email, while product searches can use codes or barcodes.
+
+  Read warehouse stock, reserved quantities, costs, sales and purchase prices, client-specific prices and outstanding debt. Date-based change reads expose clients, products, services, sales, purchases and payments for incremental exchange with other systems. Files move through Flow Steward storage, so a workflow can pass an invoice PDF to another document, email or archival step.
+
+  For more detailed integrations, the release includes 160 advanced operations derived from its pinned Finvalda reference. These cover description lists, operation classes, older record readers, record and document changes, locking, copying, journal moves, invoice and report generation and list exports. Combine these steps to turn shop orders into accounting documents, feed warehouse availability to a storefront or check unpaid invoices before processing a new order. Each connection carries its company and import settings; the configured Finvalda user and employee permissions control access.
 vendor:
   name: Flow Steward
   support_url: https://github.com/Flow-Steward/ext-finance-finvalda/issues
@@ -27,12 +28,12 @@ listing:
   - invoices
   - inventory
   - payments
-  summary: "Everyday Finvalda steps \u2014 invoices, clients, products, payments,\
-    \ stock, prices, debts \u2014 plus every documented web service method."
+  summary: "Connect Finvalda invoices, clients, products, payments, stock, prices, debt checks and document files to business workflows."
   categories:
   - finance
   - inventory
   - sales
+  setup_summary: "Have your Finvalda administrator enable FvsServicePure on a publicly reachable HTTPS host and create a web-service user. Configure the company, Finvalda employee and separate operation and record import parameters in the project connection, then run the connection test."
 features:
 - tool
 - action

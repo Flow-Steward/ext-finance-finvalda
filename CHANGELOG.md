@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.1
+
+### Changed
+
+- Clarified the catalog description, supported operations and connection setup.
+
+### Security
+
+- Updated the CI pytest pin from 8.3.5 to 9.0.3.
+
 ## 0.1.0 — 2026-11-10
 
 First release.
