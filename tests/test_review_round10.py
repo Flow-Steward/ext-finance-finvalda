@@ -154,26 +154,6 @@ def test_the_requested_broken_file_is_an_error() -> None:
 # -- R5/R6: secondary client values are matched exactly; codes strictly ------------------
 
 
-@pytest.mark.parametrize(
-    "inputs, row",
-    [
-        ({"email": "a@b.lt"}, {"code": "K9", "email": "xa@b.lt"}),
-        ({"company_code": "300"}, {"code": "K9", "company_code": "3001"}),
-        ({"vat_code": "LT100"}, {"code": "K9", "vat_payer_code": "LT1001"}),
-    ],
-)
-def test_loose_secondary_matches_let_the_client_be_created(
-    inputs: dict[str, Any], row: dict[str, Any]
-) -> None:
-    fake = FakeFinvalda(
-        GetDescriptions=[items(), items(row), items({"code": "NEW", "title": "New"})],
-        InsertNewItem={**OK, "nResult": 0},
-    )
-    result = run(fake, "find_or_create_client", {"code": "NEW", "name": "New", **inputs})["result"]
-    assert result["created"] is True
-    assert any("taken as no match" in w for w in result["warnings"])
-
-
 def test_client_code_lookup_stays_strict() -> None:
     fake = FakeFinvalda(GetDescriptions=items({"code": "K10"}), InsertNewItem={**OK, "nResult": 0})
     assert (

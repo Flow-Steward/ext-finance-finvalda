@@ -539,6 +539,7 @@ actions:
   - document_file
   - file_name
   - size_bytes
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -595,6 +596,7 @@ actions:
   - file_name
   - stored
   - attached
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -847,6 +849,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -927,6 +930,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -1078,6 +1082,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -1131,6 +1136,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -1187,6 +1193,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -1318,6 +1325,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -1465,6 +1473,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -1521,6 +1530,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -1823,6 +1833,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -2017,6 +2028,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -2073,6 +2085,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -2129,6 +2142,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -2185,6 +2199,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -2487,6 +2502,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -2543,6 +2559,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -2599,6 +2616,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -2655,6 +2673,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3709,6 +3728,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3765,6 +3785,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3821,6 +3842,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4116,6 +4138,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4204,6 +4227,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4250,6 +4274,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4290,6 +4315,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4336,6 +4362,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4376,6 +4403,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4423,6 +4451,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4464,6 +4493,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4505,6 +4535,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4774,6 +4805,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4820,6 +4852,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4860,6 +4893,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4906,6 +4940,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4947,6 +4982,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4993,6 +5029,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5034,6 +5071,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5080,6 +5118,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5120,6 +5159,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5167,6 +5207,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5207,6 +5248,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5253,6 +5295,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5293,6 +5336,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5395,6 +5439,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5454,6 +5499,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5492,6 +5538,7 @@ actions:
   - records
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5575,6 +5622,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5616,6 +5664,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5663,6 +5712,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5703,6 +5753,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5749,6 +5800,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5789,6 +5841,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5835,6 +5888,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5882,6 +5936,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5923,6 +5978,7 @@ actions:
   result_fields:
   - records
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6003,6 +6059,7 @@ actions:
   result_fields:
   - locked
   - lock_state
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6053,6 +6110,7 @@ actions:
   - document_file
   - file_name
   - size_bytes
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6110,6 +6168,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6151,6 +6210,7 @@ actions:
   - document_file
   - file_name
   - size_bytes
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6208,6 +6268,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6242,6 +6303,7 @@ actions:
   result_fields:
   - names
   - count
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6280,6 +6342,7 @@ actions:
   - document_file
   - file_name
   - size_bytes
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6324,6 +6387,7 @@ actions:
   - document_file
   - file_name
   - size_bytes
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6384,6 +6448,7 @@ actions:
   result_fields:
   - file_name
   - size_bytes
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -6438,6 +6503,7 @@ actions:
   result_fields:
   - attached
   - already_attached
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -6490,6 +6556,7 @@ actions:
   - document_file
   - file_name
   - size_bytes
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6527,6 +6594,7 @@ actions:
     required: true
   result_fields:
   - file_name
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -6586,6 +6654,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6642,6 +6711,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6698,6 +6768,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6751,6 +6822,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6804,6 +6876,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6857,6 +6930,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6913,6 +6987,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7005,6 +7080,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7058,6 +7134,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7114,6 +7191,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7167,6 +7245,7 @@ actions:
   - next_page
   - has_more
   - pages_fetched
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7715,6 +7794,7 @@ actions:
   - permissions
   - count
   - response
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7761,6 +7841,7 @@ actions:
   - item_class
   - code
   - saved
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7812,6 +7893,7 @@ actions:
   - item_class
   - code
   - saved
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7852,6 +7934,7 @@ actions:
     required: true
   result_fields:
   - saved
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7901,6 +7984,7 @@ actions:
     required: false
   result_fields:
   - saved
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7946,6 +8030,7 @@ actions:
   - item_class
   - code
   - saved
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -7997,6 +8082,7 @@ actions:
   - op_number
   - series
   - document
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -8046,6 +8132,7 @@ actions:
   - op_number
   - series
   - document
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -8099,6 +8186,7 @@ actions:
   - op_number
   - series
   - document
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -8144,6 +8232,7 @@ actions:
     required: false
   result_fields:
   - saved
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -8189,6 +8278,7 @@ actions:
     required: false
   result_fields:
   - saved
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -8237,6 +8327,7 @@ actions:
   - op_number
   - series
   - document
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -8304,6 +8395,7 @@ actions:
   - op_number
   - series
   - document
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:
@@ -8362,6 +8454,7 @@ actions:
   - complete
   - resume_page
   - stopped_by
+  - warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -8410,6 +8503,7 @@ actions:
   result_fields:
   - method
   - response
+  - warnings
   - external_effect_status
   - definitely_no_external_effect
   error_codes:

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.5 — 2026-11-16
+
+- Find or create client compares a company code, VAT code or e-mail as Finvalda keeps it: e-mail
+  without case and among several addresses in one field, VAT code without spaces or country
+  prefix. When Finvalda finds clients for such a value but none holds it exactly, the step stops
+  with a conflict naming them and writes nothing; a client is created only when no client is
+  found at all. Lookups by code stay strict.
+- A refusal of access is reported as such even when the answer's result code cannot be read.
+- A result code field holding a flag or an object is skipped, as before 0.1.3.
+- Every step declares its warnings output.
+- Number inputs accept any number of trailing zeros.
+
 ## 0.1.4 — 2026-11-15
 
 ### Added

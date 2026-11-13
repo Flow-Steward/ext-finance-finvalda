@@ -196,6 +196,8 @@ def neutral_result(operation_id: str) -> dict[str, Any]:
         result = everyday.everyday_neutral_result(operation_id)
     else:
         result = dict(NEUTRAL_OUTPUTS[OPERATIONS[operation_id]["runner"]])
+    # Every step declares warnings; a test run has none.
+    result.setdefault("warnings", [])
     # Nothing was sent. "failed" + definitely-no-effect is the pair Core accepts
     # for "no external effect happened"; an extension may not report "suppressed".
     result["external_effect_status"] = "failed"

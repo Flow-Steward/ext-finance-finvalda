@@ -336,22 +336,55 @@ def client_by_code(
     return the_row(describe(context, "Clients", {"Codes": [code]}, columns), code, "Clients")
 
 
+_COUNTRY_PREFIX = re.compile(r"^[A-Z]{2}(?=\d)")
+
+
+def _emails(value: Any) -> set[str]:
+    """The addresses of an e-mail field: several may be kept in one, by ";" or ","."""
+    return {a.strip().lower() for a in re.split(r"[;,\s]+", str(value or "")) if a.strip()}
+
+
+def _vat(value: Any) -> str:
+    """A VAT code without spaces or its country prefix: LT100001 and 100001 are one."""
+    text = re.sub(r"\s+", "", str(value or "")).upper()
+    return _COUNTRY_PREFIX.sub("", text)
+
+
+def _company(value: Any) -> str:
+    return re.sub(r"\s+", "", str(value or "")).upper()
+
+
+def same_client_value(column: str, found: Any, wanted: Any) -> bool:
+    """Whether a client's ``column`` holds ``wanted``, compared as that value is kept:
+    e-mail without case, any of several addresses in the field; VAT code without
+    spaces or country prefix; company code without spaces."""
+    if column == "email":
+        return bool(_emails(wanted)) and _emails(wanted) <= _emails(found)
+    if column == "vat_payer_code":
+        return bool(_vat(wanted)) and _vat(found) == _vat(wanted)
+    return bool(_company(wanted)) and _company(found) == _company(wanted)
+
+
 def clients_with(
     context: Any, key: str, value: str, column: str, columns: list[str] | None = None
 ) -> list[dict[str, Any]]:
-    """The clients whose ``column`` is exactly ``value`` (a company code, VAT code or
-    e-mail looked up by ``key``).
+    """The clients whose ``column`` is ``value`` (a company code, VAT code or e-mail
+    looked up by ``key``), compared as ``same_client_value`` does.
 
-    Finvalda's filter on these may be loose (contains, a country prefix, several
-    addresses in one field): rows without the exact value are not these clients —
-    left out, with one warning — so a new client can still be created.
+    Finvalda's filter on these may be loose. When it returns clients, but none holds
+    the value, the step cannot tell whether the client exists: a conflict, nothing
+    written, naming the clients found. Only an answer without rows means "no such
+    client".
     """
     answer = describe(context, "Clients", {key: value}, columns)
-    rows = [r for r in answer if _same(field(r, column), value)]
-    if len(rows) < len(answer):
-        warn(
-            f"Finvalda's Clients answer for {column} {value} holds {len(answer) - len(rows)} "
-            "row(s) without exactly that value; they are taken as no match"
+    rows = [r for r in answer if same_client_value(column, field(r, column), value)]
+    if answer and not rows:
+        codes = ", ".join(sorted({row_code(r) or "?" for r in answer})[:5])
+        raise errors.no_effect(
+            errors.CONFLICT,
+            f"Finvalda finds client(s) {codes} for {column} {value}, but none holds exactly "
+            "that value; nothing was written. Give the right client's code, or correct the "
+            "client's data in Finvalda",
         )
     return rows
 

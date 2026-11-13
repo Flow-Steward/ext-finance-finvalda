@@ -30,7 +30,7 @@ Typical jobs it automates:
 ## How it fits into Flow Steward
 
 - **Install** it as an extension: from the catalog, or with
-  `./flow-steward extensions install --archive flowsteward.finvalda-0.1.4.zip`.
+  `./flow-steward extensions install --archive flowsteward.finvalda-0.1.5.zip`.
 - **Connect**: on the extension's Connection page a project adds a Finvalda connection — the web
   service address, the web service user and password, the company, the two import parameters and
   the Finvalda employee. One project can hold several connections, for example one per company.
@@ -127,7 +127,7 @@ folder that contains it:
 ./flow-steward extensions validate flowsteward.finvalda --root "$ROOT" --health --marketplace
 ./flow-steward extensions test flowsteward.finvalda --root "$ROOT"
 ./flow-steward extensions bundle flowsteward.finvalda --root "$ROOT" --with-wheels --confirm
-./flow-steward extensions install --archive dist/extensions/flowsteward.finvalda-0.1.4.zip --confirm
+./flow-steward extensions install --archive dist/extensions/flowsteward.finvalda-0.1.5.zip --confirm
 ```
 
 The contracts, the Coverage and Finvalda API pages and `runtime/registry.json` are generated from

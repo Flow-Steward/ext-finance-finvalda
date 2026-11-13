@@ -1479,10 +1479,12 @@ operations:
     schema:
       type: integer
       description: The file's size.
+  - *id006
   result_fields:
   - result.document_file
   - result.file_name
   - result.size_bytes
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -1588,6 +1590,7 @@ operations:
     schema:
       type: boolean
       description: True when this step attached it.
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -1600,6 +1603,7 @@ operations:
   - result.file_name
   - result.stored
   - result.attached
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -2724,6 +2728,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -2731,6 +2736,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -2977,10 +2983,12 @@ operations:
         properties: {}
   - *id025
   - *id027
+  - *id006
   result_fields:
   - result.records
   - result.count
   - result.response
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3615,6 +3623,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -3622,6 +3631,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3749,6 +3759,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -3756,6 +3767,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -3905,6 +3917,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -3912,6 +3925,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4167,6 +4181,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -4174,6 +4189,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -4520,10 +4536,12 @@ operations:
         properties: {}
   - *id025
   - *id027
+  - *id006
   result_fields:
   - result.records
   - result.count
   - result.response
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -5192,6 +5210,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -5199,6 +5218,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6514,6 +6534,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -6521,6 +6542,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -6840,10 +6862,12 @@ operations:
         properties: {}
   - *id025
   - *id027
+  - *id006
   result_fields:
   - result.records
   - result.count
   - result.response
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7011,6 +7035,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -7018,6 +7043,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7187,6 +7213,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -7194,6 +7221,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -7452,6 +7480,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -7459,6 +7488,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -8432,6 +8462,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -8439,6 +8470,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -8725,6 +8757,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -8732,6 +8765,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -8999,6 +9033,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -9006,6 +9041,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -9273,6 +9309,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -9280,6 +9317,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -12787,6 +12825,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -12794,6 +12833,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -13253,6 +13293,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -13260,6 +13301,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -13469,6 +13511,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -13476,6 +13519,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -14365,10 +14409,12 @@ operations:
         properties: {}
   - *id025
   - *id027
+  - *id006
   result_fields:
   - result.records
   - result.count
   - result.response
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -14551,6 +14597,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -14558,6 +14605,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -15018,9 +15066,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -15340,9 +15390,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -15698,9 +15750,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -16020,9 +16074,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -16379,9 +16435,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -16702,9 +16760,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -16765,10 +16825,12 @@ operations:
         properties: {}
   - *id025
   - *id027
+  - *id006
   result_fields:
   - result.records
   - result.count
   - result.response
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -17476,6 +17538,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -17483,6 +17546,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -17838,9 +17902,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -18160,9 +18226,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -18518,9 +18586,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -18841,9 +18911,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -19199,9 +19271,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -19522,9 +19596,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -19886,9 +19962,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -20208,9 +20286,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -20567,9 +20647,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -20889,9 +20971,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -21255,9 +21339,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -21585,9 +21671,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -21800,10 +21888,12 @@ operations:
         properties: {}
   - *id025
   - *id027
+  - *id006
   result_fields:
   - result.records
   - result.count
   - result.response
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -21916,10 +22006,12 @@ operations:
         properties: {}
   - *id025
   - *id027
+  - *id006
   result_fields:
   - result.records
   - result.count
   - result.response
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -21970,10 +22062,12 @@ operations:
         properties: {}
   - *id025
   - *id027
+  - *id006
   result_fields:
   - result.records
   - result.count
   - result.response
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -22390,9 +22484,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -22713,9 +22809,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -23072,9 +23170,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -23394,9 +23494,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -23752,9 +23854,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -24074,9 +24178,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -24432,9 +24538,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -24791,9 +24899,11 @@ operations:
             type: *id026
             description: Finvalda's column warehouse_to.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -25114,9 +25224,11 @@ operations:
             type: *id026
             description: Finvalda's column primary_cost.
   - *id025
+  - *id006
   result_fields:
   - result.records
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -25275,9 +25387,11 @@ operations:
       - integer
       - 'null'
       description: 0, 1 or 2.
+  - *id006
   result_fields:
   - result.locked
   - result.lock_state
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -25353,10 +25467,12 @@ operations:
   - *id031
   - *id032
   - *id033
+  - *id006
   result_fields:
   - result.document_file
   - result.file_name
   - result.size_bytes
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -25494,6 +25610,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -25501,6 +25618,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -25551,10 +25669,12 @@ operations:
   - *id031
   - *id032
   - *id033
+  - *id006
   result_fields:
   - result.document_file
   - result.file_name
   - result.size_bytes
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -25680,6 +25800,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -25687,6 +25808,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -25726,9 +25848,11 @@ operations:
         type: string
       description: The report file names.
   - *id025
+  - *id006
   result_fields:
   - result.names
   - result.count
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -25771,10 +25895,12 @@ operations:
   - *id031
   - *id032
   - *id033
+  - *id006
   result_fields:
   - result.document_file
   - result.file_name
   - result.size_bytes
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -25835,10 +25961,12 @@ operations:
   - *id031
   - *id032
   - *id033
+  - *id006
   result_fields:
   - result.document_file
   - result.file_name
   - result.size_bytes
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -25939,6 +26067,7 @@ operations:
     value_type: integer
     schema:
       type: integer
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -25950,6 +26079,7 @@ operations:
   result_fields:
   - result.file_name
   - result.size_bytes
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -26044,6 +26174,7 @@ operations:
     value_type: boolean
     schema:
       type: boolean
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -26055,6 +26186,7 @@ operations:
   result_fields:
   - result.attached
   - result.already_attached
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -26133,12 +26265,14 @@ operations:
   - *id031
   - *id032
   - *id033
+  - *id006
   result_fields:
   - result.files
   - result.count
   - result.document_file
   - result.file_name
   - result.size_bytes
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -26183,6 +26317,7 @@ operations:
     value_type: text
     schema:
       type: string
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -26193,6 +26328,7 @@ operations:
       type: boolean
   result_fields:
   - result.file_name
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -26336,6 +26472,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -26343,6 +26480,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -26487,6 +26625,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -26494,6 +26633,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -26633,6 +26773,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -26640,6 +26781,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -26767,6 +26909,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -26774,6 +26917,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -26901,6 +27045,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -26908,6 +27053,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -27019,6 +27165,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -27026,6 +27173,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -27174,6 +27322,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -27181,6 +27330,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -27416,6 +27566,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -27423,6 +27574,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -27540,6 +27692,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -27547,6 +27700,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -27768,6 +27922,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -27775,6 +27930,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -27886,6 +28042,7 @@ operations:
     schema:
       type: integer
       description: How many pages were read.
+  - *id006
   result_fields:
   - result.records
   - result.count
@@ -27893,6 +28050,7 @@ operations:
   - result.next_page
   - result.has_more
   - result.pages_fetched
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -29197,10 +29355,12 @@ operations:
             description: The permitted codes (id1, id2).
   - *id025
   - *id027
+  - *id006
   result_fields:
   - result.permissions
   - result.count
   - result.response
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -29310,6 +29470,7 @@ operations:
     schema:
       type: boolean
       description: True when Finvalda confirmed the change.
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -29322,6 +29483,7 @@ operations:
   - result.item_class
   - result.code
   - result.saved
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -29395,6 +29557,7 @@ operations:
       - string
       - 'null'
   - *id039
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -29407,6 +29570,7 @@ operations:
   - result.item_class
   - result.code
   - result.saved
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -29451,6 +29615,7 @@ operations:
         Groups: Fvs.Prekes, Fvs.Paslaugos, Fvs.Klientas; values by the manual''s names.'
   outputs:
   - *id039
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -29461,6 +29626,7 @@ operations:
       type: boolean
   result_fields:
   - result.saved
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -29540,6 +29706,7 @@ operations:
       maxLength: 20
   outputs:
   - *id039
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -29550,6 +29717,7 @@ operations:
       type: boolean
   result_fields:
   - result.saved
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -29610,6 +29778,7 @@ operations:
     schema:
       type: string
   - *id039
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -29622,6 +29791,7 @@ operations:
   - result.item_class
   - result.code
   - result.saved
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -29710,6 +29880,7 @@ operations:
   - *id013
   - *id014
   - *id015
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -29723,6 +29894,7 @@ operations:
   - result.op_number
   - result.series
   - result.document
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -29789,6 +29961,7 @@ operations:
   - *id013
   - *id014
   - *id015
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -29802,6 +29975,7 @@ operations:
   - result.op_number
   - result.series
   - result.document
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -29872,6 +30046,7 @@ operations:
   - *id013
   - *id014
   - *id015
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -29885,6 +30060,7 @@ operations:
   - result.op_number
   - result.series
   - result.document
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -29932,6 +30108,7 @@ operations:
     schema: *id011
   outputs:
   - *id039
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -29942,6 +30119,7 @@ operations:
       type: boolean
   result_fields:
   - result.saved
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -29989,6 +30167,7 @@ operations:
     schema: *id011
   outputs:
   - *id039
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -29999,6 +30178,7 @@ operations:
       type: boolean
   result_fields:
   - result.saved
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -30053,6 +30233,7 @@ operations:
   - *id013
   - *id014
   - *id015
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -30066,6 +30247,7 @@ operations:
   - result.op_number
   - result.series
   - result.document
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -30164,6 +30346,7 @@ operations:
   - *id013
   - *id014
   - *id015
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -30177,6 +30360,7 @@ operations:
   - result.op_number
   - result.series
   - result.document
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:
@@ -30323,6 +30507,7 @@ operations:
       - string
       - 'null'
       description: Why the export stopped early.
+  - *id006
   result_fields:
   - result.artifact_handle
   - result.filename
@@ -30332,6 +30517,7 @@ operations:
   - result.complete
   - result.resume_page
   - result.stopped_by
+  - result.warnings
   error_codes:
   - invalid_payload
   - invalid_host_envelope
@@ -30402,6 +30588,7 @@ operations:
     schema:
       type: string
   - *id027
+  - *id006
   - name: external_effect_status
     value_type: text
     schema:
@@ -30413,6 +30600,7 @@ operations:
   result_fields:
   - result.method
   - result.response
+  - result.warnings
   - result.external_effect_status
   - result.definitely_no_external_effect
   error_codes:

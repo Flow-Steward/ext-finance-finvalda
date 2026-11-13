@@ -28,9 +28,14 @@ from runtime import shapes  # noqa: E402  (the records' single source)
 import step_names  # noqa: E402  (the step titles and their order)
 
 
+@cache
+def _titles() -> dict[str, str]:
+    return step_names.titles()
+
+
 def step(operation_id: str) -> str:
     """A step's title, for texts that point to another step (``step_names``)."""
-    return step_names.titles()[operation_id]
+    return _titles()[operation_id]
 
 
 CONNECTION = {"name": "connection_ref", "value_type": "connection_ref", "required": True}
@@ -1542,13 +1547,11 @@ def write_specs() -> list[dict[str, Any]]:
         lock_spec(
             "lock_operation",
             "LockOperation",
-            "Lock an operation",
             "Locks an operation so it cannot be changed (LockOperation, manual 3.73).",
         ),
         lock_spec(
             "unlock_operation",
             "UnLockOperation",
-            "Unlock an operation",
             "Unlocks an operation (UnLockOperation, manual 3.73).",
         ),
         {
@@ -1625,7 +1628,7 @@ def write_specs() -> list[dict[str, Any]]:
     ]
 
 
-def lock_spec(operation_id: str, method: str, title: str, description: str) -> dict[str, Any]:
+def lock_spec(operation_id: str, method: str, description: str) -> dict[str, Any]:
     return {
         "operation_id": operation_id,
         "kind": "action",
@@ -2895,7 +2898,15 @@ def operations() -> list[dict[str, Any]]:
         missing = sorted(set(by_id) - set(order))
         extra = sorted(set(order) - set(by_id))
         raise SystemExit(f"step_names.py does not list every step once: {missing} {extra}")
-    return [{**by_id[oid], "display_name": titles[oid]} for oid in order]
+    # Any step can return warnings (values that do not fit their type, rows left out),
+    # so every step declares the output.
+    out = []
+    for oid in order:
+        spec = {**by_id[oid], "display_name": titles[oid]}
+        if not any(o["name"] == "warnings" for o in spec["outputs"]):
+            spec["outputs"] = [*spec["outputs"], WARNINGS]
+        out.append(spec)
+    return out
 
 
 __all__ = ["CHANGE_ENTITIES", "OPTION_LABELS", "operations", "reference"]

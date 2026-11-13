@@ -361,6 +361,17 @@ class FinvaldaTransport:
         if access is None:
             access = field(data, "accessResult")
         text = error_text(data)
+        # An explicit refusal of access comes first: whatever else the answer holds,
+        # nothing was done.
+        if isinstance(access, str) and access.lower() == "accessdenied":
+            raise errors.no_effect(
+                errors.AUTHENTICATION_FAILED,
+                "Finvalda refused the web service user (wrong user name, password or company, or "
+                f"no right to {method_name})" + (f": {text}" if text else ""),
+                failure_class="provider",
+                retryable=False,
+                http_status=status,
+            )
         try:
             code = result_code(data)
             nested_code, nested_text = nested_result(data)
@@ -386,15 +397,6 @@ class FinvaldaTransport:
                 retryable=False,
                 http_status=status,
             ) from exc
-        if isinstance(access, str) and access.lower() == "accessdenied":
-            raise errors.no_effect(
-                errors.AUTHENTICATION_FAILED,
-                "Finvalda refused the web service user (wrong user name, password or company, or "
-                f"no right to {method_name})" + (f": {text}" if text else ""),
-                failure_class="provider",
-                retryable=False,
-                http_status=status,
-            )
         if nested_code:
             # The newer methods (manual 3.79-3.84) answer AccessResult "Success" with
             # their own result object: {"result": {"errorCode", "errorText", ...}}.
@@ -652,7 +654,10 @@ def result_code(
         value = field(data, key)
         if value is None or (isinstance(value, str) and not value.strip()):
             continue
-        if isinstance(value, int) and not isinstance(value, bool):
+        if isinstance(value, (bool, Mapping, list)):
+            # Not a code at all (a flag, an object): the next key is read, as before.
+            continue
+        if isinstance(value, int):
             return value
         if isinstance(value, Decimal) or (
             isinstance(value, str) and _CODE_TEXT.fullmatch(value.strip())
@@ -660,6 +665,7 @@ def result_code(
             whole = whole_of(value)
             if whole is not None:
                 return whole
+        # A text or number that is not a whole number Finvalda would send.
         raise UnreadableCode(key)
     return None
 

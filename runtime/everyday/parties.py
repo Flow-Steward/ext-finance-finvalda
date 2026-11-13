@@ -11,6 +11,7 @@ from ..errors import invalid
 from ..fields import field
 from ..inputs import flag_input
 from .common import (
+    same_client_value,
     client_by_code,
     clients_with,
     the_row,
@@ -122,7 +123,11 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
                 ("vat_code", "vat_payer_code"),
             ):
                 found = str(field(record, column_name) or "").strip()
-                if values[other] and found and not _same(found, values[other]):
+                if (
+                    values[other]
+                    and found
+                    and not same_client_value(column_name, found, values[other])
+                ):
                     raise errors.no_effect(
                         errors.CONFLICT,
                         f"Client {row_code(record)} has {other} {found}, not {values[other]}",

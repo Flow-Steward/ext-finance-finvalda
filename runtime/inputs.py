@@ -29,8 +29,9 @@ _COLUMN_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,60}$")
 
 #: A number as text: up to 15 whole digits and any number of decimals (the places
 #: are checked after, with their own message: 1.000000000 is 1, 0.30000000000000004
-#: has too many).
-_NUMBER_RE = re.compile(r"^-?\d{1,15}(\.\d{1,60})?$")
+#: has too many). The text as a whole is bounded by MAX_NUMBER_TEXT.
+_NUMBER_RE = re.compile(r"^-?\d{1,15}(\.\d+)?$")
+MAX_NUMBER_TEXT = 200
 
 _QUERY_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,60}$")
 
@@ -126,7 +127,9 @@ def decimal_input(
             raise invalid(f"{name} is too large")
         value = plain(value)
     text = str(value).strip().replace(" ", "")
-    if len(text) > 80 or not _NUMBER_RE.fullmatch(text):
+    if len(text) > MAX_NUMBER_TEXT:
+        raise invalid(f"{name} is too long for a number")
+    if not _NUMBER_RE.fullmatch(text):
         raise invalid(f"{name} must be a number with '.' as the decimal point")
     number = Decimal(text)
     if minimum is not None and number < minimum:

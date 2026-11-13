@@ -231,6 +231,7 @@ components:
     - `document_file` (file): A workflow file.
     - `file_name` (text): The file's name.
     - `size_bytes` (whole number): The file's size.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Attach file
 
@@ -252,6 +253,7 @@ components:
     - `file_name` (text): The file's name in Finvalda's register.
     - `stored` (yes/no): True when this step stored the file.
     - `attached` (yes/no): True when this step attached it.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Read stock levels
 
@@ -396,6 +398,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get a client by code
 
@@ -429,6 +432,7 @@ components:
     - `records` (list): The rows of GetKlientasEMail: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get clients changed since a date
 
@@ -490,6 +494,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get client groups
 
@@ -513,6 +518,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get client individual cards
 
@@ -537,6 +543,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get client types and tags
 
@@ -595,6 +602,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get unpaid sales documents
 
@@ -654,6 +662,7 @@ components:
     - `records` (list): The rows Finvalda returned. Columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 - component_id: steps_products
   type: markdown
   title: Products and services
@@ -683,6 +692,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get a product by code
 
@@ -797,6 +807,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get product types and tags
 
@@ -883,6 +894,7 @@ components:
     - `records` (list): The rows of GetPrekesIstorija: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get partner product catalogues
 
@@ -907,6 +919,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get production items
 
@@ -931,6 +944,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get services
 
@@ -955,6 +969,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get a service by code
 
@@ -1089,6 +1104,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get prices by client type
 
@@ -1113,6 +1129,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get prices by item type
 
@@ -1137,6 +1154,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get prices by client type and item type
 
@@ -1161,6 +1179,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get recommended price
 
@@ -1591,6 +1610,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get current stock by receipt
 
@@ -1615,6 +1635,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get stock on a date
 
@@ -1639,6 +1660,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get current stock (older method)
 
@@ -1756,6 +1778,7 @@ components:
     - `records` (list): The rows of GetPrekesSandelyjeOrder: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get warehouses
 
@@ -1796,6 +1819,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 - component_id: steps_sales
   type: markdown
   title: Sales
@@ -1819,6 +1843,7 @@ components:
 
     - `records` (list of records): The sales, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find sales lines
 
@@ -1835,6 +1860,7 @@ components:
 
     - `records` (list of records): The sales lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find sales returns
 
@@ -1853,6 +1879,7 @@ components:
 
     - `records` (list of records): The sales returns, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find sales return lines
 
@@ -1869,6 +1896,7 @@ components:
 
     - `records` (list of records): The sales return lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find sales reservations
 
@@ -1887,6 +1915,7 @@ components:
 
     - `records` (list of records): The sales reservations, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find sales reservation lines
 
@@ -1903,6 +1932,7 @@ components:
 
     - `records` (list of records): The sales reservation lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get order reservation status
 
@@ -1920,6 +1950,7 @@ components:
     - `records` (list): The rows of GetUVMPardRBusena: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get cancelled order reservations
 
@@ -2029,6 +2060,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 - component_id: steps_purchases
   type: markdown
   title: Purchases
@@ -2052,6 +2084,7 @@ components:
 
     - `records` (list of records): The purchases, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find purchase lines
 
@@ -2068,6 +2101,7 @@ components:
 
     - `records` (list of records): The purchase lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find purchase returns
 
@@ -2086,6 +2120,7 @@ components:
 
     - `records` (list of records): The purchase returns, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find purchase return lines
 
@@ -2102,6 +2137,7 @@ components:
 
     - `records` (list of records): The purchase return lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find purchase orders
 
@@ -2120,6 +2156,7 @@ components:
 
     - `records` (list of records): The purchase orders, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find purchase order lines
 
@@ -2136,6 +2173,7 @@ components:
 
     - `records` (list of records): The purchase order lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 - component_id: steps_payments
   type: markdown
   title: Payments
@@ -2159,6 +2197,7 @@ components:
 
     - `records` (list of records): The inflows (incoming payments), with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find incoming payment lines
 
@@ -2175,6 +2214,7 @@ components:
 
     - `records` (list of records): The inflow lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find outgoing payments
 
@@ -2193,6 +2233,7 @@ components:
 
     - `records` (list of records): The disbursements (outgoing payments), with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find outgoing payment lines
 
@@ -2209,6 +2250,7 @@ components:
 
     - `records` (list of records): The disbursement lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find offsets
 
@@ -2227,6 +2269,7 @@ components:
 
     - `records` (list of records): The offsets, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find offset lines
 
@@ -2243,6 +2286,7 @@ components:
 
     - `records` (list of records): The offset lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get settlements of a document
 
@@ -2284,6 +2328,7 @@ components:
     - `records` (list): The rows of GetAtsiskaitymaiUzDokDet: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get settlement lines of a document since a date
 
@@ -2307,6 +2352,7 @@ components:
     - `records` (list): The rows of GetAtsiskaitymaiUzDokDataNuoDet: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get settlement lines by parameters
 
@@ -2323,6 +2369,7 @@ components:
     - `records` (list): The rows of GetAtsiskaitymaiUzDokDataNuoDetParam: columns not documented by Finvalda. Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them.
     - `count` (whole number): How many rows were returned.
     - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get payment terms
 
@@ -2363,6 +2410,7 @@ components:
 
     - `records` (list of records): The internal transfers, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find internal transfer lines
 
@@ -2379,6 +2427,7 @@ components:
 
     - `records` (list of records): The internal transfer lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find receipts
 
@@ -2397,6 +2446,7 @@ components:
 
     - `records` (list of records): The receipts (capitalization), with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find receipt lines
 
@@ -2413,6 +2463,7 @@ components:
 
     - `records` (list of records): The receipt lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find write-offs
 
@@ -2431,6 +2482,7 @@ components:
 
     - `records` (list of records): The write-offs, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find write-off lines
 
@@ -2447,6 +2499,7 @@ components:
 
     - `records` (list of records): The write-off lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find production operations
 
@@ -2465,6 +2518,7 @@ components:
 
     - `records` (list of records): The production, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find other non-analytical operations
 
@@ -2483,6 +2537,7 @@ components:
 
     - `records` (list of records): The other non-analytical operations, with their lines under full_op Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `op_date`, `payment_date`, `issue_date`, `series`, `order_number`, `order_number_a`, `client`, `client_a`, `client_code`, `client_code_a`, `client_vatcode`, `client_vatcode_a`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Find other non-analytical operation lines
 
@@ -2499,6 +2554,7 @@ components:
 
     - `records` (list of records): The other non-analytical operation lines Numbers are exact decimal text. Columns the manual documents with a type are given in it (dates YYYY-MM-DD, times ISO 8601 with Lithuania's offset); other columns are as Finvalda sends them. Fields: `date_created`, `date_edited`, `op_number`, `journal`, `type`, `code`, `title`, `quantity`, `code_n`, `warehouse`, `amount_nc`, `amount`, `vat_nc`, `vat`, `discount_nc`, `discount`, ….
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get activity by objects
 
@@ -2532,6 +2588,7 @@ components:
 
     - `locked` (yes/no)
     - `lock_state` (whole number): 0, 1 or 2.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 - component_id: steps_files
   type: markdown
   title: Files and documents
@@ -2557,6 +2614,7 @@ components:
     - `document_file` (file): A workflow file.
     - `file_name` (text): The file's name.
     - `size_bytes` (whole number): The file's size.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get invoice forms
 
@@ -2581,6 +2639,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Download report PDF
 
@@ -2598,6 +2657,7 @@ components:
     - `document_file` (file): A workflow file.
     - `file_name` (text): The file's name.
     - `size_bytes` (whole number): The file's size.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get reports
 
@@ -2622,6 +2682,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get automatic reports
 
@@ -2637,6 +2698,7 @@ components:
 
     - `names` (list): The report file names.
     - `count` (whole number): How many rows were returned.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Download an automatic report
 
@@ -2653,6 +2715,7 @@ components:
     - `document_file` (file): A workflow file.
     - `file_name` (text): The file's name.
     - `size_bytes` (whole number): The file's size.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Download product image
 
@@ -2671,6 +2734,7 @@ components:
     - `document_file` (file): A workflow file.
     - `file_name` (text): The file's name.
     - `size_bytes` (whole number): The file's size.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Store a document
 
@@ -2693,6 +2757,7 @@ components:
 
     - `file_name` (text)
     - `size_bytes` (whole number)
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Attach a document
 
@@ -2712,6 +2777,7 @@ components:
 
     - `attached` (yes/no)
     - `already_attached` (yes/no)
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get attached documents
 
@@ -2733,6 +2799,7 @@ components:
     - `document_file` (file): A workflow file.
     - `file_name` (text): The file's name.
     - `size_bytes` (whole number): The file's size.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Delete a document
 
@@ -2747,6 +2814,7 @@ components:
     **Results**
 
     - `file_name` (text)
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 - component_id: steps_reference
   type: markdown
   title: Reference data
@@ -2776,6 +2844,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get currency rates
 
@@ -2800,6 +2869,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get document series
 
@@ -2824,6 +2894,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get journal groups
 
@@ -2847,6 +2918,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get operation type groups
 
@@ -2870,6 +2942,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get operation statuses
 
@@ -2893,6 +2966,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get types and tags
 
@@ -2917,6 +2991,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get taxes
 
@@ -2958,6 +3033,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get vehicles
 
@@ -2981,6 +3057,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get calendar events
 
@@ -3005,6 +3082,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get company start date
 
@@ -3028,6 +3106,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `has_more` (yes/no): True when more rows may follow.
     - `pages_fetched` (whole number): How many pages were read.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Get level 1 objects
 
@@ -3260,6 +3339,7 @@ components:
     - `permissions` (list of records): One entry per permission class (manual 3.84). Fields: `perrmisionClass`, `perrmisionCode`, `permittedEntities`.
     - `count` (whole number): How many rows were returned.
     - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 - component_id: steps_records
   type: markdown
   title: Records
@@ -3283,6 +3363,7 @@ components:
     - `item_class` (text)
     - `code` (text): The new record's code.
     - `saved` (yes/no): True when Finvalda confirmed the change.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Update a record
 
@@ -3302,6 +3383,7 @@ components:
     - `item_class` (text)
     - `code` (text)
     - `saved` (yes/no): True when Finvalda confirmed the change.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Update many records
 
@@ -3316,6 +3398,7 @@ components:
     **Results**
 
     - `saved` (yes/no): True when Finvalda confirmed the change.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Add a record to a group
 
@@ -3333,6 +3416,7 @@ components:
     **Results**
 
     - `saved` (yes/no): True when Finvalda confirmed the change.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Delete a record
 
@@ -3350,6 +3434,7 @@ components:
     - `item_class` (text)
     - `code` (text)
     - `saved` (yes/no): True when Finvalda confirmed the change.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 - component_id: steps_operations
   type: markdown
   title: Operations
@@ -3374,6 +3459,7 @@ components:
     - `op_number` (whole number): Its number in the journal.
     - `series` (text): Its document series.
     - `document` (text): Its document number.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Change an operation
 
@@ -3393,6 +3479,7 @@ components:
     - `op_number` (whole number): Its number in the journal.
     - `series` (text): Its document series.
     - `document` (text): Its document number.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Delete an operation
 
@@ -3413,6 +3500,7 @@ components:
     - `op_number` (whole number): Its number in the journal.
     - `series` (text): Its document series.
     - `document` (text): Its document number.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Lock an operation
 
@@ -3429,6 +3517,7 @@ components:
     **Results**
 
     - `saved` (yes/no): True when Finvalda confirmed the change.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Unlock an operation
 
@@ -3445,6 +3534,7 @@ components:
     **Results**
 
     - `saved` (yes/no): True when Finvalda confirmed the change.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Move an operation to another journal
 
@@ -3464,6 +3554,7 @@ components:
     - `op_number` (whole number): Its number in the journal.
     - `series` (text): Its document series.
     - `document` (text): Its document number.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Copy an operation
 
@@ -3489,6 +3580,7 @@ components:
     - `op_number` (whole number): Its number in the journal.
     - `series` (text): Its document series.
     - `document` (text): Its document number.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 - component_id: steps_any
   type: markdown
   title: Any list or method
@@ -3519,6 +3611,7 @@ components:
     - `complete` (yes/no): True when the last page was reached.
     - `resume_page` (whole number): The page to continue from.
     - `stopped_by` (text): Why the export stopped early.
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
     ### Call a Finvalda method
 
@@ -3537,3 +3630,4 @@ components:
 
     - `method` (text)
     - `response` (object): The rest of Finvalda's answer, as sent: everything but the rows and the status fields (null when there is nothing else).
+    - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).

@@ -199,25 +199,15 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
-    client = text("client_code", inputs, 15, required=True)
-    as_of = date_input("as_of", inputs.get("as_of")) or today()
-    # The same strict lookup by code as Find or create client.
-    found = client_by_code(context, client, ["code", "title", "debt", "current_debt"])
-    if found is None:
-        raise errors.no_effect(errors.NOT_FOUND, f"Finvalda has no client {client}")
-    rows = [found]
-    reply = context.call(
-        "GetNeapmoketiKliDok",
-        verb="GET",
-        query=[("sKlientoKodas", client)],
-        mutating=False,
-        language="lt",
-    )
+def _debt_documents(
+    data: Mapping[str, Any], as_of: str
+) -> tuple[Decimal, Decimal, int, list[dict[str, Any]]]:
+    """The unpaid documents, their total, the overdue part and how many amounts were
+    left out of the totals as too large to be a debt."""
     documents = []
     unpaid = overdue = Decimal(0)
     left_out = 0
-    for row in rows_of(reply.data, strict=False):
+    for row in rows_of(data, strict=False):
         if not isinstance(row, Mapping):
             continue
         remaining = decimal_of(field(row, "likusi_skola"))
@@ -229,21 +219,39 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
             # No real debt is this large: the document is returned, not summed.
             left_out += 1
         elif remaining:
-            # Summed with room for every digit, so no cent is lost before rounding.
-            with localcontext() as context:
-                context.prec = SUM_PRECISION
-                unpaid += remaining
-                if late:
-                    overdue += remaining
+            unpaid += remaining
+            if late:
+                overdue += remaining
         document = shape("debt_document", row)
         document["overdue"] = late
         documents.append(document)
+    return unpaid, overdue, left_out, documents
+
+
+def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
+    client = text("client_code", inputs, 15, required=True)
+    as_of = date_input("as_of", inputs.get("as_of")) or today()
+    # The same strict lookup by code as Find or create client.
+    record = client_by_code(context, client, ["code", "title", "debt", "current_debt"])
+    if record is None:
+        raise errors.no_effect(errors.NOT_FOUND, f"Finvalda has no client {client}")
+    reply = context.call(
+        "GetNeapmoketiKliDok",
+        verb="GET",
+        query=[("sKlientoKodas", client)],
+        mutating=False,
+        language="lt",
+    )
+    # Summed with room for every digit of the amounts summed, so no cent is lost
+    # before rounding; one Decimal context for the whole loop.
+    with localcontext() as decimal_ctx:
+        decimal_ctx.prec = SUM_PRECISION
+        unpaid, overdue, left_out, documents = _debt_documents(reply.data, as_of)
     if left_out:
         warn(
             f"{left_out} unpaid document(s) show an amount too large to be a debt; they are "
             "returned but not counted in the totals"
         )
-    record = rows[0]
     return {
         "client_code": client,
         "client_name": field(record, "title"),
@@ -259,8 +267,9 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-#: Amounts summed in the debt totals: up to 10^18 (Finvalda's sums are Numeric(14,2)),
-#: added with enough precision for every digit of them.
+#: Finvalda keeps amounts as Numeric(14,2): under 10^12. The totals take amounts up
+#: to 10^18 — a wide margin over that — and leave anything larger out (it cannot be a
+#: real debt), adding with 60 digits of precision so no cent of them is lost.
 MAX_SUMMED_EXPONENT = 18
 SUM_PRECISION = 60
 
