@@ -179,6 +179,18 @@ def widget_for(item: dict[str, Any]) -> str:
     return "text"
 
 
+FORM_PLACEHOLDERS = {
+    (
+        "create_sales_invoice",
+        "lines",
+    ): '[{"code":"PRODUCT01","quantity":2,"price":12.5,"warehouse":"MAIN"}]',
+    ("find_or_create_client", "name"): "Example customer Ltd",
+    ("find_or_create_product", "name"): "Example product",
+    ("find_or_create_service", "name"): "Example service",
+    ("changes_since", "since"): "2026-01-01",
+}
+
+
 def form_for(spec: dict[str, Any]) -> dict[str, Any]:
     fields = []
     for item in spec["inputs"]:
@@ -209,6 +221,9 @@ def form_for(spec: dict[str, Any]) -> dict[str, Any]:
             field["options"] = [
                 {"label": labels.get(v, str(v)), "value": v} for v in schema["enum"]
             ]
+        example = FORM_PLACEHOLDERS.get((spec["operation_id"], item["name"]))
+        if example is not None:
+            field["placeholder"] = example
         fields.append(field)
     return {"operation_id": spec["operation_id"], "title": spec["display_name"], "fields": fields}
 

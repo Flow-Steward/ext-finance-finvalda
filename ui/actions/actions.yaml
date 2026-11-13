@@ -617,7 +617,7 @@ actions:
   - timeout_unknown
   - artifact_input_unavailable
 - action_id: stock_levels
-  title: Stock levels
+  title: Read stock levels
   description: 'Current stock of products by warehouse: quantity, quantity with reservations and cost.'
   required_scopes:
   - extension:invoke
@@ -668,7 +668,7 @@ actions:
   - redirect_rejected
   - blocked_address
 - action_id: product_prices
-  title: Product prices
+  title: Read product prices
   description: The six sales prices and the purchase price of products, and a client's special prices
     and discounts when a client is given.
   required_scopes:
@@ -710,7 +710,7 @@ actions:
   - redirect_rejected
   - blocked_address
 - action_id: client_debt
-  title: Client debt
+  title: Read client debt
   description: A client's current debt and unpaid sales documents, with the overdue part.
   required_scopes:
   - extension:invoke
@@ -755,7 +755,7 @@ actions:
   - redirect_rejected
   - blocked_address
 - action_id: changes_since
-  title: Changes since
+  title: Read records changed since a date
   description: 'Records or operations created or edited on or after a date: clients, products, services,
     sales, purchases, inflows, disbursements, page by page in a fixed order. Finvalda filters by date
     only, so asking again with the same date returns that day''s records again — skip them by code; nothing

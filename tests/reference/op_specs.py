@@ -2267,7 +2267,7 @@ LINE_ITEM = {
         "warehouse": {
             "type": "string",
             "maxLength": 10,
-            "description": "Products: the warehouse. Default: the step's warehouse.",
+            "description": "Products: an existing warehouse code is required here or in the step's Warehouse field.",
         },
         "amount_eur": {
             "type": ["number", "string"],
@@ -2773,7 +2773,7 @@ def everyday_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "stock_levels",
-            "display_name": "Stock levels",
+            "display_name": "Read stock levels",
             "kind": "source",
             "calls": ["GetDescriptions type=CurrentStock"],
             "description": "Current stock of products by warehouse: quantity, quantity with reservations and cost.",
@@ -2810,7 +2810,7 @@ def everyday_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "product_prices",
-            "display_name": "Product prices",
+            "display_name": "Read product prices",
             "kind": "source",
             "calls": ["GetDescriptions type=Products", "GetDescriptions type=Prices"],
             "description": "The six sales prices and the purchase price of products, and a client's special prices and discounts when a client is given.",
@@ -2834,7 +2834,7 @@ def everyday_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "client_debt",
-            "display_name": "Client debt",
+            "display_name": "Read client debt",
             "kind": "source",
             "calls": ["GetDescriptions type=Clients", "GetNeapmoketiKliDok"],
             "description": "A client's current debt and unpaid sales documents, with the overdue part.",
@@ -2855,7 +2855,7 @@ def everyday_specs() -> list[dict[str, Any]]:
         },
         {
             "operation_id": "changes_since",
-            "display_name": "Changes since",
+            "display_name": "Read records changed since a date",
             "kind": "source",
             "calls": ["GetDescriptions (EditedFrom)", "GetOperations (DateEditedFrom)"],
             "description": "Records or operations created or edited on or after a date: clients, products, services, sales, purchases, inflows, disbursements, page by page in a fixed order. Finvalda filters by date only, so asking again with the same date returns that day's records again — skip them by code; nothing is lost.",

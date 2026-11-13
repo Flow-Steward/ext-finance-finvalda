@@ -253,7 +253,7 @@ components:
     - `stored` (yes/no): True when this step stored the file.
     - `attached` (yes/no): True when this step attached it.
 
-    ### Stock levels
+    ### Read stock levels
 
     Current stock of products by warehouse: quantity, quantity with reservations and cost.
 
@@ -275,7 +275,7 @@ components:
     - `next_page` (whole number): The page to read next, or null.
     - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
-    ### Product prices
+    ### Read product prices
 
     The six sales prices and the purchase price of products, and a client's special prices and discounts when a client is given.
 
@@ -293,7 +293,7 @@ components:
     - `count` (whole number): How many rows were returned.
     - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
-    ### Client debt
+    ### Read client debt
 
     A client's current debt and unpaid sales documents, with the overdue part.
 
@@ -315,7 +315,7 @@ components:
     - `count` (whole number): How many rows were returned.
     - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
 
-    ### Changes since
+    ### Read records changed since a date
 
     Records or operations created or edited on or after a date: clients, products, services, sales, purchases, inflows, disbursements, page by page in a fixed order. Finvalda filters by date only, so asking again with the same date returns that day's records again — skip them by code; nothing is lost.
 

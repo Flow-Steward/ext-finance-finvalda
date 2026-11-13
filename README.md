@@ -1,5 +1,8 @@
 # Finvalda for Flow Steward
 
+See the [workflow action guide](docs/workflow-actions.md) for setup, invoice examples,
+paging and advanced-action inputs.
+
 Bring Finvalda accounting and business records into Flow Steward through the FvsServicePure web service. Everyday steps find or create clients, products and services, prepare sales and purchase invoices, register incoming or outgoing payments and work with invoice PDFs and attachments. Client searches can use business identifiers or email, while product searches can use codes or barcodes.
 
 Read warehouse stock, reserved quantities, costs, sales and purchase prices, client-specific prices and outstanding debt. Date-based change reads expose clients, products, services, sales, purchases and payments for incremental exchange with other systems. Files move through Flow Steward storage, so a workflow can pass an invoice PDF to another document, email or archival step.
@@ -27,7 +30,7 @@ Typical jobs it automates:
 ## How it fits into Flow Steward
 
 - **Install** it as an extension: from the catalog, or with
-  `./flow-steward extensions install --archive flowsteward.finvalda-0.1.1.zip`.
+  `./flow-steward extensions install --archive flowsteward.finvalda-0.1.2.zip`.
 - **Connect**: on the extension's Connection page a project adds a Finvalda connection — the web
   service address, the web service user and password, the company, the two import parameters and
   the Finvalda employee. One project can hold several connections, for example one per company.
@@ -75,10 +78,10 @@ Everyday steps:
 - **Download invoice PDF** — prints a sale or purchase with an invoice form to a workflow file.
 - **Attach file** — stores a workflow file in Finvalda and attaches it to an operation, a client or
   a product.
-- **Stock levels** — current stock by warehouse: quantity, quantity with reservations, cost.
-- **Product prices** — the six sales prices and the purchase price, and a client's special prices.
-- **Client debt** — a client's debt and unpaid documents, with the overdue part.
-- **Changes since** — clients, products, services, sales, purchases or payments created or edited
+- **Read stock levels** — current stock by warehouse: quantity, quantity with reservations, cost.
+- **Read product prices** — the six sales prices and the purchase price, and a client's special prices.
+- **Read client debt** — a client's debt and unpaid documents, with the overdue part.
+- **Read records changed since a date** — clients, products, services, sales, purchases or payments created or edited
   on or after a date, page by page.
 
 Every documented method of the web service also has its own step, **160 `Advanced · …` steps** in
@@ -120,7 +123,7 @@ folder that contains it:
 ./flow-steward extensions validate flowsteward.finvalda --root "$ROOT" --health --marketplace
 ./flow-steward extensions test flowsteward.finvalda --root "$ROOT"
 ./flow-steward extensions bundle flowsteward.finvalda --root "$ROOT" --with-wheels --confirm
-./flow-steward extensions install --archive dist/extensions/flowsteward.finvalda-0.1.1.zip --confirm
+./flow-steward extensions install --archive dist/extensions/flowsteward.finvalda-0.1.2.zip --confirm
 ```
 
 The contracts, the Coverage and Finvalda API pages and `runtime/registry.json` are generated from

@@ -32,6 +32,7 @@ forms:
     widget_type: text
     required: false
     help_text: The name, needed when the client has to be created.
+    placeholder: Example customer Ltd
   - name: address
     label: Address
     widget_type: text
@@ -86,6 +87,7 @@ forms:
     widget_type: text
     required: false
     help_text: The name, needed when the product has to be created.
+    placeholder: Example product
   - name: unit
     label: Unit
     widget_type: text
@@ -135,6 +137,7 @@ forms:
     widget_type: text
     required: false
     help_text: The name, needed when the service has to be created.
+    placeholder: Example service
   - name: unit
     label: Unit
     widget_type: text
@@ -220,6 +223,7 @@ forms:
     required: true
     help_text: 'The lines, 1 to 200: kind (product or service), code, quantity, price without VAT, discount_percent,
       vat_percent, warehouse.'
+    placeholder: '[{"code":"PRODUCT01","quantity":2,"price":12.5,"warehouse":"MAIN"}]'
   - name: import_parameter
     label: Import parameter
     widget_type: text
@@ -450,7 +454,7 @@ forms:
     required: false
     help_text: A description of the file.
 - operation_id: stock_levels
-  title: Stock levels
+  title: Read stock levels
   fields:
   - name: product_codes
     label: Products
@@ -478,7 +482,7 @@ forms:
     required: false
     help_text: The page to read, from 1; pass next_page to continue.
 - operation_id: product_prices
-  title: Product prices
+  title: Read product prices
   fields:
   - name: product_codes
     label: Products
@@ -491,7 +495,7 @@ forms:
     required: false
     help_text: Also read this client's special prices.
 - operation_id: client_debt
-  title: Client debt
+  title: Read client debt
   fields:
   - name: client_code
     label: Client code
@@ -504,7 +508,7 @@ forms:
     required: false
     help_text: 'The date overdue is counted at, YYYY-MM-DD. Default: today.'
 - operation_id: changes_since
-  title: Changes since
+  title: Read records changed since a date
   fields:
   - name: entity
     label: What
@@ -531,6 +535,7 @@ forms:
     widget_type: text
     required: true
     help_text: A date, YYYY-MM-DD; an ISO 8601 time is taken as its date in Lithuania.
+    placeholder: '2026-01-01'
   - name: page
     label: Page
     widget_type: number

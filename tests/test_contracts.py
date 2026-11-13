@@ -187,7 +187,7 @@ def test_connection_page_matches_the_connection_type() -> None:
 
 def test_manifest_basics() -> None:
     manifest = _load("extension.yaml")
-    assert manifest["extension_id"] == "flowsteward.finvalda" and manifest["version"] == "0.1.1"
+    assert manifest["extension_id"] == "flowsteward.finvalda" and manifest["version"] == "0.1.2"
     assert manifest["egress"] == {"connection_fields": ["finvalda.base_url"]}
     assert (
         manifest["vendor"]["website_url"] == "https://github.com/Flow-Steward/ext-finance-finvalda"
