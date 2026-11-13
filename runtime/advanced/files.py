@@ -14,6 +14,7 @@ from flowsteward_extension_sdk import (
 )
 
 from .. import catalog, errors
+from ..shapes import warn
 from ..context import Context
 from ..errors import ExtensionError, invalid
 from ..fields import field
@@ -421,8 +422,21 @@ def run_attached_documents(context: Context, spec: Mapping[str, Any]) -> dict[st
     wanted = text_input("file_name", inputs.get("file_name"), limit=200)
     reply = context.call("GetAttachedDocument", verb="GET", query=query, mutating=False)
     files = attached_files(reply.data)
+    # A file whose content is not hex is listed with no size and a warning; it is an
+    # error only when it is the file asked for (below).
+    sizes: list[int | None] = []
+    broken = 0
+    for attached in files:
+        try:
+            sizes.append(attached_size(attached))
+        except ExtensionError:
+            sizes.append(None)
+            broken += 1
+    if broken:
+        warn(f"{broken} attached file(s) have content that is not hex; their size is unknown")
     listing = [
-        {"name": errors.safe_text(f["name"], 200), "size_bytes": attached_size(f)} for f in files
+        {"name": errors.safe_text(f["name"], 200), "size_bytes": size}
+        for f, size in zip(files, sizes)
     ]
     result: dict[str, Any] = {
         "files": listing,

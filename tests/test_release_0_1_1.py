@@ -38,20 +38,28 @@ def test_client_lookup_with_only_other_codes_writes_nothing() -> None:
     assert response["error_code"] == "invalid_response" and fake.writes() == []
 
 
-# 3: a result code is read, or it is a failure
+# 3: a result code is read; a code that cannot be read is never taken for success
+# (R1 of the next review: unknown after a write, invalid after a read)
 @pytest.mark.parametrize(
     "data, code",
     [
         ({"nResult": "0"}, 0),
         ({"nResult": "12"}, 12),
-        ({"nResult": "9" * 30}, -1),
         ({"nResult": Decimal("0.0")}, 0),
-        ({"nResult": "١"}, None),
-        ({"nResult": "x", "errorCode": "3"}, 3),
+        ({"errorCode": "3"}, 3),
+        ({"nResult": "", "errorCode": "3"}, 3),
     ],
 )
 def test_result_codes(data: dict[str, Any], code: Any) -> None:
     assert result_code(data) == code
+
+
+@pytest.mark.parametrize("value", ["9" * 30, "١", "x", "0.5"])
+def test_unreadable_result_codes_raise(value: str) -> None:
+    from runtime.transport import UnreadableCode
+
+    with pytest.raises(UnreadableCode):
+        result_code({"nResult": value})
 
 
 def test_unreadable_code_on_a_read_is_a_failure() -> None:
@@ -71,8 +79,9 @@ def test_large_amounts_are_kept() -> None:
         },
     )
     result = run(fake, "client_debt", {"client_code": "K1"})["result"]
+    # Kept exactly in the document; too large to be a debt, so not in the totals.
     assert result["count"] == 1 and result["documents"][0]["remaining"] == "1E+50"
-    assert not result.get("warnings")
+    assert result["unpaid_total"] == "0.00" and result["warnings"]
 
 
 # 5: tiny and huge input numbers get the right message

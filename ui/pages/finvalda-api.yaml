@@ -220,7 +220,7 @@ components:
 
     **Inputs**
 
-    - `invoice_form` (text): The form's code, for example PARD_01 (List · Invoice forms).
+    - `invoice_form` (text): The form's code, for example PARD_01 (see the Get invoice forms step).
     - `journal` (text, optional): The operation's journal; with op_number.
     - `op_number` (whole number, optional): The operation's number; with journal.
     - `series` (text, optional): The document series; with document.
@@ -346,7 +346,7 @@ components:
 
     - Every step calls the Finvalda web service of your company (the FvsServicePure interface) with the web service user of the connection. A step can do exactly what that user may do in Finvalda.
     - Writes of operations use an import parameter (sParametras): a preset made in Finvalda's FvsNETParamKonfig tool that sets the journal, operation type, series and accounts. New clients, products and services can use an item import parameter the same way. Set defaults on the connection; a step can name another.
-    - The older read methods answer with Lithuanian column names, or English ones when the connection's language is English. The list steps (List · …) and the operation steps (Operations · …) always use English column names.
+    - The older read methods answer with Lithuanian column names, or English ones when the connection's language is English. The list steps (Get …, from GetDescriptions) and the operation steps (Find …, from GetOperations) always use English column names.
 
     ### Inputs
 
@@ -2540,7 +2540,7 @@ components:
 
     ### Print an invoice form to PDF
 
-    Prints an operation with one of Finvalda's invoice forms to a PDF workflow file (MakeInvoice, manual 3.75). The forms are listed by List · Invoice forms.
+    Prints an operation with one of Finvalda's invoice forms to a PDF workflow file (MakeInvoice, manual 3.75). The forms are listed by the Get invoice forms step.
 
     Action id `make_invoice` · reads only · Finvalda: `GET MakeInvoice`
 
@@ -2584,7 +2584,7 @@ components:
 
     ### Download report PDF
 
-    Runs one of Finvalda's reports to a PDF workflow file (MakeReport, manual 3.76): balance, profit, sales and purchase lists, debts, stock. The codes are listed by List · Reports.
+    Runs one of Finvalda's reports to a PDF workflow file (MakeReport, manual 3.76): balance, profit, sales and purchase lists, debts, stock. The codes are listed by the Get reports step.
 
     Action id `make_report` · reads only · Finvalda: `GET MakeReport`
 

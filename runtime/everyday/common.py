@@ -324,6 +324,38 @@ def _same(a: Any, b: Any) -> bool:
     return str(a or "").strip().upper() == str(b or "").strip().upper()
 
 
+def client_by_code(
+    context: Any, code: str, columns: list[str] | None = None
+) -> dict[str, Any] | None:
+    """The client of this code, or None when Finvalda has none.
+
+    Strict (``the_row``): an answer with rows but none of this code, or several, is
+    invalid_response — "no such client" is never concluded from a filter that was
+    not applied.
+    """
+    return the_row(describe(context, "Clients", {"Codes": [code]}, columns), code, "Clients")
+
+
+def clients_with(
+    context: Any, key: str, value: str, column: str, columns: list[str] | None = None
+) -> list[dict[str, Any]]:
+    """The clients whose ``column`` is exactly ``value`` (a company code, VAT code or
+    e-mail looked up by ``key``).
+
+    Finvalda's filter on these may be loose (contains, a country prefix, several
+    addresses in one field): rows without the exact value are not these clients —
+    left out, with one warning — so a new client can still be created.
+    """
+    answer = describe(context, "Clients", {key: value}, columns)
+    rows = [r for r in answer if _same(field(r, column), value)]
+    if len(rows) < len(answer):
+        warn(
+            f"Finvalda's Clients answer for {column} {value} holds {len(answer) - len(rows)} "
+            "row(s) without exactly that value; they are taken as no match"
+        )
+    return rows
+
+
 def client_code_of(context: Any, inputs: Mapping[str, Any]) -> str:
     """The client's code: given, or found by company code (exactly one client)."""
     code = text("client_code", inputs, 15)
@@ -332,11 +364,7 @@ def client_code_of(context: Any, inputs: Mapping[str, Any]) -> str:
     company = text("client_company_code", inputs, 30)
     if not company:
         raise invalid("Give client_code, or client_company_code to look the client up")
-    rows = [
-        r
-        for r in describe(context, "Clients", {"CompanyCode": company}, ["code", "company_code"])
-        if _same(field(r, "company_code"), company)
-    ]
+    rows = clients_with(context, "CompanyCode", company, "company_code", ["code", "company_code"])
     if not rows:
         raise errors.no_effect(errors.NOT_FOUND, f"No Finvalda client has company code {company}")
     if len(rows) > 1:

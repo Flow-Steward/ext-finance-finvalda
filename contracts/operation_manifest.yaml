@@ -1426,7 +1426,7 @@ operations:
     schema:
       type: string
       title: Invoice form
-      description: The form's code, for example PARD_01 (List · Invoice forms).
+      description: The form's code, for example PARD_01 (see the Get invoice forms step).
       maxLength: 30
   - name: journal
     value_type: text
@@ -25298,7 +25298,7 @@ operations:
 - operation_id: make_invoice
   display_name: Print an invoice form to PDF
   description: Prints an operation with one of Finvalda's invoice forms to a PDF workflow file (MakeInvoice,
-    manual 3.75). The forms are listed by List · Invoice forms.
+    manual 3.75). The forms are listed by the Get invoice forms step.
   operation_kind: source
   category: finance
   connection_type_ids:
@@ -25521,7 +25521,7 @@ operations:
 - operation_id: make_report
   display_name: Download report PDF
   description: 'Runs one of Finvalda''s reports to a PDF workflow file (MakeReport, manual 3.76): balance,
-    profit, sales and purchase lists, debts, stock. The codes are listed by List · Reports.'
+    profit, sales and purchase lists, debts, stock. The codes are listed by the Get reports step.'
   operation_kind: source
   category: finance
   connection_type_ids:
@@ -26125,8 +26125,10 @@ operations:
             type: string
             description: The file's name.
           size_bytes:
-            type: integer
-            description: Its size in bytes.
+            type:
+            - integer
+            - 'null'
+            description: Its size in bytes; null when Finvalda's content of it cannot be read.
   - *id025
   - *id031
   - *id032

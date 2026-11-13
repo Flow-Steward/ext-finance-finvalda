@@ -19,15 +19,26 @@ components:
       services, prices and discounts, stock, sales, purchases, payments, other operations, files and
       documents, reference data, records, operations, and Export and Call at the end. The Finvalda API
       page follows the same order. Step ids are unchanged, so existing workflows keep working.
-    - A lookup answer for a client that shows only other clients is an error, as for products and
-      services; nothing is created.
+    - A lookup by code that shows only other clients is an error, as for products and services;
+      nothing is created.
     - A record created but not found when read back is said so in the warnings.
-    - A result code that cannot be read as a number counts as a failure; the next code field is read
-      when one is not a number.
     - Amounts beyond 10^40 are kept exactly (in scientific form) and rounded to cents safely; very
       small or very large input numbers get a clear message.
     - Attached files: their size is read the same way as their content, and a file too large is
       refused before it is decoded.
+    - Compatible with Flow Steward 0.9.16; the bundle carries BRANDING.md, the provenance of
+      `icon.png` (Finvalda's own square app icon from finvalda.lt, reduced to 128 × 128), as the
+      extension publication standard asks.
+    - A result code that cannot be read is never taken for success or for a refusal: after a write
+      the outcome is reported as unknown, after a read the answer as invalid.
+    - Steps that point to another step name it by its current title.
+    - Client debt totals keep every cent; an amount too large to be a debt is returned but not summed,
+      with a warning.
+    - Attached documents: a file whose content cannot be read is listed without a size (warned); only
+      the file asked for is an error.
+    - Find or create client: a company code, VAT code or e-mail is matched exactly — rows that only
+      resemble it are no match (warned), so the client can be created. Lookups by code stay strict.
+    - Numbers such as 1.000000000 are read as 1; one with more decimal places than allowed says so.
 
     ## 0.1.2
 

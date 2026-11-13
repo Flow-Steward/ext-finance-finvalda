@@ -29,7 +29,7 @@ BEHAVIOUR = """\
 
 - Every step calls the Finvalda web service of your company (the FvsServicePure interface) with the web service user of the connection. A step can do exactly what that user may do in Finvalda.
 - Writes of operations use an import parameter (sParametras): a preset made in Finvalda's FvsNETParamKonfig tool that sets the journal, operation type, series and accounts. New clients, products and services can use an item import parameter the same way. Set defaults on the connection; a step can name another.
-- The older read methods answer with Lithuanian column names, or English ones when the connection's language is English. The list steps (List · …) and the operation steps (Operations · …) always use English column names.
+- The older read methods answer with Lithuanian column names, or English ones when the connection's language is English. The list steps (Get …, from GetDescriptions) and the operation steps (Find …, from GetOperations) always use English column names.
 
 ### Inputs
 
@@ -208,8 +208,8 @@ def coverage_page(cov: dict[str, Any], ops: list[dict[str, Any]]) -> dict[str, A
         f"metodų naudojimo instrukcija\" (revision 110, 2025-04-14) and Finvalda's [Postman collection]({POSTMAN_DOCS}).",
         "",
         f"- **Methods:** {len(methods)} names, each with a step or a reason below.",
-        f"- **Lists (GetDescriptions types):** {len(lists)}, one step each (List · …).",
-        f"- **Operation classes (GetOperations):** {len(classes)}, one step each (Operations · …).",
+        f"- **Lists (GetDescriptions types):** {len(lists)}, one step each (Get …).",
+        f"- **Operation classes (GetOperations):** {len(classes)}, one step each (Find …).",
         f"- **Record and operation classes (writes):** {len(records)}, through Create a record, "
         "Update a record, Create an operation, Change an operation and Delete an operation.",
         f"- **XML twins:** {len(twins)} methods ending in Xml return the same data as their "

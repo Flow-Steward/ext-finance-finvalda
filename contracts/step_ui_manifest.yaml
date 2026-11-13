@@ -372,7 +372,7 @@ forms:
     label: Invoice form
     widget_type: text
     required: true
-    help_text: The form's code, for example PARD_01 (List · Invoice forms).
+    help_text: The form's code, for example PARD_01 (see the Get invoice forms step).
   - name: journal
     label: Journal
     widget_type: text

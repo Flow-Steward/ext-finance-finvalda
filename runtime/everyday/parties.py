@@ -11,6 +11,8 @@ from ..errors import invalid
 from ..fields import field
 from ..inputs import flag_input
 from .common import (
+    client_by_code,
+    clients_with,
     the_row,
     row_code,
     _EMAIL_RE,
@@ -91,16 +93,13 @@ def client_op(context: Any, inputs: Mapping[str, Any], progress: Progress) -> di
         if value is None:
             continue
         wanted = value[0] if isinstance(value, list) else value
-        answer = describe(context, "Clients", {key: value}, CLIENT_COLUMNS)
-        rows = [r for r in answer if _same(field(r, column), wanted)]
-        if answer and not rows:
-            # Rows, but none with the value asked for: the filter was not applied, so
-            # "no such client" cannot be told — as for products and services.
-            raise errors.no_effect(
-                errors.INVALID_RESPONSE,
-                f"Finvalda's Clients answer for {matched_by} {wanted} holds {len(answer)} "
-                "row(s), none with that value",
-            )
+        if matched_by == "code":
+            # By code: strict, as for products and services.
+            by_code = client_by_code(context, wanted, CLIENT_COLUMNS)
+            rows = [by_code] if by_code is not None else []
+        else:
+            # By a secondary value: rows without exactly it are no match (warned).
+            rows = clients_with(context, key, wanted, column, CLIENT_COLUMNS)
         if len(rows) > 1:
             raise errors.no_effect(
                 errors.CONFLICT,

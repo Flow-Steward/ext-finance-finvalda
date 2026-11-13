@@ -55,10 +55,7 @@ def _identity(row: Mapping[str, Any]) -> str:
     number = found["op_number"]
     # A number that is not whole is shown as sent, cut to 20 characters like the
     # journal, so the hint at the end of the message is never cut off.
-    raw = field(row, "op_number")
-    shown = (
-        number if number is not None else errors.safe_text(str(raw), 20) if raw is not None else "?"
-    )
+    shown = number if number is not None else errors.safe_text(field(row, "op_number"), 20) or "?"
     return f"{found['journal'] or '?'} #{shown}"
 
 

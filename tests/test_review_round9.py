@@ -38,7 +38,10 @@ def test_huge_result_code_does_not_hang() -> None:
     from runtime.transport import result_code
 
     started = time.monotonic()
-    assert result_code({"nResult": "9" * 5000}) == -1
+    from runtime.transport import UnreadableCode
+
+    with pytest.raises(UnreadableCode):
+        result_code({"nResult": "9" * 5000})
     assert time.monotonic() - started < 1
 
 

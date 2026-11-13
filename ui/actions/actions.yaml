@@ -6023,7 +6023,7 @@ actions:
 - action_id: make_invoice
   title: Print an invoice form to PDF
   description: Prints an operation with one of Finvalda's invoice forms to a PDF workflow file (MakeInvoice,
-    manual 3.75). The forms are listed by List · Invoice forms.
+    manual 3.75). The forms are listed by the Get invoice forms step.
   required_scopes:
   - extension:invoke
   handler:
@@ -6130,7 +6130,7 @@ actions:
 - action_id: make_report
   title: Download report PDF
   description: 'Runs one of Finvalda''s reports to a PDF workflow file (MakeReport, manual 3.76): balance,
-    profit, sales and purchase lists, debts, stock. The codes are listed by List · Reports.'
+    profit, sales and purchase lists, debts, stock. The codes are listed by the Get reports step.'
   required_scopes:
   - extension:invoke
   handler:

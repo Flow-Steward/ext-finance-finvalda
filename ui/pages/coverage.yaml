@@ -11,8 +11,8 @@ components:
     The steps cover the whole web service Finvalda documents: the manual "FVS Webserviso metodų naudojimo instrukcija" (revision 110, 2025-04-14) and Finvalda's [Postman collection](https://documenter.getpostman.com/view/7208231/2s8YmRMLvd).
 
     - **Methods:** 170 names, each with a step or a reason below.
-    - **Lists (GetDescriptions types):** 34, one step each (List · …).
-    - **Operation classes (GetOperations):** 27, one step each (Operations · …).
+    - **Lists (GetDescriptions types):** 34, one step each (Get …).
+    - **Operation classes (GetOperations):** 27, one step each (Find …).
     - **Record and operation classes (writes):** 111, through Create a record, Update a record, Create an operation, Change an operation and Delete an operation.
     - **XML twins:** 57 methods ending in Xml return the same data as their method without Xml, as an XML string. Each is offered by that method's step, which returns the data as JSON (tests/reference/coverage.json lists every pair).
 

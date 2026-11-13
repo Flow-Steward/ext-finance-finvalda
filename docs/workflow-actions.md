@@ -1,7 +1,8 @@
 # Finvalda workflow actions
 
 Choose an everyday action for common invoices, clients, products and payments.
-Choose **Advanced ·** actions when you need a particular provider method or record shape.
+Choose one of the other actions — each named by what it does, such as **Get currency rates**
+or **Find sales lines** — when you need a particular provider method or record shape.
 Action IDs in parentheses remain compatible with existing workflows.
 
 ## Connect and check access
@@ -34,11 +35,11 @@ archive or document steps, rather than local filesystem paths.
 
 Read subsequent pages using **Page** and **Rows per page**. Finvalda filters by date, so repeating a date repeats that day; deduplicate by record code.
 
-**Advanced · Export a list to a file** (`export_list`) saves a GetDescriptions list as JSONL. Use its continuation outputs when an export stops early.
+**Export a list to a file** (`export_list`) saves a GetDescriptions list as JSONL. Use its continuation outputs when an export stops early.
 
 ## Work with advanced records
 
-**Advanced ·** description-list actions read specific record families; operation-list actions read journals and document classes. Record and document write actions accept the corresponding Finvalda fields and import parameters. Prefer an everyday action for invoices or payments. Use **Advanced · Call a Finvalda method** only when you know the exact supported service method and its parameters.
+The **Get …** list actions read specific record families (**Get clients**, **Get chart of accounts**); the **Find …** actions read journals and document classes (**Find sales**, **Find incoming payments**). Record and document write actions accept the corresponding Finvalda fields and import parameters. Prefer an everyday action for invoices or payments. Use **Call a Finvalda method** only when you know the exact supported service method and its parameters.
 
 Read actions still contact the provider during a workflow test. Write actions are
 suppressed in test mode. A lost response after a write can leave an unknown

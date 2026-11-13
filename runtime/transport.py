@@ -361,8 +361,31 @@ class FinvaldaTransport:
         if access is None:
             access = field(data, "accessResult")
         text = error_text(data)
-        code = result_code(data)
-        nested_code, nested_text = nested_result(data)
+        try:
+            code = result_code(data)
+            nested_code, nested_text = nested_result(data)
+        except UnreadableCode as exc:
+            # Neither success nor a known refusal: after a write the outcome is unknown,
+            # after a read the answer cannot be used.
+            if mutating:
+                raise ExtensionError(
+                    errors.TIMEOUT_UNKNOWN,
+                    f"Finvalda answered {method_name} with a result code ({exc}) that cannot be "
+                    "read; check in Finvalda whether the change was saved before running the "
+                    "step again",
+                    failure_class="provider",
+                    retryable=False,
+                    definitely_no_external_effect=False,
+                    external_effect_status="timeout_unknown",
+                    http_status=status,
+                ) from exc
+            raise errors.no_effect(
+                errors.INVALID_RESPONSE,
+                f"Finvalda answered {method_name} with a result code ({exc}) that cannot be read",
+                failure_class="provider",
+                retryable=False,
+                http_status=status,
+            ) from exc
         if isinstance(access, str) and access.lower() == "accessdenied":
             raise errors.no_effect(
                 errors.AUTHENTICATION_FAILED,
@@ -609,27 +632,35 @@ def error_text(data: Mapping[str, Any]) -> str:
     return ""
 
 
-_CODE_TEXT = re.compile(r"-?[0-9]+(\.0+)?", re.ASCII)
-#: The code given for a result code that cannot be read as a number: never 0.
-UNREADABLE_CODE = -1
+_CODE_TEXT = re.compile(r"-?[0-9]{1,19}(\.0+)?", re.ASCII)
+
+
+class UnreadableCode(ValueError):
+    """A result code field that is there but is not a whole number Finvalda would send
+    ("0.5", thirty digits, Unicode digits, text): nothing can be concluded from it."""
 
 
 def result_code(
     data: Mapping[str, Any], keys: tuple[str, ...] = ("nResult", "errorCode")
 ) -> int | None:
+    """The first result code present among ``keys``; None when none is there.
+
+    A field that is there but cannot be read raises ``UnreadableCode``: it is never
+    taken for success, and never given a made-up value.
+    """
     for key in keys:
         value = field(data, key)
-        if isinstance(value, bool):
+        if value is None or (isinstance(value, str) and not value.strip()):
             continue
-        if isinstance(value, int):
+        if isinstance(value, int) and not isinstance(value, bool):
             return value
         if isinstance(value, Decimal) or (
             isinstance(value, str) and _CODE_TEXT.fullmatch(value.strip())
         ):
-            # A code too long to read is still a code, and not 0: a failure.
             whole = whole_of(value)
-            return whole if whole is not None else UNREADABLE_CODE
-        # Anything else is no code (Unicode digits, text): the next key is read.
+            if whole is not None:
+                return whole
+        raise UnreadableCode(key)
     return None
 
 

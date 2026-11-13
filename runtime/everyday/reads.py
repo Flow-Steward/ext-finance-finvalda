@@ -8,7 +8,7 @@ from itertools import groupby
 from collections.abc import Callable, Mapping
 from datetime import date as Date
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, localcontext
 from typing import Any
 
 from ..shapes import shape, warn
@@ -19,8 +19,9 @@ from ..fields import field
 from ..inputs import date_input, whole_input
 from ..reference_data import CHANGE_ENTITIES, DESCRIPTION_TYPES
 from ..rows import rows_of
-from ..values import as_decimal, cents, finvalda_date, finvalda_datetime, iso_moment
+from ..values import as_decimal, cents, decimal_of, finvalda_date, finvalda_datetime, iso_moment
 from .common import (
+    client_by_code,
     row_code,
     CLIENT_COLUMNS,
     OPERATION_COLUMNS,
@@ -201,19 +202,11 @@ def prices_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
 def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     client = text("client_code", inputs, 15, required=True)
     as_of = date_input("as_of", inputs.get("as_of")) or today()
-    rows = [
-        r
-        for r in describe(
-            context,
-            "Clients",
-            {"Codes": [client]},
-            ["code", "title", "debt", "current_debt"],
-        )
-        # Strict: a row without its code is invalid_response, never "no such client".
-        if _same(row_code(r), client)
-    ]
-    if not rows:
+    # The same strict lookup by code as Find or create client.
+    found = client_by_code(context, client, ["code", "title", "debt", "current_debt"])
+    if found is None:
         raise errors.no_effect(errors.NOT_FOUND, f"Finvalda has no client {client}")
+    rows = [found]
     reply = context.call(
         "GetNeapmoketiKliDok",
         verb="GET",
@@ -223,21 +216,33 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
     )
     documents = []
     unpaid = overdue = Decimal(0)
+    left_out = 0
     for row in rows_of(reply.data, strict=False):
         if not isinstance(row, Mapping):
             continue
-        remaining = as_decimal(field(row, "likusi_skola"))
+        remaining = decimal_of(field(row, "likusi_skola"))
         due_date = finvalda_date(field(row, "apmokejimo_data"))
         late: bool | None = None
         if due_date is not None and remaining is not None:
-            late = due_date < Date.fromisoformat(as_of) and Decimal(remaining) > 0
-        if remaining:
-            unpaid += Decimal(remaining)
-            if late:
-                overdue += Decimal(remaining)
+            late = due_date < Date.fromisoformat(as_of) and remaining > 0
+        if remaining is not None and remaining.adjusted() > MAX_SUMMED_EXPONENT:
+            # No real debt is this large: the document is returned, not summed.
+            left_out += 1
+        elif remaining:
+            # Summed with room for every digit, so no cent is lost before rounding.
+            with localcontext() as context:
+                context.prec = SUM_PRECISION
+                unpaid += remaining
+                if late:
+                    overdue += remaining
         document = shape("debt_document", row)
         document["overdue"] = late
         documents.append(document)
+    if left_out:
+        warn(
+            f"{left_out} unpaid document(s) show an amount too large to be a debt; they are "
+            "returned but not counted in the totals"
+        )
     record = rows[0]
     return {
         "client_code": client,
@@ -253,6 +258,11 @@ def debt_op(context: Any, inputs: Mapping[str, Any]) -> dict[str, Any]:
         "count": len(documents),
     }
 
+
+#: Amounts summed in the debt totals: up to 10^18 (Finvalda's sums are Numeric(14,2)),
+#: added with enough precision for every digit of them.
+MAX_SUMMED_EXPONENT = 18
+SUM_PRECISION = 60
 
 CHANGES_MAX_ROWS = 20_000
 #: The record each entity of Changes since is returned as.
