@@ -17,7 +17,7 @@ from ..records import check_fields
 from ..rows import op_result
 from ..shapes import shape
 from ..transport import dumps_json
-from ..values import cents, decimal_of
+from ..values import cents, decimal_of, finvalda_datetime, iso_date
 from .common import (
     MAX_LINES,
     Progress,
@@ -256,7 +256,9 @@ def invoice_op(
     created = existing is None
     warnings: list[str] = []
     if existing is not None:
-        same_as_request(existing, client, document, currency, totals)
+        warnings += same_as_request(
+            existing, client, document, currency, totals, str(header["tData"])
+        )
     if existing is None:
         operation = {**header, **lines}
         body = {
@@ -337,8 +339,15 @@ def same_as_request(
     document: str,
     currency: str,
     totals: Totals,
-) -> None:
-    """A document found by number is this one only when its currency and amount match.
+    date: str,
+) -> list[str]:
+    """A document found by number is this one only when its date, currency and amount
+    match; the warning it returns says that its lines were not compared.
+
+    The date comes first: a supplier may use the same number in another year, with the
+    same amount. A document without a readable date cannot be this request. The lines
+    are not in GetOperations' answer (``fullOp`` false), so they are never compared,
+    and the step says so instead of claiming that they are the same.
 
     The manual (3.77) names the header's ``amount`` and ``initial_debt`` columns
     but not whether they include VAT, nor whether a foreign-currency operation shows
@@ -347,6 +356,16 @@ def same_as_request(
     take the card's VAT, so any VAT is accepted for them. Another currency or an
     amount that fits none of these is not this request.
     """
+    found_date = iso_date(finvalda_datetime(field(existing, "op_date")))
+    if found_date != date[:10]:
+        raise errors.no_effect(
+            errors.CONFLICT,
+            f"Document {document} of client {client} is already in Finvalda dated "
+            f"{found_date or 'with no readable date'}, and this request is dated {date[:10]}. "
+            "Nothing was written. If it is this invoice, nothing more needs to be done; if "
+            "it is not (a number used again in another year), give the document a number "
+            "of its own or correct the request before running the step again",
+        )
     found_currency = str(field(existing, "currency") or "").strip().upper()
     amounts = [
         number
@@ -360,7 +379,11 @@ def same_as_request(
         totals.matches(a, eur=False) or (currency != "EUR" and totals.matches(a, eur=True))
         for a in amounts
     ):
-        return
+        return [
+            f"Document {document} of client {client} was already in Finvalda with this "
+            "date, currency and amount; its lines were not compared (Finvalda's operation "
+            "list does not show them): check them in Finvalda if the request may have changed"
+        ]
     shown = f"{amounts[0] if amounts else '?'} {found_currency or '?'}"
     raise errors.no_effect(
         errors.CONFLICT,

@@ -13,6 +13,7 @@ from typing import Any
 
 import pytest
 import yaml
+from runtime.everyday.common import today
 from support import OK, FakeFinvalda, items, run, saved
 
 import main
@@ -119,6 +120,7 @@ def test_different_existing_invoice_is_a_conflict() -> None:
         "client": "K1",
         "journal": "PARD",
         "op_number": 5,
+        "op_date": today(),
         "amount": "999.00",
         "currency": "USD",
     }
@@ -144,6 +146,7 @@ def test_same_existing_invoice_reports_its_own_amount() -> None:
         "client": "K1",
         "journal": "PARD",
         "op_number": 5,
+        "op_date": today(),
         "amount": "6.05",
         "currency": "EUR",
     }

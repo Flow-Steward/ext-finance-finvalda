@@ -7,6 +7,7 @@ from decimal import Decimal
 from typing import Any
 
 import pytest
+from runtime.everyday.common import today
 from support import OK, FakeFinvalda, Files, items, run, saved
 
 from runtime import errors
@@ -704,6 +705,7 @@ def test_attachment_uses_the_read_back_operation_when_the_answer_names_none() ->
     sale = {
         "journal": "PARD",
         "op_number": 77,
+        "op_date": today(),
         "order_number": "S-1",
         "client": "K1",
         "currency": "EUR",
@@ -848,6 +850,7 @@ def test_invoice_rerun_does_not_take_a_refused_store_for_its_file() -> None:
     sale = {
         "journal": "PARD",
         "op_number": 77,
+        "op_date": today(),
         "order_number": "S-1",
         "client": "K1",
         "currency": "EUR",
@@ -926,6 +929,7 @@ def test_a_network_failure_on_store_is_not_taken_for_a_refusal() -> None:
     sale = {
         "journal": "PARD",
         "op_number": 77,
+        "op_date": today(),
         "order_number": "S-1",
         "client": "K1",
         "currency": "EUR",

@@ -10,6 +10,7 @@ from typing import Any
 
 import pytest
 import yaml
+from runtime.everyday.common import today
 from support import BUNDLE, OK, FakeFinvalda, Files, items, run
 
 from runtime.errors import ExtensionError
@@ -75,7 +76,8 @@ _LINE = {"code": "P1", "quantity": "1", "price": "100"}
 
 
 def _invoice(existing: dict[str, Any], **inputs: Any) -> dict[str, Any]:
-    row = {"order_number": "S-1", "client": "K1", "journal": "PARD", "op_number": 5, **existing}
+    row = {"order_number": "S-1", "client": "K1", "journal": "PARD", "op_number": 5}
+    row = {**row, "op_date": today(), **existing}
     fake = FakeFinvalda(GetOperations=items(row))
     response = run(
         fake,

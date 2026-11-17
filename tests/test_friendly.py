@@ -234,6 +234,7 @@ def test_sales_invoice_rerun_returns_the_existing_one() -> None:
         "client": "K1",
         "currency": "EUR",
         "amount": 100.03,
+        "op_date": "2026-11-10",
     }
     fake = FakeFinvalda(GetOperations=items(existing))
     response = run(fake, "create_sales_invoice", INVOICE)
