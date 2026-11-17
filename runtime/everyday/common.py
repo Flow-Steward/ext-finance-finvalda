@@ -435,19 +435,40 @@ def _best_effort(read: Callable[[], Any], warnings: list[str], what: str) -> Any
 def same_document(
     context: Any, op_class: str, document: str, series: str = "", client: str = ""
 ) -> list[dict[str, Any]]:
-    """Operations of ``op_class`` with this document number (and series, and client)."""
+    """Operations of ``op_class`` with this document number (and series, and client).
+
+    Every row is checked again. An answer with rows but none of this document (or
+    series, or client) shows that the filter was not applied: that is
+    invalid_response, never "no such document", so nothing is written after it (as
+    ``the_row`` and ``clients_with``). Rows of others next to matching ones are left
+    out, with one warning.
+    """
     conditions: dict[str, Any] = {"OrderNumber": document}
     if series:
         conditions["Series"] = series
     if client:
         conditions["Client"] = client
-    rows = operations_of(context, op_class, conditions, OPERATION_COLUMNS, strict=True)
-    rows = [r for r in rows if _same(field(r, "order_number"), document)]
+    answer = operations_of(context, op_class, conditions, OPERATION_COLUMNS, strict=True)
+    rows = [r for r in answer if _same(field(r, "order_number"), document)]
     if series:
         rows = [r for r in rows if _same(field(r, "series"), series)]
     if client:
         # The "client" column holds the client's code ("client_code" is its company code).
         rows = [r for r in rows if _same(field(r, "client"), client)]
+    asked = f"document {document}" + (f", series {series}" if series else "")
+    asked += f", client {client}" if client else ""
+    if answer and not rows:
+        raise errors.no_effect(
+            errors.INVALID_RESPONSE,
+            f"Finvalda answered the {op_class} search for {asked} with {len(answer)} "
+            "operation(s), none of them that one: the search was not applied as asked, so "
+            "it does not show that the document is missing. Nothing was written",
+        )
+    if len(rows) < len(answer):
+        warn(
+            f"Finvalda's {op_class} answer for {asked} holds {len(answer) - len(rows)} "
+            "operation(s) of other documents; they are left out"
+        )
     return rows
 
 
