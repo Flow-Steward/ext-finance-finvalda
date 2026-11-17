@@ -42,6 +42,31 @@ def _identifiers(record: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+MAX_KEPT_ITEMS = 100
+
+
+def _cut_list(items: list[Any]) -> tuple[list[Any], str]:
+    """A list cut for the output, and what the warning says about it: records cut to
+    their identifying fields, short scalars (ids, codes) kept as they are, other items
+    left out; at most ``MAX_KEPT_ITEMS``."""
+    kept: list[Any] = []
+    records = 0
+    for item in items:
+        if isinstance(item, Mapping):
+            kept.append(_identifiers(item))
+            records += 1
+        elif isinstance(item, _SCALARS) and len(str(item)) <= MAX_KEPT_TEXT:
+            kept.append(item)
+        if len(kept) >= MAX_KEPT_ITEMS:
+            break
+    if not kept:
+        return [], "it is left out"
+    said = f"{len(kept)} of its {len(items)} items are kept"
+    if records:
+        said += ", records cut to their identifying fields (codes, journal, numbers)"
+    return kept, said
+
+
 def fit_write_result(result: dict[str, Any]) -> dict[str, Any]:
     """The result of a write that already happened, cut until it fits the step output.
 
@@ -64,11 +89,11 @@ def fit_write_result(result: dict[str, Any]) -> dict[str, Any]:
         value = result[key]
         if isinstance(value, Mapping):
             result[key] = _identifiers(value)
+            said = "only its identifying fields (codes, journal, numbers) are kept"
         else:
-            result[key] = [_identifiers(v) for v in value if isinstance(v, Mapping)][:100]
+            result[key], said = _cut_list(value)
         warnings.append(
-            f"The {key} returned is too large for the step output; only its identifying "
-            "fields (codes, journal, numbers) are kept: see the full record in Finvalda"
+            f"The {key} returned is too large for the step output; {said}: see it in Finvalda"
         )
         if budget.fits(result):
             return result
