@@ -2281,7 +2281,13 @@ _INVOICE_OUTPUTS = [
         ["string", "null"],
         "Of a new document: its lines without VAT, exact decimal.",
     ),
-    out("total_vat", "text", ["string", "null"], "Of a new document: its VAT, exact decimal."),
+    out(
+        "total_vat",
+        "text",
+        ["string", "null"],
+        "Of a new document: its VAT, exact decimal; null when a line takes its VAT from the "
+        "card (see warnings).",
+    ),
     out("attachment_name", "text", ["string", "null"], "The attached file's name in Finvalda."),
     record_out("invoice", "operation", "The document as Finvalda has it."),
     WARNINGS,

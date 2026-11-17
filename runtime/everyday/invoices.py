@@ -315,6 +315,15 @@ def invoice_op(
             generated_name=True,
         )["file_name"]
     invoice = shape("operation", record)
+    vat_known = not totals.unknown[0]
+    if created and not vat_known:
+        known = cents(vat_total)
+        warnings.append(
+            "total_vat is not known: Finvalda takes the VAT of lines without vat_percent from "
+            "the product's or service's card"
+            + (f"; the lines with vat_percent have {known} {currency} VAT" if known else "")
+            + ". See the VAT of the document in Finvalda"
+        )
     return {
         "journal": saved["journal"],
         "op_number": saved["op_number"],
@@ -326,7 +335,7 @@ def invoice_op(
         "amount": invoice["amount"] if invoice else None,
         # The totals of this request; an existing document's are Finvalda's amount.
         "total_without_vat": str(cents(total)) if created else None,
-        "total_vat": str(cents(vat_total)) if created else None,
+        "total_vat": str(cents(vat_total)) if created and vat_known else None,
         "attachment_name": attachment,
         "invoice": invoice,
         "warnings": warnings,

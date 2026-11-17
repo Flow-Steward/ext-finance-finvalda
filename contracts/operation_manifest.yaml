@@ -922,7 +922,8 @@ operations:
       type:
       - string
       - 'null'
-      description: 'Of a new document: its VAT, exact decimal.'
+      description: 'Of a new document: its VAT, exact decimal; null when a line takes its VAT from the
+        card (see warnings).'
   - &id022
     name: attachment_name
     value_type: text

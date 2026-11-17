@@ -140,7 +140,7 @@ components:
     - `currency` (text): The document currency.
     - `amount` (text): The document's amount as Finvalda shows it, exact decimal.
     - `total_without_vat` (text): Of a new document: its lines without VAT, exact decimal.
-    - `total_vat` (text): Of a new document: its VAT, exact decimal.
+    - `total_vat` (text): Of a new document: its VAT, exact decimal; null when a line takes its VAT from the card (see warnings).
     - `attachment_name` (text): The attached file's name in Finvalda.
     - `invoice` (record): The document as Finvalda has it. Fields: `journal`, `op_number`, `series`, `document`, `client_code`, `client_name`, `date`, `payment_date`, `currency`, `amount`, `created_at`, `edited_at`.
     - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
@@ -177,7 +177,7 @@ components:
     - `currency` (text): The document currency.
     - `amount` (text): The document's amount as Finvalda shows it, exact decimal.
     - `total_without_vat` (text): Of a new document: its lines without VAT, exact decimal.
-    - `total_vat` (text): Of a new document: its VAT, exact decimal.
+    - `total_vat` (text): Of a new document: its VAT, exact decimal; null when a line takes its VAT from the card (see warnings).
     - `attachment_name` (text): The attached file's name in Finvalda.
     - `invoice` (record): The document as Finvalda has it. Fields: `journal`, `op_number`, `series`, `document`, `client_code`, `client_name`, `date`, `payment_date`, `currency`, `amount`, `created_at`, `edited_at`.
     - `warnings` (list): What the step could not do fully: read a record back after its write, or read a value of the type its field has (that value is returned as Finvalda sent it).
