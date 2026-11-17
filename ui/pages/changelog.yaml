@@ -8,6 +8,13 @@ components:
   type: markdown
   title: Release history
   body: |
+    ## 0.1.6 — 2026-11-17
+
+    - Create sales invoice and Create purchase invoice take a document found by number for this request only when its date matches too (a number used again in another year is a conflict), and a document without a readable date is a conflict. When the date, currency and amount match, the step says in its warnings that the lines were not compared: Finvalda's operation list does not show them.
+    - An operation search that returns only other documents, series or clients (the filter was not applied) stops the invoice and payment steps without writing, instead of being read as "no such document".
+    - total_vat of a new invoice is null with a warning when a line takes its VAT from the product's or service's card; the warning gives the VAT of the lines with vat_percent. An explicit vat_percent of 0 still gives 0.00.
+    - A write whose result is too large for the step output keeps its codes, journal and numbers and the fact that the change was made, and says what was cut; a response that is still too large keeps the write's facts.
+
     ## 0.1.5 — 2026-11-16
 
     - Find or create client compares a company code, VAT code or e-mail as Finvalda keeps it: e-mail

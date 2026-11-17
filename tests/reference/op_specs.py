@@ -2424,7 +2424,9 @@ def invoice_spec(operation_id: str, noun: str, header: str, journal_hint: str) -
             f"Creates a {noun} ({header}) with product and service lines; amounts and VAT are computed "
             "from quantity, price, discount and VAT percent. The document number makes it safe to run "
             f"again: the step first looks for a {noun} of that client with that number and returns it "
-            "instead of a second one, and Finvalda itself refuses a number already used. Can attach "
+            "instead of a second one when its date, currency and amount match (its lines cannot be "
+            "read there, so they are not compared; the warnings say so), and stops with a conflict "
+            "when they do not. Finvalda itself refuses a number already used. Can attach "
             "a file, such as the PDF, for which the connection needs a Finvalda employee. "
             "If an earlier run already stored the file in the register, attach it with the "
             + step("attach_document")
