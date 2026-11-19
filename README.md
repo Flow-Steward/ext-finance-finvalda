@@ -1,152 +1,116 @@
-# Finvalda for Flow Steward
+# Finvalda integration for Flow Steward
 
-See the [workflow action guide](docs/workflow-actions.md) for setup, invoice examples,
-paging and advanced-action inputs.
+<img src="icon.png" width="96" alt="Finvalda integration for Flow Steward">
 
-Bring Finvalda accounting and business records into Flow Steward through the FvsServicePure web service. Everyday steps find or create clients, products and services, prepare sales and purchase invoices, register incoming or outgoing payments and work with invoice PDFs and attachments. Client searches can use business identifiers or email, while product searches can use codes or barcodes.
+[![CI](https://img.shields.io/github/actions/workflow/status/Flow-Steward/ext-finance-finvalda/ci.yml?branch=main&label=CI)](https://github.com/Flow-Steward/ext-finance-finvalda/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/Flow-Steward/ext-finance-finvalda?label=release)](https://github.com/Flow-Steward/ext-finance-finvalda/releases/latest)
 
-Read warehouse stock, reserved quantities, costs, sales and purchase prices, client-specific prices and outstanding debt. Date-based change reads expose clients, products, services, sales, purchases and payments for incremental exchange with other systems. Files move through Flow Steward storage, so a workflow can pass an invoice PDF to another document, email or archival step.
+Automate Finvalda accounting with Flow Steward workflows and AI agents: create invoices, register payments, read stock and debts — without writing code.
 
-For more detailed integrations, the release includes 160 advanced operations derived from its pinned Finvalda reference. These cover description lists, operation classes, older record readers, record and document changes, locking, copying, journal moves, invoice and report generation and list exports. Combine these steps to turn shop orders into accounting documents, feed warehouse availability to a storefront or check unpaid invoices before processing a new order. Each connection carries its company and import settings; the configured Finvalda user and employee permissions control access.
+This Flow Steward extension is a Finvalda integration for accounting automation in Lithuania. It works through the Finvalda web service API (FvsServicePure) and brings workflow automation to clients, products, sales and purchase invoices, payments, stock, prices and documents.
 
-Have your Finvalda administrator enable FvsServicePure on a publicly reachable HTTPS host and create a web-service user. Configure the company, Finvalda employee and separate operation and record import parameters in the project connection, then run the connection test.
+## What is this
 
-## Why use it
+Finvalda is an accounting and business management system used by companies in Lithuania for bookkeeping, sales, purchases and warehouse. This extension is a connector: it adds ready Finvalda steps to the Flow Steward workflow editor and the same operations as tools for AI agents. Read more about Flow Steward at <https://docs.flowsteward.org>.
 
-Typical jobs it automates:
+## What you can automate
 
-- **An order or invoice arrives** (from a shop, an e-mail, a form) → find the client and the
-  products in Finvalda, create them if they are missing, and create the sales invoice with its PDF
-  attached.
-- **A bank statement arrives** → register each payment against the client and the invoice it
-  pays.
-- **Stock and prices for a shop** → read current stock by warehouse and the sales prices, and pass
-  them to the shop's steps.
-- **Changes to another system** → read the clients, products or operations changed since a date
-  and send them on, page by page.
-- **Debt control** → read a client's debt and unpaid documents, with the overdue part, before
-  accepting a new order.
+- Create sales invoices in Finvalda from orders in your online shop — the client and products are found or created first, no retyping.
+- Book supplier invoices as purchase invoices and attach the original PDF to the document.
+- Register payments from a bank statement against the invoices they pay.
+- Send current stock by warehouse and sales prices from Finvalda to your shop or marketplace.
+- Check a client's debt and overdue documents before accepting a new order.
+- Send an invoice PDF from Finvalda to the client by e-mail or to your archive.
+- Pass clients, products, sales, purchases and payments changed since a date to another system.
 
-## How it fits into Flow Steward
+## Why teams use it
 
-- **Install** it as an extension: from the catalog, or with
-  `./flow-steward extensions install --archive flowsteward.finvalda-0.1.6.zip`.
-- **Connect**: on the extension's Connection page a project adds a Finvalda connection — the web
-  service address, the web service user and password, the company, the two import parameters and
-  the Finvalda employee. One project can hold several connections, for example one per company.
-- **Build workflows**: the Finvalda steps appear in the workflow editor, each named by what it
-  does ("Find sales", "Get currency rates", "Create an operation") — the everyday steps first, then
-  the others by subject. Each step's results (codes, records, totals, files) are inputs for the
-  next steps.
-- **Files** (invoice PDFs, attachments, exports) travel through Flow Steward's file storage: a step
-  takes a workflow file as input or returns one.
-- **Writes** to Finvalda are declared external effects: Flow Steward suppresses them in test runs,
-  so a workflow can be tried without changing the books.
+- **No duplicate documents.** Everyday steps look up before they create: clients, products and services by code, invoices and payments by document number for that client. A rerun of an invoice returns the one already created; when the match is unclear, the step stops and writes nothing.
+- **Amounts without rounding errors.** Money is handled as exact decimals from input to Finvalda and back; an amount with more than cents is refused rather than rounded.
+- **A change is not sent twice.** When Finvalda's answer does not confirm a write, the step reports the outcome as unknown instead of retrying, so the workflow can check Finvalda first.
+- **A test run changes nothing.** Writes are declared external effects, and Flow Steward suppresses them in test runs, so you can try a workflow without touching the books.
+- **The whole documented API is covered.** 173 steps: 13 everyday steps plus a step for every documented method of the web service.
+- **The password stays secret.** It travels only in the header the web service requires and is removed from every answer before the answer is read.
 
-```
-order / bank statement / schedule  →  Finvalda step  →  next steps (e-mail, shop, report …)
-```
-
-## What Finvalda needs
-
-The company's Finvalda administrator:
-
-- enables Finvalda's **web service module** and makes it reachable over **https** on a public host
-  name, for example `https://fvs.example.lt/FvsServicePure.svc`;
-- creates a **Finvalda user for the web service** and gives it the rights the steps need;
-- names a **Finvalda employee** (finUser) for documents and files — a Finvalda employee, not the
-  web service user;
-- prepares the **import parameters** in Finvalda's FvsNETParamKonfig tool: one for operations
-  (journal, operation type, series, accounts) and one for new records (accounts, VAT, unit).
-
-The extension's **Setup Guide** page walks through each of these, and the **Connection** page
-explains every field.
-
-## Steps
+## What's inside
 
 Everyday steps:
 
-- **Test the connection** — reads one client to check the address, user, password and company.
-- **Find or create client** — looks a client up by code, company code, VAT code or e-mail; creates
-  it when none matches.
-- **Find or create product** — looks a product up by code or barcode; creates it when none matches.
-- **Find or create service** — looks a service up by code; creates it when it does not exist.
-- **Create sales invoice** — a sales invoice with product and service lines, VAT computed, and an
-  optional PDF attached.
+- **Test the connection** — checks the address, user, password and company in one click.
+- **Find or create client** — finds a client by code, company code, VAT code or e-mail, creates it when missing.
+- **Find or create product** — finds a product by code or barcode, creates it when missing.
+- **Find or create service** — finds a service by code, creates it when missing.
+- **Create sales invoice** — product and service lines with VAT computed, optionally with a PDF attached.
 - **Create purchase invoice** — the same for a supplier's invoice.
-- **Register payment** — money received from a client or paid to a supplier, against an invoice or
-  as a prepayment.
-- **Download invoice PDF** — prints a sale or purchase with an invoice form to a workflow file.
-- **Attach file** — stores a workflow file in Finvalda and attaches it to an operation, a client or
-  a product.
-- **Read stock levels** — current stock by warehouse: quantity, quantity with reservations, cost.
-- **Read product prices** — the six sales prices and the purchase price, and a client's special prices.
-- **Read client debt** — a client's debt and unpaid documents, with the overdue part.
-- **Read records changed since a date** — clients, products, services, sales, purchases or payments created or edited
-  on or after a date, page by page.
+- **Register payment** — money received from a client or paid to a supplier, against an invoice or as a prepayment.
+- **Download invoice PDF** — the invoice form as a workflow file, ready for e-mail or archive.
+- **Attach file** — attaches a workflow file to an operation, a client or a product.
+- **Read stock levels** — quantity, quantity with reservations and cost by warehouse.
+- **Read product prices** — the sales prices, the purchase price and a client's special prices.
+- **Read client debt** — debt and unpaid documents, with the overdue part.
+- **Read records changed since a date** — clients, products, services, sales, purchases or payments, page by page.
 
-Every documented method of the web service also has its own step — **160 more steps**, each named
-by what it does and listed by subject after the everyday ones: clients ("Get clients", "Get a
-client by code"), products and services, prices and discounts, stock and warehouses, sales ("Find
-sales", "Find sales lines"), purchases, payments ("Find incoming payments", "Get payment terms"),
-other operations, files and documents ("Print an invoice form to PDF", "Store a document"),
-reference data ("Get currency rates", "Get chart of accounts"), records and operations ("Create a
-record", "Change an operation", "Lock an operation"), and at the end "Export a list to a file" and
-"Call a Finvalda method". The **Coverage** page names
-every method and list of Finvalda's documents and the step that offers it, or the reason there is
-none; the **Finvalda API** page lists each step's inputs and results with their types.
+Beyond these, 160 more API operations are available as steps: clients, products and services, prices and discounts, stock and warehouses, sales, purchases, payments and settlements, reports and invoice forms, documents and files, reference data, records and operations, and list exports. The [workflow action guide](docs/workflow-actions.md) shows examples.
 
-## How writes behave
+## Get started
 
-- **Running a step again does not create duplicates.** Everyday steps look up before they create:
-  clients, products and services by code (and the other values given), invoices and payments by
-  their document number for that client. When the answer is not clear — another client with the
-  same company code, an invoice with another amount, a lookup row without its code — the step stops
-  with a conflict and writes nothing.
-- **An unknown outcome is marked, never retried.** When Finvalda's answer does not confirm that a
-  change was saved (a timeout, a lost connection, a server error), the step reports the outcome as
-  unknown so the workflow can check Finvalda first. A step that saves more than one thing (an
-  invoice and its file) names what it already saved when a later call fails.
-- **Refusals are explained.** When Finvalda refuses a change, the step passes on Finvalda's code
-  with the manual's meaning; nothing was saved.
-- **Money is exact.** Amounts are exact decimals from input to Finvalda and back: no rounding
-  through floating point, and an amount with more than cents is refused rather than rounded.
-- **The password stays secret.** It travels only in the header the web service requires and is
-  removed from every answer before it is read.
+1. In Flow Steward, open **Extensions → Catalog**, find **Finvalda** and install it.
+2. Open the extension's **Connection** page and add a connection: the web service address (https), the web service user and password, the company code if the service serves several companies, the import parameter for operations, the import parameter for records and the Finvalda employee.
+3. Press **Test connection**. It reads one client to check everything.
+4. Build your first workflow: for example, an order arrives → **Find or create client** → **Create sales invoice** → **Download invoice PDF** → e-mail.
 
-## Installing and developing
+## Requirements
 
-Requirements: Flow Steward Core with the extension host contract `extension_host_v2`; the
-extension is built on `flowsteward-extension-sdk` 0.4.0 and has no other Python dependencies.
+- Finvalda with the web service module (FvsServicePure), an add-on of Finvalda MINI, MIDI and MAXI, reachable over https on a public host name with a valid certificate.
+- A Finvalda user for the web service with the rights your workflows need: the steps can do exactly what that user can do.
+- A Finvalda employee for documents and files (an employee, not the web service user).
+- Import parameters prepared in Finvalda's FvsNETParamKonfig tool: one for operations (journal, operation type, series, accounts) and one for new records (accounts, VAT, unit). Without an operation parameter Finvalda accepts no invoice or payment.
+- Flow Steward 0.9.16 or later.
 
-From a Flow Steward checkout, with `EXT` the absolute path of this repository and `ROOT` the
-folder that contains it:
+## FAQ
 
-```bash
-./core/entrypoints/cli/scripts/lint.sh --checks extension-static,extension-tests --extension-root "$EXT"
-./flow-steward extensions validate flowsteward.finvalda --root "$ROOT" --health --marketplace
-./flow-steward extensions test flowsteward.finvalda --root "$ROOT"
-./flow-steward extensions bundle flowsteward.finvalda --root "$ROOT" --with-wheels --confirm
-./flow-steward extensions install --archive dist/extensions/flowsteward.finvalda-0.1.6.zip --confirm
-```
+**How do I create invoices in Finvalda from an online shop?**
+Add a trigger for new orders, then **Find or create client**, **Find or create product** for each line and **Create sales invoice** with the order number as the document number.
 
-The contracts, the Coverage and Finvalda API pages and `runtime/registry.json` are generated from
-the facts extracted from Finvalda's documents:
+**Can Flow Steward send Finvalda stock and prices to my e-shop?**
+Yes. **Read stock levels** and **Read product prices** return stock by warehouse and prices that the next steps pass to your shop.
+
+**Will running a workflow twice create a duplicate invoice in Finvalda?**
+No. A rerun with the same client and document number returns the existing invoice. For payments, an existing payment with the same document number for that client stops the step with a conflict, so give each payment its own number.
+
+**Can one Flow Steward project work with several Finvalda companies?**
+Yes. Each company is its own connection, and each step picks the connection to use.
+
+**What does the Finvalda administrator need to set up?**
+Enable the web service on an https address, create a web service user, name the Finvalda employee and prepare the two import parameters. The extension's **Setup Guide** page walks through each of these.
+
+## In your language
+
+Finvalda integracija su Flow Steward padeda automatizuoti apskaitą be rankinio darbo. Plėtinys per Finvalda webservisą kuria klientus, prekes, pardavimo ir pirkimo sąskaitas faktūras, registruoja mokėjimus ir skaito likučius, kainas bei skolas. Tinka įmonėms Lietuvoje, kurios nori sujungti Finvalda su el. parduotuve ar kita sistema.
+
+## Links
+
+- Flow Steward documentation: <https://docs.flowsteward.org>
+- Flow Steward extension catalog: <https://github.com/Flow-Steward/extensions>
+- Issues and support: <https://github.com/Flow-Steward/ext-finance-finvalda/issues>
+- Finvalda web service API reference (Postman): <https://documenter.getpostman.com/view/7208231/2s8YmRMLvd>
+- Changes: [CHANGELOG.md](CHANGELOG.md)
+
+## For developers
+
+The extension is built on `flowsteward-extension-sdk` 0.4.0 and has no other Python dependencies. The contracts, the Coverage and Finvalda API pages and `runtime/registry.json` are generated from facts extracted from Finvalda's documents (`tests/reference/fvs_reference.json`):
 
 ```bash
 python3 tests/reference/extract_reference.py <FVS_Webservice.md> <collection.json>  # re-extract
 python3 tests/reference/build_contracts.py                                           # regenerate
 ```
 
-Neither source is committed — only the facts extracted from them
-(`tests/reference/fvs_reference.json`), pinned by SHA-256 in `tests/reference/extract_reference.py`.
-`tests/test_reference.py` re-extracts each source and compares it with the committed facts when
-`FINVALDA_MANUAL` (the manual as Markdown) and `FINVALDA_POSTMAN` (the Postman collection's JSON
-export) name the pinned copies.
+From a Flow Steward checkout, with `EXT` the absolute path of this repository and `ROOT` the folder that contains it (the checks run in the `fs-audit` container):
 
-## Support and links
+```bash
+./core/entrypoints/cli/scripts/lint.sh --checks extension-static,extension-tests --extension-root "$EXT"
+./flow-steward extensions validate flowsteward.finvalda --root "$ROOT" --health --marketplace
+./flow-steward extensions test flowsteward.finvalda --root "$ROOT"
+```
 
-- Support and issues: <https://github.com/Flow-Steward/ext-finance-finvalda/issues>
-- Changes: [CHANGELOG.md](CHANGELOG.md)
-- Finvalda's web service reference (Postman):
-  <https://documenter.getpostman.com/view/7208231/2s8YmRMLvd>
+Finvalda and its marks belong to their owner; see [BRANDING.md](BRANDING.md) for the icon's source.
